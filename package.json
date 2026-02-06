@@ -1,0 +1,50 @@
+{
+  "name": "resume-customizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.72.1",
+    "@react-pdf/renderer": "^4.3.2",
+    "@types/node": "^25.2.0",
+    "@types/react": "^19.2.11",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.4.24",
+    "cheerio": "^1.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.31.0",
+    "lucide-react": "^0.563.0",
+    "mammoth": "^1.11.0",
+    "next": "^14.2.35",
+    "next-themes": "^0.4.6",
+    "p-queue": "^9.1.0",
+    "postcss": "^8.5.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-dropzone": "^14.4.0",
+    "react-hook-form": "^7.71.1",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "unpdf": "^1.4.0",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.11"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.6",
+    "prettier": "^3.8.1"
+  }
+}

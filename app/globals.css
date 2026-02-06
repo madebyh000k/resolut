@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --surface: 0 0% 98%;
+    --surface-hover: 0 0% 95%;
+    --text-primary: 0 0% 10%;
+    --text-secondary: 0 0% 45%;
+    --text-muted: 0 0% 60%;
+  }
+
+  .dark {
+    --background: 0 0% 4%;
+    --surface: 0 0% 10%;
+    --surface-hover: 0 0% 16%;
+    --text-primary: 0 0% 100%;
+    --text-secondary: 0 0% 64%;
+    --text-muted: 0 0% 45%;
+  }
+
+  body {
+    @apply bg-background text-text-primary;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+  }
+}
+
+@layer utilities {
+  .btn-primary {
+    @apply rounded-full px-6 py-3 font-medium bg-primary hover:bg-primary-hover text-white transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply rounded-full px-6 py-3 font-medium bg-surface hover:bg-surfaceHover text-white transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply rounded-full px-6 py-3 font-medium border-2 border-primary text-primary hover:bg-primary/10 transition-all duration-200;
+  }
+}
