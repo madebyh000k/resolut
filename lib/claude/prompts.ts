@@ -659,12 +659,80 @@ Required sections (in this order):
    - Explain: "This offer is at the TOP of the pay band for this role/level"
    - Future raises: 0-3% annually (cost-of-living only)
    - NEXT raise requires: Promotion to next level OR company change
-   - Strategic options:
-     1. Negotiate TITLE BUMP to next level NOW (e.g., Senior → Staff)
-     2. Ask for GUARANTEED promotion timeline (6-12 months with clear criteria)
-     3. Maximize EQUITY and SIGNING BONUS since base is maxed
-     4. Accept knowing you'll need to switch companies in 2-3 years for next big raise
-   - Be direct: "Your career growth here will depend on promotion, not merit raises"
+
+   STRATEGIC OPTIONS (ranked by likelihood of success):
+
+   ❌ OPTION 1: Push for title bump during offer stage
+   REALITY CHECK: This rarely works at big tech companies.
+   - They'll say: "Title is based on role scope, not compensation"
+   - They'll say: "We can discuss promotion after you prove yourself"
+   - They WON'T budge on level during negotiation
+   - Real example: Candidate pushed for L7 at Amazon with L7-level comp. Amazon said no.
+     Candidate accepted. Hit ceiling immediately.
+   - You can try this, but have a backup plan when they say no.
+
+   ⚠️ OPTION 2: Negotiate promotion timeline guarantee
+   REALITY CHECK: They won't put timeline in writing.
+   - Best case: Verbal "we'll review you in 12-18 months"
+   - No guarantee of outcome
+   - Promo committees are unpredictable (e.g., 15% annual promo rate L6→L7 at Amazon)
+   - You can ask for this, but don't count on it.
+
+   ✅ OPTION 3: Accept + plan strategic 18-24 month exit
+   REALITY CHECK: This is what most people at ceiling actually do.
+   The play:
+   1. Accept the high offer
+   2. Use company brand for 18-24 months
+   3. Build skills, get promoted projects, document impact
+   4. Leave for next-level role at different company (20-30% comp bump)
+
+   Why this works:
+   - You maximize short-term comp
+   - Build strong resume at prestigious company
+   - Leave before ceiling frustration sets in
+   - Next company hires you at higher level
+
+   Real example: L6 at Amazon → 18 months → Senior PM at startup (Staff-equivalent)
+   Total comp went from $240k to $320k + equity, higher title
+
+   This is the pragmatic choice if you're already at ceiling.
+
+   ✅ OPTION 4: Negotiate equity-heavy structure to preserve cash runway
+   REALITY CHECK: This sometimes works if you frame it right.
+   The ask:
+   "I appreciate the offer. I'd like to propose an alternative structure:
+   - Base: [Lower amount at 70th percentile, leaves raise runway]
+   - RSU: Increase to maintain total comp
+   - This gives me room for annual base increases while keeping total comp competitive"
+
+   Why this works:
+   - You acknowledge the ceiling problem
+   - You propose a solution that helps both sides
+   - Companies often have more equity flexibility than cash
+   - You preserve 3-4 years of base raise potential
+
+   Real outcome: If accepted, you buy 2-3 years before ceiling + time for promotion
+   If rejected, you know to plan exit (Option 3)
+
+   This is worth trying before accepting standard offer.
+
+   🎯 RECOMMENDED APPROACH:
+   1. Try Option 4 first (equity-heavy restructure)
+      - If yes: You bought yourself time
+      - If no: Move to step 2
+   2. Try Option 1 (title bump) knowing it probably won't work
+      - Document that you tried
+      - Sets up future "I told you I was operating at next level" conversation
+      - When they say no, move to step 3
+   3. Accept + Option 3 (plan 18-24 month exit)
+      - Don't tell them this is your plan
+      - Use the time strategically
+      - Leave on your terms when ready
+
+   HONEST ASSESSMENT:
+   You're at ceiling. The company won't fix this during negotiation. Your choice is:
+   stay frustrated for 6+ years grinding for promo, OR take the money, build your brand,
+   leave in 2 years for next level. Most successful people choose the latter.
 
    IF offer is 85-95th percentile (HIGH RISK):
    ⚠️ CEILING RISK - PLAN AHEAD
