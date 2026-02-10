@@ -142,7 +142,7 @@ export const useResumeStore = create<ResumeStore>()(
             customizedText: analysis.customizedResume,
             structure: originalResume.structure,
             keywordsAdded: analysis.keywordsPresent
-              ? analysis.keywordsPresent.split(',').map(k => k.trim()).filter(Boolean)
+              ? analysis.keywordsPresent.split(',').map((k: string) => k.trim()).filter(Boolean)
               : [],
             analysis,
             customizedAt: new Date(),
