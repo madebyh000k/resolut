@@ -647,27 +647,39 @@ Required sections (in this order):
    - Compare against typical ranges (be realistic, use general knowledge)
    - Identify if offer is below, at, or above market
 
-3. "Negotiation Priorities" (priority: high)
+3. "Pay Band & Career Strategy" (priority: high)
+   - CRITICAL: Calculate where offer sits within typical pay band for this role/level
+   - Estimate pay band width: Junior ~$40k, Mid ~$60k, Senior ~$80k, Staff+ ~$100k+
+   - Identify position: Bottom third (0-33%, headroom), Middle third (34-66%, sweet spot), Top third (67-100%, CEILING RISK)
+   - IF top third: FLAG with "⚠️ PAY BAND CEILING RISK" warning
+     * Explain limited future raises (3-5% vs 10-15%)
+     * Note promotion may be required for significant increases
+     * Provide strategic options: negotiate title bump, faster promotion timeline, or accept knowing company change needed
+   - IF middle third: Flag as "✅ OPTIMAL POSITIONING" with 8-12% annual raise potential
+   - IF bottom third: Note "💡 HEADROOM AVAILABLE" with 30-50% growth potential
+   - This analysis is REQUIRED for every negotiation
+
+4. "Negotiation Priorities" (priority: high)
    - What to negotiate first (salary vs equity vs benefits)
    - Prioritize based on the specific offer structure
    - Consider what typically has most negotiation flexibility
 
-4. "Communication Strategy" (priority: high)
+5. "Communication Strategy" (priority: high)
    - How to frame your negotiation request
    - Specific language and tone to use
    - Timing and approach recommendations
 
-5. "Leverage Points" (priority: medium)
+6. "Leverage Points" (priority: medium)
    - Specific strengths from candidate's background (if available)
    - Market demand factors to reference
    - Other offers or competing factors (if mentioned)
 
-6. "Alternative Asks" (priority: medium)
+7. "Alternative Asks" (priority: medium)
    - Non-salary items to negotiate (benefits, PTO, signing bonus, etc.)
    - Remote work flexibility or relocation assistance
    - Professional development, title changes, etc.
 
-7. "Potential Responses & Rebuttals" (priority: medium)
+8. "Potential Responses & Rebuttals" (priority: medium)
    - Common employer responses to negotiation requests
    - How to handle "this is our final offer"
    - When to accept vs walk away
