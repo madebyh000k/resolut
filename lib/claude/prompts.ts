@@ -650,14 +650,63 @@ Required sections (in this order):
 3. "Pay Band & Career Strategy" (priority: high)
    - CRITICAL: Calculate where offer sits within typical pay band for this role/level
    - Estimate pay band width: Junior ~$40k, Mid ~$60k, Senior ~$80k, Staff+ ~$100k+
-   - Identify position: Bottom third (0-33%, headroom), Middle third (34-66%, sweet spot), Top third (67-100%, CEILING RISK)
-   - IF top third: FLAG with "⚠️ PAY BAND CEILING RISK" warning
-     * Explain limited future raises (3-5% vs 10-15%)
-     * Note promotion may be required for significant increases
-     * Provide strategic options: negotiate title bump, faster promotion timeline, or accept knowing company change needed
-   - IF middle third: Flag as "✅ OPTIMAL POSITIONING" with 8-12% annual raise potential
-   - IF bottom third: Note "💡 HEADROOM AVAILABLE" with 30-50% growth potential
-   - This analysis is REQUIRED for every negotiation
+   - Calculate percentile position within band (0-100th percentile)
+
+   PAY BAND CEILING WARNINGS - WARN EARLY:
+
+   IF offer is 95-100th percentile (AT CEILING):
+   🚨 AT CEILING - STRATEGIC DECISION REQUIRED
+   - Explain: "This offer is at the TOP of the pay band for this role/level"
+   - Future raises: 0-3% annually (cost-of-living only)
+   - NEXT raise requires: Promotion to next level OR company change
+   - Strategic options:
+     1. Negotiate TITLE BUMP to next level NOW (e.g., Senior → Staff)
+     2. Ask for GUARANTEED promotion timeline (6-12 months with clear criteria)
+     3. Maximize EQUITY and SIGNING BONUS since base is maxed
+     4. Accept knowing you'll need to switch companies in 2-3 years for next big raise
+   - Be direct: "Your career growth here will depend on promotion, not merit raises"
+
+   IF offer is 85-95th percentile (HIGH RISK):
+   ⚠️ CEILING RISK - PLAN AHEAD
+   - Explain: "This offer is in the TOP 15% of the pay band"
+   - Future raises: 3-5% annually (limited headroom)
+   - Real example: "Amazon L6 at $185K (band $140-200K) = 75% through band = 3-4 years until ceiling"
+   - Strategic options:
+     1. Negotiate title clarity (Senior vs Staff vs Principal - ensures correct band)
+     2. Ask about promotion timeline and criteria upfront
+     3. Front-load compensation (signing bonus, year-1 equity refresh)
+     4. Plan for promotion in 18-24 months or external move
+   - Warning: "Merit raises will slow significantly after year 2"
+
+   IF offer is 70-85th percentile (APPROACHING CEILING):
+   ⚠️ APPROACHING CEILING
+   - Explain: "This offer is in the UPPER THIRD of the pay band"
+   - Future raises: 5-8% annually (2-3 years of headroom)
+   - You have ~15-30% growth potential before hitting ceiling
+   - Strategic options:
+     1. This is often the "senior hire" zone - confirm level is correct
+     2. Plan career growth path: What's next level? When typically promoted?
+     3. Consider negotiating now vs accepting with promotion plan
+   - Note: "Good positioning, but start thinking about next level within 2-3 years"
+
+   IF offer is 60-70th percentile (SWEET SPOT):
+   ✅ OPTIMAL POSITIONING - SWEET SPOT
+   - Explain: "This offer is in the IDEAL ZONE of the pay band"
+   - Future raises: 8-12% annually (3-5 years of runway)
+   - You have 30-40% growth potential through merit raises
+   - This is where companies WANT to hire: Room to reward performance
+   - Strategic note: "Best long-term positioning - plenty of headroom for growth"
+
+   IF offer is below 60th percentile (HEADROOM):
+   💡 HEADROOM AVAILABLE
+   - Explain: "This offer has SIGNIFICANT growth potential within current level"
+   - Future raises: 10-15%+ annually for strong performers
+   - You have 40%+ growth potential before promotion needed
+   - May indicate: Early career, career change, or below-market offer
+   - Negotiation angle: If experienced, argue for higher starting point
+
+   - This percentile-based analysis is REQUIRED for every negotiation
+   - Always show the math: "(Offer - Band Min) / (Band Max - Band Min) = X percentile"
 
 4. "Negotiation Priorities" (priority: high)
    - What to negotiate first (salary vs equity vs benefits)
