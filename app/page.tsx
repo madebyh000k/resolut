@@ -71,11 +71,16 @@ export default function LandingPage() {
           </div>
 
           {/* Value Prop 3 */}
-          <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+          <div className="text-center opacity-60">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 opacity-50">
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold mb-3">Smart Negotiations</h3>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <h3 className="text-xl font-semibold">Smart Negotiations</h3>
+              <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full uppercase tracking-wide">
+                Coming Soon
+              </span>
+            </div>
             <p className="text-text-secondary">
               Analyze your offer and get data-driven negotiation strategies with market insights, email templates, and pushback responses.
             </p>
@@ -88,7 +93,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto text-center px-4">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">Get Early Access</h2>
           <p className="text-lg text-text-secondary mb-8">
-            Join the waitlist and be first to try Resolut when we launch.
+            Join the waitlist and be first to try Resolut when we launch. Optimize and Prepare features available now. Negotiate coming this week.
           </p>
 
           {/* Mailchimp Form */}
@@ -227,25 +232,28 @@ export default function LandingPage() {
           </div>
 
           {/* Step 3: Negotiate Your Offer */}
-          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 opacity-60">
             <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4 opacity-50">
                 3
               </div>
-              <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
+              <div className="flex items-center gap-3 justify-center md:justify-start mb-3">
                 <TrendingUp className="h-6 w-6 text-primary" />
-                Negotiate Your Offer
-              </h3>
+                <h3 className="text-2xl font-semibold">Negotiate Your Offer</h3>
+                <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full uppercase tracking-wide">
+                  Coming Soon
+                </span>
+              </div>
               <p className="text-text-secondary mb-4">
                 Analyze your offer and get data-driven negotiation strategies with market insights, personalized email templates, and responses to common pushback scenarios.
               </p>
               <Button
-                variant="primary"
-                onClick={() => router.push('/negotiate')}
-                className="group"
+                variant="outline"
+                disabled
+                className="group opacity-50 cursor-not-allowed"
               >
                 Start Negotiating
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
             <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
