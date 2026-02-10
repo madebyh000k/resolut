@@ -590,29 +590,41 @@ ${jobOffer.benefits ? `Benefits: ${jobOffer.benefits.join(', ')}` : ''}
 ${resumeText ? `CANDIDATE BACKGROUND:\n${resumeText.substring(0, 3000)}\n` : ''}
 ${jobDescription ? `JOB DESCRIPTION:\n${jobDescription.substring(0, 2000)}\n` : ''}
 
-⚠️ CRITICAL: Calibrate your advice to the offer quality ⚠️
+🚨 CRITICAL INSTRUCTION - READ FIRST:
 
-IF offer is 90th percentile or above (exceptional/top-tier):
-- DO NOT suggest asking for significantly more money
-- Acknowledge it as an exceptional/outstanding offer
-- Focus on NON-MONETARY items: title clarity, equity acceleration, signing bonus structure, relocation, team fit
-- Suggest PROTECTING the offer, not inflating it
-- Example: "This is an outstanding offer. Focus on role clarity, growth path, and team fit rather than comp increases."
-- Recommend accepting if all other factors align
+Your job is HONEST ASSESSMENT, not always optimizing for more money.
 
-IF offer is 75th-89th percentile (strong/competitive):
-- Suggest MODEST improvements (5-10% maximum)
-- Focus on specific gaps vs market benchmarks
-- Provide clear justification for any increases
-- Consider non-monetary enhancements
+CALIBRATION RULES (check percentile FIRST, then respond accordingly):
 
-IF offer is below 75th percentile (below market):
-- Suggest clear increases with market data
-- Provide specific negotiation strategies
-- Focus on bringing comp to market rate
-- Be more aggressive with recommendations
+IF offer is 95th percentile or above:
+- DO NOT suggest asking for more money
+- Acknowledge it's exceptional
+- Focus on: protecting the offer, non-monetary items, strategic positioning
+- Example response: "This is an outstanding offer. Accept it. Focus on team fit and role clarity."
+- Your bottomLine recommendation must be "ACCEPT"
 
-Your credibility depends on honest assessment. DO NOT always optimize for "more."
+IF offer is 85th-94th percentile:
+- Acknowledge it's strong
+- Suggest ONLY minor tweaks (5% max increase OR non-monetary items)
+- Example: "Strong offer. Consider asking for signing bonus or earlier equity review, not higher base."
+- Your bottomLine recommendation should be "ACCEPT with minor tweaks"
+
+IF offer is 70th-84th percentile:
+- This is market rate
+- Suggest modest improvements (10% max) with specific justification
+- Example: "Fair offer. You could ask for $X based on [specific gap], but this is reasonable."
+- Your bottomLine recommendation should be "NEGOTIATE modest increase"
+
+IF offer is below 70th percentile:
+- This is where you suggest real increases
+- Provide specific market data and negotiation strategies
+- Example: "This is below market. Here's the data and how to negotiate up."
+- Your bottomLine recommendation should be "NEGOTIATE significantly OR decline"
+
+YOUR CREDIBILITY DEPENDS ON BEING HONEST.
+
+If an offer is great, SAY IT'S GREAT.
+Don't always optimize for "more" - optimize for BEST CAREER DECISION.
 
 ---
 
@@ -633,7 +645,12 @@ Create a JSON object with this structure:
       "recommendation": "Specific actionable recommendation",
       "confidence": "high" | "medium" | "low"
     }
-  ]
+  ],
+  "bottomLine": {
+    "recommendation": "ACCEPT" | "ACCEPT with minor tweaks" | "NEGOTIATE modest increase" | "NEGOTIATE significantly OR decline",
+    "reasoning": "2-3 sentence explanation of why this is the right move",
+    "oneLineAdvice": "Single most important thing to do (actionable, specific)"
+  }
 }
 
 Required sections (in this order):
@@ -692,8 +709,31 @@ Required sections (in this order):
    - Leave before ceiling frustration sets in
    - Next company hires you at higher level
 
-   Real example: L6 at Amazon → 18 months → Senior PM at startup (Staff-equivalent)
-   Total comp went from $240k to $320k + equity, higher title
+   📊 REAL EXAMPLES - THE CEILING TRAP ACROSS INDUSTRIES:
+
+   BIG TECH:
+   Senior PM at Amazon (L6), $265k total comp (90th percentile).
+   Stock appreciation → $300k over 4 years, but no promotion.
+   Stayed 48 months for team/comfort. Left frustrated.
+   Should have moved at Month 24 for $190k+ more over same period.
+
+   CREATIVE/AGENCY:
+   Creative Director at major agency, $180k + 20% bonus (top of CD band).
+   Annual raises capped at 3-5%. Stayed 3 years hoping for ECD promotion.
+   Finally left for Head of Creative at brand ($240k + equity).
+   Opportunity cost: ~$120k over 3 years by waiting.
+
+   STARTUP:
+   Head of Marketing at Series B, $160k + 0.5% equity (85th percentile).
+   Company hit plateau, equity value stagnant, no VP promotion.
+   Stayed 2.5 years. Left for VP Marketing at Series C ($220k + 0.3%).
+   Opportunity cost: Lower title, slower career velocity.
+
+   THE PATTERN IS UNIVERSAL:
+   - Hit compensation ceiling for your level
+   - Stay too long hoping for promotion
+   - Leave 18-36 months later than optimal
+   - Cost: $100-300k in opportunity cost + career growth
 
    This is the pragmatic choice if you're already at ceiling.
 
@@ -738,7 +778,12 @@ Required sections (in this order):
    ⚠️ CEILING RISK - PLAN AHEAD
    - Explain: "This offer is in the TOP 15% of the pay band"
    - Future raises: 3-5% annually (limited headroom)
-   - Real example: "Amazon L6 at $185K (band $140-200K) = 75% through band = 3-4 years until ceiling"
+
+   Real examples across industries:
+   - Big Tech: Amazon L6 at $185K (band $140-200K) = 75% through band = 3-4 years until ceiling
+   - Creative: Creative Director at $165K (band $120-185K) = 69% through band = hitting ECD ceiling
+   - Startup: Head of Marketing at $145K (band $100-165K) = 73% through band = VP ceiling approaching
+
    - Strategic options:
      1. Negotiate title clarity (Senior vs Staff vs Principal - ensures correct band)
      2. Ask about promotion timeline and criteria upfront
@@ -800,6 +845,41 @@ Required sections (in this order):
    - Common employer responses to negotiation requests
    - How to handle "this is our final offer"
    - When to accept vs walk away
+
+9. "Bottom Line" (REQUIRED - priority: critical)
+   This section MUST be included in EVERY response.
+
+   Choose ONE of these recommendations based on percentile analysis:
+
+   IF 95th+ percentile - Use "ACCEPT":
+   {
+     "recommendation": "ACCEPT",
+     "reasoning": "This is a top-tier offer at 97th percentile. Negotiating higher risks the offer and provides minimal upside. Your focus should be on team fit and role scope, not compensation.",
+     "oneLineAdvice": "Accept this offer and focus on crushing it in the role."
+   }
+
+   IF 85-94th percentile - Use "ACCEPT with minor tweaks":
+   {
+     "recommendation": "ACCEPT with minor tweaks",
+     "reasoning": "Strong offer at 89th percentile. You could try for a signing bonus or earlier equity review, but don't push on base/equity amounts. Risk/reward doesn't favor aggressive negotiation.",
+     "oneLineAdvice": "Accept with request for $20k signing bonus to offset relocation costs."
+   }
+
+   IF 70-84th percentile - Use "NEGOTIATE modest increase":
+   {
+     "recommendation": "NEGOTIATE modest increase",
+     "reasoning": "Fair market offer at 76th percentile. You have room to ask for 8-12% more based on your experience, but this is reasonable if they hold firm.",
+     "oneLineAdvice": "Ask for $185k base (vs $170k offered), be prepared to accept $175k."
+   }
+
+   IF below 70th percentile - Use "NEGOTIATE significantly OR decline":
+   {
+     "recommendation": "NEGOTIATE significantly OR decline",
+     "reasoning": "This is 35th percentile - well below market for your level. Either they don't know market rates or don't value the role properly. Push for 25-30% increase with data.",
+     "oneLineAdvice": "Counter with $160k (market rate) and be willing to walk if they won't move to $145k minimum."
+   }
+
+   The bottomLine section is your FINAL verdict. Make it clear and actionable.
 
 Market Insights Guidelines:
 - Provide 3-5 specific insights about market rates, equity norms, benefits benchmarks

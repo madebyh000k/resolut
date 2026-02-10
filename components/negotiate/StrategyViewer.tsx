@@ -50,6 +50,15 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
     }
     markdown += `---\n\n`;
 
+    // Add bottom line first
+    if (strategy.bottomLine) {
+      markdown += `## 🎯 BOTTOM LINE\n\n`;
+      markdown += `**Recommendation:** ${strategy.bottomLine.recommendation}\n\n`;
+      markdown += `${strategy.bottomLine.reasoning}\n\n`;
+      markdown += `**One-Line Advice:** ${strategy.bottomLine.oneLineAdvice}\n\n`;
+      markdown += `---\n\n`;
+    }
+
     strategy.sections.forEach((section) => {
       markdown += `## ${section.title}\n\n`;
       markdown += `${section.content}\n\n`;
@@ -161,6 +170,38 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
           })}
         </div>
       </Card>
+
+      {/* Bottom Line - Final Recommendation */}
+      {strategy.bottomLine && (
+        <Card className="p-6 border-2 border-primary bg-primary/5">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🎯</span>
+              <div>
+                <h3 className="text-xl font-bold text-primary mb-1">Bottom Line</h3>
+                <p className="text-sm text-text-secondary">Clear recommendation for your next move</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-lg bg-background border-2 border-primary">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-3 py-1.5 rounded-full bg-primary text-white text-sm font-bold">
+                  {strategy.bottomLine.recommendation}
+                </span>
+              </div>
+              <p className="text-base leading-relaxed mb-4">
+                {strategy.bottomLine.reasoning}
+              </p>
+              <div className="p-3 rounded-lg bg-primary/10 border border-primary/30">
+                <p className="text-xs font-semibold text-primary mb-1">ONE-LINE ADVICE:</p>
+                <p className="text-sm font-medium">
+                  {strategy.bottomLine.oneLineAdvice}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Market Insights */}
       {strategy.marketInsights.length > 0 && (

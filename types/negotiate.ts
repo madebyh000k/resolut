@@ -24,6 +24,7 @@ export interface NegotiationStrategy {
   sections: StrategySection[];
   generatedAt: Date;
   marketInsights: MarketInsight[];
+  bottomLine: BottomLine;
 }
 
 export interface StrategySection {
@@ -38,4 +39,10 @@ export interface MarketInsight {
   insight: string;
   recommendation?: string;
   confidence: 'high' | 'medium' | 'low';
+}
+
+export interface BottomLine {
+  recommendation: 'ACCEPT' | 'ACCEPT with minor tweaks' | 'NEGOTIATE modest increase' | 'NEGOTIATE significantly OR decline';
+  reasoning: string;
+  oneLineAdvice: string;
 }

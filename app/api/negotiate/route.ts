@@ -73,12 +73,21 @@ export async function POST(request: NextRequest) {
       throw new Error('Invalid strategy structure: missing marketInsights array');
     }
 
+    if (!parsedResponse.bottomLine || typeof parsedResponse.bottomLine !== 'object') {
+      throw new Error('Invalid strategy structure: missing bottomLine object');
+    }
+
+    if (!parsedResponse.bottomLine.recommendation || !parsedResponse.bottomLine.reasoning || !parsedResponse.bottomLine.oneLineAdvice) {
+      throw new Error('Invalid strategy structure: bottomLine missing required fields');
+    }
+
     // Create the negotiation strategy object
     const negotiationStrategy: NegotiationStrategy = {
       id: `strategy-${Date.now()}`,
       offerId: jobOffer.id,
       sections: parsedResponse.sections,
       marketInsights: parsedResponse.marketInsights,
+      bottomLine: parsedResponse.bottomLine,
       generatedAt: new Date(),
     };
 
