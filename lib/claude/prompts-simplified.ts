@@ -109,3 +109,82 @@ Final resume MUST fit 2 pages (100-120 lines). Apply this hierarchy:
 
 Return ONLY valid JSON with the exact flat structure shown above. NO markdown, NO additional text.`;
 }
+
+/**
+ * SIMPLIFIED INTERVIEW BRIEF PROMPT - Flat String Structure
+ * Returns newline-separated sections instead of nested arrays to avoid JSON parsing errors
+ */
+export function createSimplifiedInterviewBriefPrompt(
+  resumeText: string,
+  jobDescription: string,
+  companyName: string,
+  companyNews: Array<{ title: string; summary: string }>,
+  format: '30min' | '60min'
+): string {
+  const tokenGuidance = format === '30min'
+    ? 'CRITICAL: Keep this brief to ONE PAGE maximum (500-700 words total). Each section should be 2-4 sentences.'
+    : 'CRITICAL: Keep this brief to TWO PAGES maximum (1000-1400 words total). Each section should be 1 concise paragraph (3-5 sentences).';
+
+  const sectionsGuide = format === '30min'
+    ? `Required sections for 30-minute interview:
+1. Proposed Interview Agenda
+2. Executive Summary
+3. Top 3 Strengths for This Role
+4. Company Insights
+5. 2 Key Stories to Tell
+6. 3-4 Questions to Ask`
+    : `Required sections for 60-minute interview:
+1. Proposed Interview Agenda
+2. Executive Summary
+3. Top 5 Strengths for This Role
+4. Company Insights
+5. 3-4 Key Stories to Tell
+6. Questions to Ask
+7. Technical Knowledge to Review
+8. Potential Concerns & How to Address`;
+
+  return `Create a concise interview preparation brief for this candidate.
+
+CANDIDATE RESUME:
+${resumeText}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+COMPANY: ${companyName}
+
+RECENT COMPANY NEWS:
+${companyNews.map((n, i) => `${i + 1}. ${n.title}\n${n.summary}`).join('\n\n')}
+
+INTERVIEW FORMAT: ${format === '30min' ? '30-minute interview' : '60-minute interview'}
+${tokenGuidance}
+
+${sectionsGuide}
+
+Return ONLY a valid JSON object with this EXACT FLAT structure (NO nested arrays):
+
+{
+  "sections": "<newline-separated sections in this format:
+
+## Section Title
+Section content here (2-5 sentences depending on format).
+
+TIPS:
+- Tip 1
+- Tip 2
+
+##>"
+}
+
+CRITICAL RULES:
+- Use ## to separate sections
+- Each section has: title, content, then TIPS: with bullet points
+- Keep content concise (format dictates length)
+- NO complex nested JSON - just ONE string field with newline separators
+- Return ONLY valid JSON, NO markdown blocks, NO additional text
+
+Example format:
+{
+  "sections": "## Executive Summary\\nYou bring 5 years of full-stack development experience...\\n\\nTIPS:\\n- Lead with your recent achievements\\n- Emphasize technical depth\\n\\n## Top Strengths\\nStrength 1: React expertise...\\n\\nTIPS:\\n- Be specific about technologies"
+}`;
+}
