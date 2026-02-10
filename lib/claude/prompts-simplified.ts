@@ -111,8 +111,8 @@ Return ONLY valid JSON with the exact flat structure shown above. NO markdown, N
 }
 
 /**
- * SIMPLIFIED INTERVIEW BRIEF PROMPT - Flat String Structure
- * Returns newline-separated sections instead of nested arrays to avoid JSON parsing errors
+ * ULTRA-SIMPLIFIED INTERVIEW BRIEF PROMPT - Maximum JSON Safety
+ * Uses SHORT numbered fields to avoid long string parsing errors
  */
 export function createSimplifiedInterviewBriefPrompt(
   resumeText: string,
@@ -121,29 +121,20 @@ export function createSimplifiedInterviewBriefPrompt(
   companyNews: Array<{ title: string; summary: string }>,
   format: '30min' | '60min'
 ): string {
-  const tokenGuidance = format === '30min'
-    ? 'CRITICAL: Keep this brief to ONE PAGE maximum (500-700 words total). Each section should be 2-4 sentences.'
-    : 'CRITICAL: Keep this brief to TWO PAGES maximum (1000-1400 words total). Each section should be 1 concise paragraph (3-5 sentences).';
+  const numSections = format === '30min' ? 6 : 8;
 
-  const sectionsGuide = format === '30min'
-    ? `Required sections for 30-minute interview:
-1. Proposed Interview Agenda
-2. Executive Summary
-3. Top 3 Strengths for This Role
-4. Company Insights
-5. 2 Key Stories to Tell
-6. 3-4 Questions to Ask`
-    : `Required sections for 60-minute interview:
-1. Proposed Interview Agenda
-2. Executive Summary
-3. Top 5 Strengths for This Role
-4. Company Insights
-5. 3-4 Key Stories to Tell
-6. Questions to Ask
-7. Technical Knowledge to Review
-8. Potential Concerns & How to Address`;
+  return `⚠️ CRITICAL JSON RULES - READ FIRST ⚠️
 
-  return `Create a concise interview preparation brief for this candidate.
+YOU MUST GENERATE VALID JSON:
+- Return ONLY valid JSON, nothing else
+- Use ONLY simple string fields (no nested objects or arrays)
+- Keep EACH field under 400 characters
+- Break long content into numbered fields (section1, section2, etc.)
+- Escape quotes: use \\" not "
+- Use \\n for line breaks, NEVER actual newlines in strings
+- Test mentally: Will this parse as valid JSON?
+
+---
 
 CANDIDATE RESUME:
 ${resumeText}
@@ -153,38 +144,45 @@ ${jobDescription}
 
 COMPANY: ${companyName}
 
-RECENT COMPANY NEWS:
-${companyNews.map((n, i) => `${i + 1}. ${n.title}\n${n.summary}`).join('\n\n')}
+RECENT NEWS:
+${companyNews.map((n, i) => `${i + 1}. ${n.title}: ${n.summary}`).join('\n')}
 
-INTERVIEW FORMAT: ${format === '30min' ? '30-minute interview' : '60-minute interview'}
-${tokenGuidance}
+FORMAT: ${format === '30min' ? '30-minute' : '60-minute'} interview
 
-${sectionsGuide}
-
-Return ONLY a valid JSON object with this EXACT FLAT structure (NO nested arrays):
+Create a ${numSections}-section interview brief. Return ONLY this EXACT JSON structure:
 
 {
-  "sections": "<newline-separated sections in this format:
-
-## Section Title
-Section content here (2-5 sentences depending on format).
-
-TIPS:
-- Tip 1
-- Tip 2
-
-##>"
+  "section1Title": "Agenda",
+  "section1Content": "Brief agenda (3-4 lines max)",
+  "section1Tips": "Tip 1\\nTip 2",
+  "section2Title": "Executive Summary",
+  "section2Content": "Your value prop (3-4 sentences max)",
+  "section2Tips": "Tip 1\\nTip 2",
+  "section3Title": "Top Strengths",
+  "section3Content": "Strength 1: X. Strength 2: Y. (Brief bullets)",
+  "section3Tips": "Tip 1\\nTip 2",
+  "section4Title": "Company Insights",
+  "section4Content": "Recent news points (2-3 sentences)",
+  "section4Tips": "Tip 1\\nTip 2",
+  "section5Title": "Stories to Tell",
+  "section5Content": "Story 1 (STAR). Story 2 (STAR). (Brief)",
+  "section5Tips": "Tip 1\\nTip 2",
+  "section6Title": "Questions to Ask",
+  "section6Content": "Question 1? Question 2? (3-4 max)",
+  "section6Tips": "Tip 1\\nTip 2"${format === '60min' ? `,
+  "section7Title": "Technical Review",
+  "section7Content": "Key concepts (brief list)",
+  "section7Tips": "Tip 1\\nTip 2",
+  "section8Title": "Potential Concerns",
+  "section8Content": "Concern 1 + solution. Concern 2 + solution.",
+  "section8Tips": "Tip 1\\nTip 2"` : ''}
 }
 
-CRITICAL RULES:
-- Use ## to separate sections
-- Each section has: title, content, then TIPS: with bullet points
-- Keep content concise (format dictates length)
-- NO complex nested JSON - just ONE string field with newline separators
-- Return ONLY valid JSON, NO markdown blocks, NO additional text
-
-Example format:
-{
-  "sections": "## Executive Summary\\nYou bring 5 years of full-stack development experience...\\n\\nTIPS:\\n- Lead with your recent achievements\\n- Emphasize technical depth\\n\\n## Top Strengths\\nStrength 1: React expertise...\\n\\nTIPS:\\n- Be specific about technologies"
-}`;
+CRITICAL CONSTRAINTS:
+- Each "Content" field: MAX 400 characters
+- Each "Tips" field: 2-3 tips, newline-separated, MAX 200 characters
+- ${format === '30min' ? '6 sections total' : '8 sections total'}
+- NO quotes inside strings (use \\" if needed)
+- NO line breaks (use \\n)
+- Return ONLY the JSON object, nothing else`;
 }

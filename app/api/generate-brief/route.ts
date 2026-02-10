@@ -10,45 +10,34 @@ const anthropic = new Anthropic({
 });
 
 /**
- * Parse the flat string structure into BriefSection array
- * Format: ## Section Title\nContent...\n\nTIPS:\n- Tip 1\n- Tip 2\n\n##
+ * Parse the numbered field structure into BriefSection array
+ * Format: section1Title, section1Content, section1Tips, section2Title, ...
  */
-function parseSectionsFromString(sectionsText: string): BriefSection[] {
-  if (!sectionsText) return [];
+function parseSectionsFromFields(response: Record<string, string>): BriefSection[] {
+  const sections: BriefSection[] = [];
 
-  // Split by ## markers
-  const sectionBlocks = sectionsText.split('##').filter(block => block.trim());
+  // Determine how many sections we have by looking for sectionXTitle fields
+  let sectionNum = 1;
+  while (response[`section${sectionNum}Title`]) {
+    const title = response[`section${sectionNum}Title`];
+    const content = response[`section${sectionNum}Content`] || 'No content provided';
+    const tipsStr = response[`section${sectionNum}Tips`];
 
-  return sectionBlocks.map(block => {
-    const lines = block.split('\n').map(line => line.trim()).filter(Boolean);
+    // Parse tips from newline-separated string
+    const tips = tipsStr
+      ? tipsStr.split('\n').map((t: string) => t.trim()).filter(Boolean)
+      : undefined;
 
-    // First line is the title
-    const title = lines[0] || 'Section';
-
-    // Find where TIPS: starts
-    const tipsIndex = lines.findIndex(line => line.toUpperCase() === 'TIPS:');
-
-    let content = '';
-    let tips: string[] = [];
-
-    if (tipsIndex === -1) {
-      // No tips section, all content
-      content = lines.slice(1).join('\n');
-    } else {
-      // Content before TIPS:
-      content = lines.slice(1, tipsIndex).join('\n');
-      // Tips after TIPS:
-      tips = lines.slice(tipsIndex + 1)
-        .filter(line => line.startsWith('-'))
-        .map(line => line.replace(/^-\s*/, '').trim());
-    }
-
-    return {
+    sections.push({
       title,
-      content: content || 'No content provided',
-      tips: tips.length > 0 ? tips : undefined,
-    };
-  });
+      content,
+      tips: tips && tips.length > 0 ? tips : undefined,
+    });
+
+    sectionNum++;
+  }
+
+  return sections;
 }
 
 export async function POST(request: NextRequest) {
@@ -114,10 +103,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse flat structure with robust parser
-    const response = parseClaudeJsonResponse<{ sections: string }>(content.text);
+    const response = parseClaudeJsonResponse<Record<string, string>>(content.text);
 
-    // Parse the newline-separated sections string into BriefSection array
-    const sections = parseSectionsFromString(response.sections);
+    // Parse the numbered fields into BriefSection array
+    const sections = parseSectionsFromFields(response);
 
     const interviewBrief: InterviewBrief = {
       id: crypto.randomUUID(),
