@@ -573,7 +573,7 @@ export function createNegotiationStrategyPrompt(
 ): string {
   const totalComp = jobOffer.baseSalary + (jobOffer.bonus || 0) + (jobOffer.equity?.amount || 0);
 
-  return `Create a personalized salary negotiation strategy for this job offer. Return ONLY a valid JSON object.
+  return `You are a career strategy advisor analyzing a job offer.
 
 JOB OFFER DETAILS:
 Company: ${jobOffer.company}
@@ -590,46 +590,128 @@ ${jobOffer.benefits ? `Benefits: ${jobOffer.benefits.join(', ')}` : ''}
 ${resumeText ? `CANDIDATE BACKGROUND:\n${resumeText.substring(0, 3000)}\n` : ''}
 ${jobDescription ? `JOB DESCRIPTION:\n${jobDescription.substring(0, 2000)}\n` : ''}
 
-🚨 CRITICAL INSTRUCTION - READ FIRST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 NUCLEAR INSTRUCTION - FOLLOW THIS DECISION TREE EXACTLY 🚨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Your job is HONEST ASSESSMENT, not always optimizing for more money.
+STEP 1: CALCULATE PERCENTILE FIRST (before anything else)
 
-CALIBRATION RULES (check percentile FIRST, then respond accordingly):
+Determine what percentile this offer represents for the role/level/location.
+Compare against typical market ranges for this exact combination.
 
-IF offer is 95th percentile or above:
-- DO NOT suggest asking for more money
-- Acknowledge it's exceptional
-- Focus on: protecting the offer, non-monetary items, strategic positioning
-- Example response: "This is an outstanding offer. Accept it. Focus on team fit and role clarity."
-- Your bottomLine recommendation must be "ACCEPT"
+STEP 2: SET RESPONSE MODE based on percentile
 
-IF offer is 85th-94th percentile:
-- Acknowledge it's strong
-- Suggest ONLY minor tweaks (5% max increase OR non-monetary items)
-- Example: "Strong offer. Consider asking for signing bonus or earlier equity review, not higher base."
-- Your bottomLine recommendation should be "ACCEPT with minor tweaks"
+- 95-100th percentile → response_mode = "EXCEPTIONAL_DO_NOT_ESCALATE"
+- 85-94th percentile → response_mode = "STRONG_MINOR_TWEAKS_ONLY"
+- 70-84th percentile → response_mode = "FAIR_MODEST_NEGOTIATION"
+- Below 70th percentile → response_mode = "LOW_NEGOTIATE_UP"
 
-IF offer is 70th-84th percentile:
-- This is market rate
-- Suggest modest improvements (10% max) with specific justification
-- Example: "Fair offer. You could ask for $X based on [specific gap], but this is reasonable."
-- Your bottomLine recommendation should be "NEGOTIATE modest increase"
+STEP 3: RESPOND ACCORDING TO MODE (follow rules EXACTLY)
 
-IF offer is below 70th percentile:
-- This is where you suggest real increases
-- Provide specific market data and negotiation strategies
-- Example: "This is below market. Here's the data and how to negotiate up."
-- Your bottomLine recommendation should be "NEGOTIATE significantly OR decline"
+═══════════════════════════════════════════════════════════════════════════════
 
-YOUR CREDIBILITY DEPENDS ON BEING HONEST.
+MODE: "EXCEPTIONAL_DO_NOT_ESCALATE"
 
-If an offer is great, SAY IT'S GREAT.
-Don't always optimize for "more" - optimize for BEST CAREER DECISION.
+When offer is 95th percentile or above, your ONLY job is:
 
----
+✅ ALLOWED:
+- Confirm this is exceptional/outstanding/top-tier
+- Explain percentile and why it's exceptional
+- Recommend ACCEPTING without compensation changes
+- Focus on non-comp: team fit, role scope, growth path, onboarding
 
-Create a JSON object with this structure:
+❌ FORBIDDEN:
+- DO NOT suggest any compensation increases
+- DO NOT say "you could ask for X more"
+- DO NOT provide tactics to negotiate higher
+- DO NOT suggest "try for Y% more"
+- DO NOT hedge with "but you might try..."
+
+Bottom Line MUST be: "ACCEPT"
+Reasoning MUST emphasize: "This is exceptional, don't risk it"
+
+Example response:
+"This $500K offer is at 97th percentile. This is exceptional.
+
+ASSESSMENT: Outstanding compensation. Top 3% of market.
+
+DO NOT negotiate for more money. You risk the offer for ~2% upside.
+
+Focus on:
+- Team structure and reporting
+- Role scope and first 90 days
+- Growth opportunities
+
+VERDICT: Accept this offer immediately."
+
+═══════════════════════════════════════════════════════════════════════════════
+
+MODE: "STRONG_MINOR_TWEAKS_ONLY"
+
+When offer is 85-94th percentile:
+
+✅ ALLOWED:
+- One-time signing bonus (low risk)
+- Earlier equity review timing
+- Relocation/moving assistance
+- Non-monetary items only
+
+❌ FORBIDDEN:
+- DO NOT suggest higher base salary
+- DO NOT suggest more RSUs/equity grants
+- DO NOT suggest total comp increases
+
+Bottom Line MUST be: "ACCEPT with minor tweaks"
+Emphasis: "Strong offer, minimal negotiation"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+MODE: "FAIR_MODEST_NEGOTIATION"
+
+When offer is 70-84th percentile:
+
+✅ ALLOWED:
+- Suggest 8-12% increase with specific justification
+- Provide market data for the gap
+- Offer alternative: accept if they hold firm
+
+Bottom Line MUST be: "NEGOTIATE modest increase"
+Emphasis: "Fair offer, modest room to negotiate"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+MODE: "LOW_NEGOTIATE_UP"
+
+When offer is below 70th percentile:
+
+✅ ALLOWED:
+- Aggressive negotiation strategy
+- Significant increases (20-30%+)
+- Strong market data
+- Walk-away scenarios
+
+Bottom Line MUST be: "NEGOTIATE significantly OR decline"
+Emphasis: "Below market, push hard or walk"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+CRITICAL ENFORCEMENT:
+
+1. Calculate percentile FIRST
+2. Set response_mode based on percentile
+3. Follow response_mode rules EXACTLY - NO EXCEPTIONS
+4. If 95th+: DO NOT suggest higher comp under ANY circumstances
+5. Your credibility depends on honest assessment
+
+Test: If offer is $1M total comp for Senior PM, response_mode = "EXCEPTIONAL_DO_NOT_ESCALATE"
+Output MUST be: "ACCEPT - this is absurdly good, don't negotiate"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create a JSON object with this EXACT structure:
 {
+  "offerPercentile": 85,
+  "response_mode": "EXCEPTIONAL_DO_NOT_ESCALATE" | "STRONG_MINOR_TWEAKS_ONLY" | "FAIR_MODEST_NEGOTIATION" | "LOW_NEGOTIATE_UP",
   "sections": [
     {
       "title": "Section title",
@@ -652,6 +734,11 @@ Create a JSON object with this structure:
     "oneLineAdvice": "Single most important thing to do (actionable, specific)"
   }
 }
+
+IMPORTANT:
+- offerPercentile MUST be a number (0-100)
+- response_mode MUST match the percentile (use decision tree above)
+- bottomLine.recommendation MUST match response_mode
 
 Required sections (in this order):
 1. "Current Offer Assessment" (priority: high)

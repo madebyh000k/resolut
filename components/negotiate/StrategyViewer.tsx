@@ -117,8 +117,52 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
     return colors[priority as keyof typeof colors] || colors.medium;
   };
 
+  const getOfferQualityBadge = () => {
+    const percentile = strategy.offerPercentile;
+    const mode = strategy.responseMode;
+
+    if (percentile >= 95 || mode === 'EXCEPTIONAL_DO_NOT_ESCALATE') {
+      return {
+        emoji: '🏆',
+        text: `EXCEPTIONAL OFFER (${percentile}th percentile)`,
+        className: 'bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30',
+      };
+    } else if (percentile >= 85 || mode === 'STRONG_MINOR_TWEAKS_ONLY') {
+      return {
+        emoji: '✅',
+        text: `STRONG OFFER (${percentile}th percentile)`,
+        className: 'bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/30',
+      };
+    } else if (percentile >= 70 || mode === 'FAIR_MODEST_NEGOTIATION') {
+      return {
+        emoji: '📊',
+        text: `MARKET RATE (${percentile}th percentile)`,
+        className: 'bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-500/30',
+      };
+    } else {
+      return {
+        emoji: '⚠️',
+        text: `BELOW MARKET (${percentile}th percentile)`,
+        className: 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/30',
+      };
+    }
+  };
+
+  const qualityBadge = getOfferQualityBadge();
+
   return (
     <div className="space-y-6">
+      {/* Offer Quality Badge */}
+      <Card className={`p-4 border-2 ${qualityBadge.className}`}>
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">{qualityBadge.emoji}</span>
+          <div>
+            <p className="text-lg font-bold">{qualityBadge.text}</p>
+            <p className="text-xs opacity-75">Assessment based on role/level/location market data</p>
+          </div>
+        </div>
+      </Card>
+
       {/* Header */}
       <Card className="p-6">
         <div className="flex items-start justify-between mb-4">

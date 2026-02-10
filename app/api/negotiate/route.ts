@@ -81,10 +81,20 @@ export async function POST(request: NextRequest) {
       throw new Error('Invalid strategy structure: bottomLine missing required fields');
     }
 
+    if (typeof parsedResponse.offerPercentile !== 'number') {
+      throw new Error('Invalid strategy structure: offerPercentile must be a number');
+    }
+
+    if (!parsedResponse.response_mode) {
+      throw new Error('Invalid strategy structure: missing response_mode');
+    }
+
     // Create the negotiation strategy object
     const negotiationStrategy: NegotiationStrategy = {
       id: `strategy-${Date.now()}`,
       offerId: jobOffer.id,
+      offerPercentile: parsedResponse.offerPercentile,
+      responseMode: parsedResponse.response_mode,
       sections: parsedResponse.sections,
       marketInsights: parsedResponse.marketInsights,
       bottomLine: parsedResponse.bottomLine,

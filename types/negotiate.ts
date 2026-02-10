@@ -21,6 +21,8 @@ export interface JobOffer {
 export interface NegotiationStrategy {
   id: string;
   offerId: string;
+  offerPercentile: number;
+  responseMode: 'EXCEPTIONAL_DO_NOT_ESCALATE' | 'STRONG_MINOR_TWEAKS_ONLY' | 'FAIR_MODEST_NEGOTIATION' | 'LOW_NEGOTIATE_UP';
   sections: StrategySection[];
   generatedAt: Date;
   marketInsights: MarketInsight[];
