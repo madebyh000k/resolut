@@ -1,26 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
-const MAILCHIMP_AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID;
-const MAILCHIMP_SERVER_PREFIX = process.env.MAILCHIMP_SERVER_PREFIX || 'us15';
-
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, tags } = body;
+    // Get request body
+    const { email, tags } = await request.json();
 
+    // Validate
     if (!email) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
 
-    if (!MAILCHIMP_API_KEY || !MAILCHIMP_AUDIENCE_ID) {
-      console.error('Mailchimp configuration missing');
+    // Check environment variables
+    if (!process.env.MAILCHIMP_API_KEY) {
+      console.error('MAILCHIMP_API_KEY not set');
       return NextResponse.json(
         { error: 'Server configuration error. Please contact support.' },
         { status: 500 }
       );
     }
 
+    if (!process.env.MAILCHIMP_AUDIENCE_ID) {
+      console.error('MAILCHIMP_AUDIENCE_ID not set');
+      return NextResponse.json(
+        { error: 'Server configuration error. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    const serverPrefix = process.env.MAILCHIMP_SERVER_PREFIX || 'us15';
+
+    // Prepare Mailchimp data
     const data = {
       email_address: email,
       status: 'subscribed',
@@ -29,45 +38,53 @@ export async function POST(request: NextRequest) {
 
     console.log('Subscribing to Mailchimp:', { email, tags });
 
-    const response = await fetch(
-      `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${MAILCHIMP_AUDIENCE_ID}/members`,
+    // Call Mailchimp API
+    const mailchimpResponse = await fetch(
+      `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${process.env.MAILCHIMP_AUDIENCE_ID}/members`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `apikey ${MAILCHIMP_API_KEY}`,
+          Authorization: `apikey ${process.env.MAILCHIMP_API_KEY}`,
         },
         body: JSON.stringify(data),
       }
     );
 
-    const responseData = await response.json();
+    const responseData = await mailchimpResponse.json();
 
-    if (response.ok) {
+    if (mailchimpResponse.ok) {
       console.log('Mailchimp subscription successful:', responseData);
-      return NextResponse.json(
-        {
-          success: true,
-          message:
-            'Email added to Mailchimp with beta-tester tag. Welcome email will be sent automatically.',
-        },
-        { status: 200 }
-      );
+      return NextResponse.json({
+        success: true,
+        message:
+          'Email added to Mailchimp with beta-tester tag. Welcome email will be sent automatically.',
+      });
     } else {
-      console.error('Mailchimp API error:', responseData);
-      // Return Mailchimp error details
+      console.error('Mailchimp error:', responseData);
+
+      // Handle "already subscribed" gracefully
+      if (
+        responseData.title === 'Member Exists' ||
+        responseData.detail?.toLowerCase().includes('already a list member')
+      ) {
+        return NextResponse.json(
+          {
+            error: 'This email is already registered. Check your inbox!',
+          },
+          { status: 400 }
+        );
+      }
+
       return NextResponse.json(
         {
-          error: responseData.detail || responseData.title || 'Failed to subscribe',
+          error: responseData.detail || responseData.title || 'Subscription failed',
         },
-        { status: response.status }
+        { status: mailchimpResponse.status }
       );
     }
   } catch (error) {
-    console.error('Mailchimp API error:', error);
-    return NextResponse.json(
-      { error: 'Server error. Please try again.' },
-      { status: 500 }
-    );
+    console.error('API route error:', error);
+    return NextResponse.json({ error: 'Server error. Please try again.' }, { status: 500 });
   }
 }
