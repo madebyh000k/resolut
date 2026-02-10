@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --surface: 0 0% 98%;
-    --surface-hover: 0 0% 95%;
+    --background: 45 33% 97%;
+    --surface: 45 25% 95%;
+    --surface-hover: 45 20% 92%;
     --text-primary: 0 0% 10%;
     --text-secondary: 0 0% 45%;
     --text-muted: 0 0% 60%;
@@ -16,7 +16,7 @@
     --background: 0 0% 4%;
     --surface: 0 0% 10%;
     --surface-hover: 0 0% 16%;
-    --text-primary: 0 0% 100%;
+    --text-primary: 45 33% 97%;
     --text-secondary: 0 0% 64%;
     --text-muted: 0 0% 45%;
   }

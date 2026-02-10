@@ -1,248 +1,295 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Sparkles, AlertCircle, Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import Image from 'next/image';
-import { useResumeStore } from '@/lib/store/use-resume-store';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
-import { ResumeUploader } from '@/components/resume/ResumeUploader';
-import { JobUrlInput } from '@/components/job/JobUrlInput';
-import { ResumeComparison } from '@/components/resume/ResumeComparison';
+import { useRouter } from 'next/navigation';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
+import { Sparkles, Target, Briefcase, TrendingUp, FileText, MessageSquare, ArrowRight } from 'lucide-react';
 
-export default function Home() {
-  const [mounted, setMounted] = useState(false);
-  const { theme } = useTheme();
-  const {
-    originalResume,
-    jobDescription,
-    customizedResume,
-    isProcessing,
-    error,
-    customizeResume,
-    reset,
-    clearError,
-  } = useResumeStore();
-
-  const canCustomize = originalResume && jobDescription && !customizedResume && !isProcessing;
-  const showComparison = customizedResume && !isProcessing;
-
-  // Avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export default function LandingPage() {
+  const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-text-muted/20">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              {mounted ? (
-                <Image
-                  src={theme === 'dark' ? '/resolut-light.svg' : '/resolut.svg'}
-                  alt="Resolut"
-                  width={150}
-                  height={50}
-                  priority
-                />
-              ) : (
-                <Image
-                  src="/resolut.svg"
-                  alt="Resolut"
-                  width={150}
-                  height={50}
-                  priority
-                />
-              )}
+    <AppLayout>
+      {/* Hero Section */}
+      <section className="text-center py-12 sm:py-20">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
+          Land your dream job,
+          <br />
+          <span className="text-primary">with AI-powered preparation</span>
+        </h1>
+        <p className="text-lg sm:text-xl text-text-secondary mb-8 max-w-2xl mx-auto">
+          Transform your resume for ATS systems, prepare for interviews, and negotiate with confidence.
+          Resolut helps you stand out in every stage of the job search.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => router.push('/optimize')}
+            className="px-8 py-4 sm:px-12 sm:py-6 text-base sm:text-lg w-full sm:w-auto"
+          >
+            <Sparkles className="h-6 w-6 mr-3" />
+            Get Started Free
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => {
+              const howItWorks = document.getElementById('how-it-works');
+              howItWorks?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-8 py-4 sm:px-12 sm:py-6 text-base sm:text-lg w-full sm:w-auto"
+          >
+            See How It Works
+          </Button>
+        </div>
+      </section>
+
+      {/* Value Propositions */}
+      <section className="py-12 sm:py-16 border-t border-text-muted/20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
+          {/* Value Prop 1 */}
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Target className="h-8 w-8 text-primary" />
             </div>
-            <div className="flex items-center gap-4">
-              {(originalResume || jobDescription || customizedResume) && (
-                <Button variant="ghost" size="sm" onClick={reset}>
-                  Start Over
-                </Button>
-              )}
-              <ThemeToggle />
+            <h3 className="text-xl font-semibold mb-3">ATS-Optimized Resumes</h3>
+            <p className="text-text-secondary">
+              Get past applicant tracking systems with AI-powered keyword optimization while preserving your unique voice and authenticity.
+            </p>
+          </div>
+
+          {/* Value Prop 2 */}
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <MessageSquare className="h-8 w-8 text-primary" />
             </div>
+            <h3 className="text-xl font-semibold mb-3">Interview Preparation</h3>
+            <p className="text-text-secondary">
+              Get personalized interview briefs with company research, talking points, and strategic questions tailored to your background.
+            </p>
+          </div>
+
+          {/* Value Prop 3 */}
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <TrendingUp className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-3">Smart Negotiations</h3>
+            <p className="text-text-secondary">
+              Analyze your offer and get data-driven negotiation strategies with market insights, email templates, and pushback responses.
+            </p>
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-12 max-w-7xl">
-        {/* Error Banner */}
-        {error && (
-          <div className="mb-6 p-4 rounded-lg bg-error/10 border-2 border-error flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-error flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-error font-medium">{error}</p>
+      {/* Email Signup Section */}
+      <section className="py-16 sm:py-24 bg-surface border-t border-text-muted/20">
+        <div className="max-w-2xl mx-auto text-center px-4">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Get Early Access</h2>
+          <p className="text-lg text-text-secondary mb-8">
+            Join the waitlist and be first to try Resolut when we launch.
+          </p>
+
+          {/* Mailchimp Form */}
+          <form
+            action="https://tools.us15.list-manage.com/subscribe/post?u=b4a4e83bc62b08f39a2be6939&id=2ff1ffe83b&f_id=0082c2e1f0"
+            method="post"
+            target="_blank"
+            className="max-w-md mx-auto"
+          >
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                name="EMAIL"
+                placeholder="Enter your email"
+                required
+                className="flex-1 px-4 py-3 rounded-full border-2 border-text-muted/30 bg-background text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+              />
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="sm:w-auto whitespace-nowrap"
+              >
+                Join Waitlist
+              </Button>
             </div>
-            <button
-              onClick={clearError}
-              className="text-error hover:text-error/80 transition-colors"
-            >
-              ✕
-            </button>
-          </div>
-        )}
 
-        {/* Workflow Steps */}
-        {!showComparison && (
-          <div className="space-y-8">
-            {/* Welcome Section with 3-Step Process */}
-            {!originalResume && (
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-3">Welcome to Resolut</h2>
-                <p className="text-text-secondary mb-8">
-                  Optimize your resume for any job in three simple steps
-                </p>
+            {/* Mailchimp required hidden field */}
+            <div style={{ position: 'absolute', left: '-5000px' }} aria-hidden="true">
+              <input type="text" name="b_b4a4e83bc62b08f39a2be6939_2ff1ffe83b" tabIndex={-1} value="" readOnly />
+            </div>
+          </form>
+        </div>
+      </section>
 
-                {/* 3-Step Process Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                  {/* Step 1 */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">1</span>
-                    </div>
-                    <h4 className="font-semibold mb-1">Upload Your Resume</h4>
-                    <p className="text-xs text-text-secondary">
-                      PDF or DOCX format
-                    </p>
-                  </div>
+      {/* How It Works */}
+      <section id="how-it-works" className="py-12 sm:py-16 border-t border-text-muted/20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">How Resolut Works For You</h2>
+          <p className="text-lg text-text-secondary max-w-2xl mx-auto">
+            Three powerful tools to take you from application to offer
+          </p>
+        </div>
 
-                  {/* Step 2 */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">2</span>
-                    </div>
-                    <h4 className="font-semibold mb-1">Add Your Job Posting</h4>
-                    <p className="text-xs text-text-secondary">
-                      LinkedIn, Indeed, or any job board
-                    </p>
-                  </div>
-
-                  {/* Step 3 */}
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">3</span>
-                    </div>
-                    <h4 className="font-semibold mb-1">Resolut Does the Rest</h4>
-                    <p className="text-xs text-text-secondary">
-                      Get optimized, ATS-ready resume
-                    </p>
-                  </div>
-                </div>
+        <div className="space-y-12">
+          {/* Step 1: Customize Resume */}
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4">
+                1
               </div>
-            )}
-
-            {/* Step 1: Upload Resume */}
-            <section>
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold">Upload Your Resume</h2>
-                <p className="text-text-secondary mt-1">
-                  Upload your current resume in PDF or DOCX format
-                </p>
-              </div>
-              <ResumeUploader />
-            </section>
-
-            {/* Step 2: Job URL */}
-            {originalResume && (
-              <section>
-                <div className="mb-4">
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">
-                      2
-                    </span>
-                    Add Job Posting
-                  </h2>
-                  <p className="text-text-secondary ml-10 mt-1">
-                    Paste the URL of the job you're applying for
-                  </p>
-                </div>
-                <JobUrlInput />
-              </section>
-            )}
-
-            {/* Step 3: Customize */}
-            {canCustomize && (
-              <section>
-                <div className="mb-4">
-                  <h2 className="text-xl font-semibold flex items-center gap-2">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">
-                      3
-                    </span>
-                    Resolut Does the Rest
-                  </h2>
-                  <p className="text-text-secondary ml-10 mt-1">
-                    Click below to optimize your resume for ATS while preserving your unique voice
-                  </p>
-                </div>
-                <div className="flex justify-center">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={customizeResume}
-                    disabled={isProcessing}
-                    className="px-12 py-6 text-lg"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="h-6 w-6 mr-3 animate-spin" />
-                        Customizing Your Resume...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-6 w-6 mr-3" />
-                        Customize Resume
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </section>
-            )}
-
-            {/* Processing State */}
-            {isProcessing && jobDescription && originalResume && (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <Loader2 className="h-16 w-16 text-primary animate-spin" />
-                <div className="text-center">
-                  <p className="text-lg font-medium">Customizing your resume...</p>
-                  <p className="text-sm text-text-secondary mt-2">
-                    Analyzing tone • Optimizing keywords • Preserving your voice
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Results */}
-        {showComparison && (
-          <section>
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <span className="text-primary">✨</span>
-                Your Customized Resume
-              </h2>
-              <p className="text-text-secondary mt-1">
-                Compare your original and customized resumes below
+              <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
+                <FileText className="h-6 w-6 text-primary" />
+                Optimize Your Resume
+              </h3>
+              <p className="text-text-secondary mb-4">
+                Upload your resume and paste any job URL. Resolut analyzes your writing style and the job requirements, then optimizes your resume for ATS systems while keeping your authentic voice intact.
               </p>
+              <Button
+                variant="primary"
+                onClick={() => router.push('/optimize')}
+                className="group"
+              >
+                Start Optimizing
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
             </div>
-            <ResumeComparison />
-          </section>
-        )}
+            <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Upload PDF or DOCX resume</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Paste job posting URL</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Get ATS-optimized resume in seconds</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      </main>
+          {/* Step 2: Prepare for Interview */}
+          <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-12">
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4">
+                2
+              </div>
+              <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
+                <Briefcase className="h-6 w-6 text-primary" />
+                Prepare for Your Interview
+              </h3>
+              <p className="text-text-secondary mb-4">
+                Generate personalized interview briefs with company news, strategic talking points, and questions to ask. Choose between 30-minute or 60-minute interview formats.
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => router.push('/prepare')}
+                className="group"
+              >
+                Start Preparing
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+            <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Recent company news & insights</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Personalized talking points</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Strategic questions to ask</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Footer */}
-      <footer className="border-t border-text-muted/20 py-6 mt-12">
-        <div className="container mx-auto px-6 text-center text-sm text-text-secondary">
-          <p>Powered by Claude AI • Built with Next.js</p>
+          {/* Step 3: Negotiate Your Offer */}
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4">
+                3
+              </div>
+              <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
+                <TrendingUp className="h-6 w-6 text-primary" />
+                Negotiate Your Offer
+              </h3>
+              <p className="text-text-secondary mb-4">
+                Analyze your offer and get data-driven negotiation strategies with market insights, personalized email templates, and responses to common pushback scenarios.
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => router.push('/negotiate')}
+                className="group"
+              >
+                Start Negotiating
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+            <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Market position analysis</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Email templates & scripts</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                    ✓
+                  </div>
+                  <span className="text-sm">Pushback response strategies</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </footer>
-    </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-12 sm:py-20 text-center border-t border-text-muted/20">
+        <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Land Your Dream Job?</h2>
+        <p className="text-lg text-text-secondary mb-8 max-w-2xl mx-auto">
+          Join professionals who are getting more interviews and better offers with Resolut
+        </p>
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => router.push('/optimize')}
+          className="px-8 py-4 sm:px-12 sm:py-6 text-base sm:text-lg"
+        >
+          <Sparkles className="h-6 w-6 mr-3" />
+          Get Started Free
+        </Button>
+      </section>
+    </AppLayout>
   );
 }

@@ -106,6 +106,317 @@ INSTRUCTIONS:
 Return ONLY the customized resume text with the same structure as the original. Do not include any explanations, comments, or markdown formatting.`;
 }
 
+export function createSophisticatedResumeAnalysisPrompt(
+  resumeText: string,
+  jobDescription: string,
+  companyName?: string
+): string {
+  return `⚠️ CRITICAL ETHICAL CONSTRAINT - READ THIS FIRST ⚠️
+
+You MUST NEVER add, invent, or fabricate ANY information that is not explicitly present in the user's original resume.
+
+This is an ABSOLUTE RULE that cannot be broken under any circumstances. Violating this rule could result in:
+- The user lying on their resume (illegal/unethical)
+- The user being fired if caught
+- The user facing legal consequences
+- Loss of professional credibility
+
+❌ FORBIDDEN - NEVER ADD:
+- Metrics like percentages, dollar amounts, user counts, or team sizes
+- Specific numbers if the original just says "increased" or "improved"
+- Timeframes not mentioned in the original (e.g., "in 6 months")
+- Scope details: team size, budget, revenue, user base
+- Company names, project names, or technologies not in original
+- Accomplishments or responsibilities not mentioned
+- Any quantification that isn't already there
+
+✅ ALLOWED - YOU MAY ONLY:
+- Rewrite existing bullets with better structure/formatting
+- Add keywords from job description ONLY if they naturally describe existing work
+- Improve action verbs (but keep the same accomplishment)
+- Fix grammar, spelling, and formatting
+- Reorganize information that's already present
+- Remove redundancy or fluff
+- Condense verbose text
+
+EXAMPLES OF WHAT IS FORBIDDEN:
+
+❌ WRONG - FABRICATING METRICS:
+Original: "Led project that improved user engagement"
+WRONG Output: "Led project that improved user engagement by 34% across 2M users"
+✅ CORRECT Output: "Led project that improved user engagement"
+
+❌ WRONG - ADDING TEAM SIZE:
+Original: "Managed engineering team"
+WRONG Output: "Managed engineering team of 12"
+✅ CORRECT Output: "Managed engineering team"
+
+❌ WRONG - INVENTING REVENUE:
+Original: "Increased sales through new marketing strategy"
+WRONG Output: "Increased sales by $2M through new marketing strategy"
+✅ CORRECT Output: "Increased sales through new marketing strategy"
+
+❌ WRONG - ADDING TIMEFRAMES:
+Original: "Reduced system downtime"
+WRONG Output: "Reduced system downtime by 40% in Q1"
+✅ CORRECT Output: "Reduced system downtime"
+
+YOUR ANALYSIS (dimensions 1-5) can and should recommend adding metrics. But the CUSTOMIZED RESUME must remain 100% factually accurate to what the user provided.
+
+---
+
+You are a senior technical recruiter and resume optimization expert who has reviewed 10,000+ resumes for FAANG, top-tier tech companies, and creative agencies. You're analyzing this resume as if you're the candidate's best friend who desperately wants them to succeed and has insider knowledge of what actually works.
+
+ORIGINAL RESUME:
+${resumeText}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+${companyName ? `TARGET COMPANY: ${companyName}` : ''}
+
+YOUR TASK:
+Perform a comprehensive 5-dimensional analysis, then provide an optimized version of the resume that follows the CRITICAL ETHICAL CONSTRAINT above.
+
+Return a JSON object with this EXACT structure:
+
+{
+  "atsCompatibility": {
+    "score": <number 0-10>,
+    "formattingIssues": ["<issue 1>", "<issue 2>"],
+    "exactFixes": ["<fix 1>", "<fix 2>"],
+    "parseability": "excellent" | "good" | "fair" | "poor"
+  },
+  "impactQuantification": {
+    "score": <number 0-10>,
+    "bulletsWithMetrics": <number>,
+    "bulletsWithoutMetrics": <number>,
+    "totalBullets": <number>,
+    "weakestBullets": [
+      {
+        "original": "<original bullet text>",
+        "issue": "<what's wrong>",
+        "suggestedMetric": "<type of metric to add>",
+        "example": "<example with metric>"
+      }
+    ]
+  },
+  "keywordOptimization": {
+    "score": <number 0-10>,
+    "criticalKeywords": ["<keyword 1>", "<keyword 2>"],
+    "keywordsPresent": ["<present 1>", "<present 2>"],
+    "keywordsMissing": [
+      {
+        "keyword": "<missing keyword>",
+        "priority": "critical" | "high" | "medium",
+        "suggestedLocation": "<where to add it>",
+        "integrationExample": "<natural example>"
+      }
+    ],
+    "coverageRate": <number 0-100>,
+    "stuffingRisk": "none" | "low" | "moderate" | "high"
+  },
+  "narrativeCoherence": {
+    "score": <number 0-10>,
+    "currentNarrative": "<what story resume tells now>",
+    "recommendedNarrative": "<what story would win role>",
+    "reframingSuggestions": [
+      {
+        "section": "<section name>",
+        "current": "<current framing>",
+        "recommended": "<better framing>",
+        "rationale": "<why this works>"
+      }
+    ],
+    "angleToEmphasize": "<key positioning>"
+  },
+  "levelAppropriateLanguage": {
+    "score": <number 0-10>,
+    "targetLevel": "entry" | "mid" | "senior" | "staff" | "principal" | "executive",
+    "currentLevel": "entry" | "mid" | "senior" | "staff" | "principal" | "executive",
+    "languageIssues": [
+      {
+        "issue": "<problem>",
+        "example": "<example from resume>",
+        "fix": "<how to fix>",
+        "impact": "high" | "medium" | "low"
+      }
+    ],
+    "scopeAssessment": "<analysis of scope mentioned>"
+  },
+  "lengthAnalysis": {
+    "estimatedLines": <number>,
+    "estimatedPages": <number>,
+    "withinLimit": <boolean>,
+    "itemsRemoved": ["<item 1>", "<item 2>"],
+    "condensingApplied": ["<condensing 1>", "<condensing 2>"],
+    "lengthOptimizationNote": "<explanation of length optimization choices>"
+  },
+  "overallScore": <number 0-10>,
+  "customizedResume": "<fully optimized resume text>"
+}
+
+DIMENSION 1: ATS COMPATIBILITY (/10)
+Evaluate:
+- Format parsing (tables, columns, graphics break ATS)
+- Critical keywords from job description present?
+- File format issues in plain text representation?
+- Any elements that would fail parsing?
+
+Provide:
+- Score
+- Specific formatting issues
+- Exact fixes (e.g., "Remove two-column layout", "Add missing keyword: 'stakeholder management'")
+- Parseability rating
+
+DIMENSION 2: IMPACT QUANTIFICATION (/10)
+Evaluate:
+- How many bullets have concrete metrics vs. vague statements?
+- Accomplishments quantified with scale/scope/results?
+- Format: [Action Verb] + [What] + [How] + [Measurable Impact]?
+
+Provide:
+- Score
+- Count of bullets with/without metrics
+- Top 5 weakest bullets with specific metric suggestions
+- Examples: "# of users, % improvement, $ value, time saved"
+
+DIMENSION 3: KEYWORD OPTIMIZATION (/10)
+Evaluate:
+- Extract 15 most critical keywords/phrases from job description
+- Map which keywords appear in resume (coverage rate)
+- Identify high-value missing keywords
+- Check for keyword stuffing (robotic language)
+
+Provide:
+- Score
+- Coverage rate (X/15 keywords present)
+- Missing keywords with priority
+- Natural integration examples (not just "add this")
+
+DIMENSION 4: NARRATIVE COHERENCE (/10)
+Evaluate:
+- Clear story for THIS specific role?
+- Logical progression showing readiness?
+- Gaps, contradictions, confusing elements?
+- Positioning matches job requirements?
+
+Provide:
+- Score
+- Current narrative summary
+- Recommended narrative
+- Specific reframing suggestions
+- Angle to emphasize
+
+DIMENSION 5: LEVEL-APPROPRIATE LANGUAGE (/10)
+Evaluate:
+- Language calibrated to target seniority?
+- Junior signs: task-focused, "helped with", "assisted"
+- Senior signs: owned outcomes, led teams, strategic impact
+- Scope matches expectations (team size, budget, scale)?
+
+Provide:
+- Score
+- Target vs current level
+- Language issues with examples
+- Scope assessment
+
+CUSTOMIZED RESUME:
+CRITICAL: In the "customizedResume" field, return the original resume with ONLY the following changes:
+- Fix formatting issues for ATS compatibility (remove tables, columns, graphics)
+- Add naturally missing keywords that are obviously implied by existing experience
+- Fix grammatical errors or typos
+
+DO NOT:
+- Add fabricated metrics, numbers, or data the user didn't provide
+- Embellish achievements or invent impact statistics
+- Add experience, projects, or responsibilities that aren't already there
+- Change the factual content of the resume
+
+The resume must remain 100% factually accurate to what the user provided. Your analysis provides the recommendations - the resume itself should only have minimal formatting/keyword fixes.
+
+LENGTH OPTIMIZATION (CRITICAL CONSTRAINT):
+
+The final optimized resume MUST fit on 2 pages maximum when formatted in a standard resume template:
+- Font: 10-11pt
+- Margins: 0.5-0.75 inches
+- Standard single-column layout
+- Approximately 50-60 lines per page = ~100-120 lines total
+
+PRIORITIZATION FRAMEWORK FOR LENGTH:
+
+When resume content exceeds 2 pages, apply this hierarchy:
+
+1. KEEP (Always include):
+   - Most recent 2-3 roles with full detail
+   - Quantified achievements with high impact
+   - Skills/technologies directly matching job description
+   - Education (condensed if necessary)
+   - Critical certifications relevant to role
+
+2. CONDENSE (Compress but don't remove):
+   - Roles 3-5 years old: reduce to 2-3 bullets each
+   - Older roles (5+ years): consider single line or remove if not relevant
+   - Early career roles: merge or summarize
+   - Projects section: keep only most impressive/relevant
+
+3. REMOVE (Cut if necessary to fit):
+   - Roles older than 10 years (unless highly relevant)
+   - Redundant skills already demonstrated in experience
+   - Obvious skills for the role (don't list "Email" for senior roles)
+   - Hobbies/interests (unless uniquely relevant)
+   - Objective statements (outdated)
+   - References line (assumed available)
+
+BULLET OPTIMIZATION FOR LENGTH:
+
+Each bullet should be 1-2 lines maximum:
+- Start with strong action verb
+- Include what, how, and impact
+- Use specific metrics but don't over-explain
+- Remove filler words: "responsible for", "worked on", "helped to"
+
+EXAMPLE TRANSFORMATIONS:
+
+TOO LONG (3 lines):
+"Was responsible for leading a cross-functional team of 8 engineers and 3 designers to successfully redesign the company's main product interface, which resulted in a 34% increase in user engagement and 12% reduction in churn across our 2M user base over a 6-month period"
+
+OPTIMIZED (2 lines):
+"Led cross-functional team of 11 to redesign product interface, increasing user engagement 34% and reducing churn 12% across 2M users in 6 months"
+
+TOO LONG (2.5 lines):
+"Developed and implemented a new automated testing framework using Python and Selenium which reduced manual testing time by 60% and caught 40% more bugs before production"
+
+OPTIMIZED (1 line):
+"Built automated testing framework (Python/Selenium) reducing manual testing 60% and catching 40% more pre-production bugs"
+
+FORMATTING EFFICIENCY:
+
+- Use abbreviated months (Jan 2023 vs January 2023)
+- Compress location (SF vs San Francisco, CA)
+- Combine degree and school on one line when possible
+- Use symbols strategically: % instead of "percent", $ instead of "dollars"
+- Remove extra spacing between sections if needed
+
+QUALITY CHECKS BEFORE RETURNING:
+
+Before outputting the optimized resume, verify:
+1. Total line count ≤ 120 lines (rough 2-page equivalent)
+2. No bullet exceeds 2 lines
+3. Most impactful information retained
+4. Each word earns its place (no fluff)
+5. Still reads naturally (not telegram-style)
+
+In the lengthAnalysis field:
+- Count the estimated lines in the customized resume
+- Calculate estimated pages (lines / 60)
+- List what was removed to fit 2 pages
+- List what was condensed
+- Explain your prioritization choices
+
+Return ONLY the JSON object, no markdown formatting or additional text.`;
+}
+
 export function createJobScrapingPrompt(html: string): string {
   return `Extract key information from this job posting HTML. Return ONLY a valid JSON object.
 
@@ -125,6 +436,235 @@ Focus on extracting:
 - Company name
 - The full job description text (clean text without HTML tags)
 - Key requirements, qualifications, and responsibilities as separate array items
+
+Return ONLY the JSON object, nothing else.`;
+}
+
+export function createNewsAnalysisPrompt(
+  companyName: string,
+  articles: Array<{ title: string; snippet: string }>
+): string {
+  return `Analyze these recent news articles about ${companyName} and create a concise summary for interview preparation. Return ONLY a valid JSON array.
+
+NEWS ARTICLES:
+${articles.map((a, i) => `${i + 1}. ${a.title}\n${a.snippet}`).join('\n\n')}
+
+Create a JSON array of key insights with this structure:
+[
+  {
+    "title": "Brief insight title",
+    "summary": "2-3 sentence explanation of the news and its relevance",
+    "relevance": "high" | "medium" | "low"
+  }
+]
+
+Focus on:
+- Recent company achievements, product launches, or strategic changes
+- Industry challenges or opportunities the company is facing
+- Company culture, values, or leadership changes
+- Information that would be valuable to discuss in an interview
+
+Prioritize insights that:
+- Show recent (within last 6 months) activity
+- Demonstrate company growth or innovation
+- Reveal company priorities and direction
+
+Return ONLY the JSON array, nothing else. Limit to 5 most relevant insights.`;
+}
+
+export function createInterviewBriefPrompt(
+  resumeText: string,
+  jobDescription: string,
+  companyName: string,
+  companyNews: Array<{ title: string; summary: string }>,
+  format: '30min' | '60min'
+): string {
+  const tokenGuidance = format === '30min'
+    ? 'CRITICAL: Keep this brief to ONE PAGE maximum (500-700 words total). Each section should be 2-4 sentences. Focus only on the most essential points.'
+    : 'CRITICAL: Keep this brief to TWO PAGES maximum (1000-1400 words total). Each section should be 1 concise paragraph (3-5 sentences). Be selective and actionable.';
+
+  const sections = format === '30min'
+    ? `Required sections for 30-minute interview (ONE PAGE TOTAL):
+1. Proposed Interview Agenda (time allocations for 30-min format)
+2. Executive Summary (2-3 sentences - your unique value proposition)
+3. Top 3 Strengths for This Role (3 bullet points matching job requirements)
+4. Company Insights (2-3 recent news points to reference)
+5. 2 Key Stories to Tell (brief STAR format - situation, action, result only)
+6. 3-4 Questions to Ask (show genuine interest and research)`
+    : `Required sections for 60-minute interview (TWO PAGES TOTAL):
+1. Proposed Interview Agenda (time allocations for 60-min format)
+2. Executive Summary (3-4 sentences - your unique value proposition)
+3. Top 5 Strengths for This Role (5 bullet points matching job requirements)
+4. Company Insights (4-5 recent news points and strategic context)
+5. 3-4 Key Stories to Tell (concise STAR format with impact)
+6. Questions to Ask (5-6 thoughtful questions)
+7. Technical Knowledge to Review (brief list if applicable)
+8. Potential Concerns & How to Address (2-3 points)`;
+
+  return `Create a concise interview preparation brief for this candidate. Return ONLY a valid JSON array of sections.
+
+CANDIDATE RESUME:
+${resumeText}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+COMPANY: ${companyName}
+
+RECENT COMPANY NEWS:
+${companyNews.map((n, i) => `${i + 1}. ${n.title}\n${n.summary}`).join('\n\n')}
+
+INTERVIEW FORMAT: ${format === '30min' ? '30-minute interview' : '60-minute interview'}
+${tokenGuidance}
+
+Create a JSON array with this structure:
+[
+  {
+    "title": "Section title",
+    "content": "Brief, actionable content",
+    "tips": ["Tip 1", "Tip 2"] (max 2-3 tips per section)
+  }
+]
+
+${sections}
+
+CRITICAL CONSTRAINTS:
+- ${format === '30min' ? 'ONE PAGE (500-700 words)' : 'TWO PAGES (1000-1400 words)'}
+- Ultra-concise: every word must add value
+- Bullet points over paragraphs where possible
+- No fluff or generic advice
+- Specific to THIS candidate and THIS role
+- Actionable and memorable
+
+AGENDA FORMAT:
+For the "Proposed Interview Agenda" section, provide realistic time breakdowns:
+${format === '30min' ? `30-minute interview typical flow:
+- Introduction & Rapport (3-5 min)
+- Your Background & Experience (8-10 min)
+- Behavioral/Technical Questions (10-12 min)
+- Your Questions (3-5 min)
+- Closing (2 min)` : `60-minute interview typical flow:
+- Introduction & Rapport (5-7 min)
+- Your Background & Experience (12-15 min)
+- Behavioral/Technical Questions (20-25 min)
+- Role-Specific Deep Dive (10 min)
+- Your Questions (5-7 min)
+- Closing (3 min)`}
+
+Return ONLY the JSON array, nothing else.`;
+}
+
+export function createNegotiationStrategyPrompt(
+  jobOffer: {
+    company: string;
+    jobTitle: string;
+    baseSalary: number;
+    currency: string;
+    bonus?: number;
+    equity?: { amount: number; type: string };
+    benefits?: string[];
+    location: string;
+    remote: string;
+    yearsOfExperience: number;
+    roleLevel: string;
+  },
+  resumeText?: string,
+  jobDescription?: string
+): string {
+  const totalComp = jobOffer.baseSalary + (jobOffer.bonus || 0) + (jobOffer.equity?.amount || 0);
+
+  return `Create a personalized salary negotiation strategy for this job offer. Return ONLY a valid JSON object.
+
+JOB OFFER DETAILS:
+Company: ${jobOffer.company}
+Position: ${jobOffer.jobTitle}
+Base Salary: ${jobOffer.baseSalary} ${jobOffer.currency}
+${jobOffer.bonus ? `Annual Bonus: ${jobOffer.bonus} ${jobOffer.currency}` : ''}
+${jobOffer.equity ? `Equity: ${jobOffer.equity.amount} ${jobOffer.currency} (${jobOffer.equity.type})` : ''}
+Total Compensation: ${totalComp} ${jobOffer.currency}
+Location: ${jobOffer.location} (${jobOffer.remote})
+Role Level: ${jobOffer.roleLevel}
+Years of Experience: ${jobOffer.yearsOfExperience}
+${jobOffer.benefits ? `Benefits: ${jobOffer.benefits.join(', ')}` : ''}
+
+${resumeText ? `CANDIDATE BACKGROUND:\n${resumeText.substring(0, 3000)}\n` : ''}
+${jobDescription ? `JOB DESCRIPTION:\n${jobDescription.substring(0, 2000)}\n` : ''}
+
+Create a JSON object with this structure:
+{
+  "sections": [
+    {
+      "title": "Section title",
+      "content": "Detailed strategy content (2-4 paragraphs)",
+      "tips": ["Actionable tip 1", "Actionable tip 2"],
+      "priority": "high" | "medium" | "low"
+    }
+  ],
+  "marketInsights": [
+    {
+      "category": "salary" | "equity" | "benefits" | "total-comp",
+      "insight": "Market context or benchmark information",
+      "recommendation": "Specific actionable recommendation",
+      "confidence": "high" | "medium" | "low"
+    }
+  ]
+}
+
+Required sections (in this order):
+1. "Current Offer Assessment" (priority: high)
+   - Analyze the offer comprehensively
+   - Consider total comp, location, role level, experience
+   - Identify strengths and potential negotiation opportunities
+
+2. "Market Positioning" (priority: high)
+   - Provide market context for this role/level/location
+   - Compare against typical ranges (be realistic, use general knowledge)
+   - Identify if offer is below, at, or above market
+
+3. "Negotiation Priorities" (priority: high)
+   - What to negotiate first (salary vs equity vs benefits)
+   - Prioritize based on the specific offer structure
+   - Consider what typically has most negotiation flexibility
+
+4. "Communication Strategy" (priority: high)
+   - How to frame your negotiation request
+   - Specific language and tone to use
+   - Timing and approach recommendations
+
+5. "Leverage Points" (priority: medium)
+   - Specific strengths from candidate's background (if available)
+   - Market demand factors to reference
+   - Other offers or competing factors (if mentioned)
+
+6. "Alternative Asks" (priority: medium)
+   - Non-salary items to negotiate (benefits, PTO, signing bonus, etc.)
+   - Remote work flexibility or relocation assistance
+   - Professional development, title changes, etc.
+
+7. "Potential Responses & Rebuttals" (priority: medium)
+   - Common employer responses to negotiation requests
+   - How to handle "this is our final offer"
+   - When to accept vs walk away
+
+Market Insights Guidelines:
+- Provide 3-5 specific insights about market rates, equity norms, benefits benchmarks
+- Base recommendations on general industry knowledge
+- Consider company size, location, and role level
+- Mark confidence level based on specificity of data available
+
+Tone & Style:
+- Professional but empowering
+- Data-driven and specific, not generic
+- Actionable advice, not just information
+- Realistic about outcomes, not overly optimistic
+- Supportive and confidence-building
+
+IMPORTANT:
+- Be specific to THIS offer at THIS company for THIS role level
+- Reference the candidate's background if available
+- Provide actual numbers and ranges where appropriate (based on general market knowledge)
+- Focus on win-win framing, not adversarial tactics
+- Consider the candidate's experience level in advice complexity
 
 Return ONLY the JSON object, nothing else.`;
 }

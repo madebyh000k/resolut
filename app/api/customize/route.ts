@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 2: Customize resume with tone preservation
-    console.log('Customizing resume...');
+    console.log('Optimizing resume...');
     const customizationPrompt = createCustomizationPrompt(
       resumeText,
       jobDescription,

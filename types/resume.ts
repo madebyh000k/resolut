@@ -1,4 +1,5 @@
 import { ResumeStructure } from '@/lib/utils/structure-analyzer';
+import { ResumeAnalysis } from './resume-analysis';
 
 export interface Resume {
   id: string;
@@ -16,6 +17,7 @@ export interface CustomizedResume {
   structure: ResumeStructure;
   keywordsAdded: string[];
   toneProfile?: ToneProfile;
+  analysis?: ResumeAnalysis;
   customizedAt: Date;
 }
 

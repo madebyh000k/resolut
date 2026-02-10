@@ -1,0 +1,219 @@
+'use client';
+
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { NegotiationAdvice } from '@/types/offer-advice';
+import {
+  Copy,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  TrendingUp,
+  DollarSign,
+  AlertTriangle,
+  Mail,
+  Lightbulb,
+} from 'lucide-react';
+
+interface AdviceDisplayProps {
+  advice: NegotiationAdvice;
+}
+
+export function AdviceDisplay({ advice }: AdviceDisplayProps) {
+  const [emailCopied, setEmailCopied] = useState(false);
+  const [pushbackExpanded, setPushbackExpanded] = useState(false);
+
+  const handleCopyEmail = async () => {
+    await navigator.clipboard.writeText(advice.emailTemplate);
+    setEmailCopied(true);
+    setTimeout(() => setEmailCopied(false), 2000);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Key Insights */}
+      {advice.redFlags && advice.redFlags.length > 0 && (
+        <Card className="p-6 bg-primary/5 border-2 border-primary/30">
+          <div className="flex items-start gap-3">
+            <Lightbulb className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Key Insights</h3>
+              <p className="text-sm text-text-secondary mb-3">Important context for your negotiation</p>
+              <ul className="space-y-2">
+                {advice.redFlags.map((flag, index) => (
+                  <li key={index} className="text-sm flex items-start gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span>{flag}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Market Position */}
+      <Card className="p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <TrendingUp className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold mb-1">Market Position</h3>
+            <p className="text-sm text-text-secondary">Where your offer stands in the market</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="text-center p-4 rounded-lg bg-surface">
+            <div className="text-3xl font-bold text-primary mb-1">
+              {advice.marketPosition.percentile}th
+            </div>
+            <div className="text-sm text-text-secondary">Percentile</div>
+          </div>
+
+          <div className="text-center p-4 rounded-lg bg-surface">
+            <div className="text-2xl font-bold mb-1">{advice.marketPosition.totalComp4Year}</div>
+            <div className="text-sm text-text-secondary">Total Comp (4 years)</div>
+          </div>
+
+          <div className="text-center p-4 rounded-lg bg-surface">
+            <div className="text-lg font-bold mb-1">{advice.marketPosition.gap}</div>
+            <div className="text-sm text-text-secondary">Market Gap</div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Recommended Ask */}
+      <Card className="p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <DollarSign className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold mb-1">Recommended Ask</h3>
+            <p className="text-sm text-text-secondary">What you should negotiate for</p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/30">
+            <div>
+              <div className="text-sm text-text-secondary mb-1">Base Salary</div>
+              <div className="text-2xl font-bold text-primary">
+                {advice.recommendedAsk.base}
+              </div>
+            </div>
+            {advice.recommendedAsk.equity && (
+              <div className="text-right">
+                <div className="text-sm text-text-secondary mb-1">Equity</div>
+                <div className="text-xl font-bold">{advice.recommendedAsk.equity}</div>
+              </div>
+            )}
+          </div>
+
+          <div className="p-4 rounded-lg bg-surface border border-text-muted/20">
+            <div className="text-sm font-medium text-text-secondary mb-2">Why This Works:</div>
+            <p className="text-sm leading-relaxed">{advice.recommendedAsk.rationale}</p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Email Template */}
+      <Card className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-start gap-3">
+            <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-xl font-semibold mb-1">Email Template</h3>
+              <p className="text-sm text-text-secondary">
+                Copy and personalize this email to send to your recruiter
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopyEmail}
+            disabled={emailCopied}
+          >
+            {emailCopied ? (
+              <>
+                <Check className="h-4 w-4 mr-2" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Email
+              </>
+            )}
+          </Button>
+        </div>
+
+        <div className="relative">
+          <pre className="p-4 rounded-lg bg-surface border border-text-muted/20 text-sm whitespace-pre-wrap font-sans overflow-x-auto">
+            {advice.emailTemplate}
+          </pre>
+        </div>
+
+        <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <p className="text-xs text-text-secondary">
+            💡 <strong>Tips:</strong> Replace [Recruiter Name], [specific team/project], and
+            [Your Name] with actual details before sending. Send from your personal email during
+            business hours for best results.
+          </p>
+        </div>
+      </Card>
+
+      {/* Pushback Responses */}
+      <Card className="p-6">
+        <button
+          onClick={() => setPushbackExpanded(!pushbackExpanded)}
+          className="w-full flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <div className="text-xl font-semibold">Handling Pushback</div>
+            <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-medium">
+              {advice.pushbackResponses.length} scenarios
+            </span>
+          </div>
+          {pushbackExpanded ? (
+            <ChevronUp className="h-5 w-5 text-text-secondary" />
+          ) : (
+            <ChevronDown className="h-5 w-5 text-text-secondary" />
+          )}
+        </button>
+
+        {pushbackExpanded && (
+          <div className="mt-6 space-y-4">
+            <p className="text-sm text-text-secondary">
+              Copy-paste responses for common recruiter objections
+            </p>
+
+            {advice.pushbackResponses.map((response, index) => (
+              <div key={index} className="p-4 rounded-lg bg-surface border border-text-muted/20">
+                <div className="mb-3">
+                  <div className="text-xs font-medium text-text-secondary mb-1">THEY SAY:</div>
+                  <div className="text-sm italic">"{response.theySay}"</div>
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-primary mb-1">YOU SAY:</div>
+                  <div className="text-sm">{response.youSay}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Generate New Button */}
+      <div className="text-center pt-6 border-t border-text-muted/20">
+        <p className="text-text-secondary mb-4">Want to analyze a different offer?</p>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+        >
+          Analyze Another Offer
+        </Button>
+      </div>
+    </div>
+  );
+}

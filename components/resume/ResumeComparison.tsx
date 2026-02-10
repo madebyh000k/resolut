@@ -52,7 +52,7 @@ export function ResumeComparison() {
       )}
 
       {/* Download Actions */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <Button
           variant="primary"
           size="lg"
@@ -85,25 +85,25 @@ export function ResumeComparison() {
       {/* Comparison View */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Original Resume */}
-        <Card className="p-6">
+        <Card className="p-6 overflow-hidden bg-background border border-text-muted/20">
           <h3 className="text-lg font-semibold mb-4 pb-2 border-b border-text-muted/30">
             Original Resume
           </h3>
-          <div className="prose prose-sm max-w-none">
-            <pre className="whitespace-pre-wrap font-sans text-sm text-text-secondary leading-relaxed">
+          <div className="max-w-none">
+            <pre className="whitespace-pre-wrap break-words font-sans text-xs sm:text-sm text-text-primary leading-relaxed bg-transparent" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               {originalResume.originalText}
             </pre>
           </div>
         </Card>
 
         {/* Customized Resume */}
-        <Card className="p-6 border-2 border-primary">
-          <h3 className="text-lg font-semibold mb-4 pb-2 border-b border-primary flex items-center gap-2">
+        <Card className="p-6 overflow-hidden bg-background border-2 border-primary/20">
+          <h3 className="text-lg font-semibold mb-4 pb-2 border-b border-primary/30 flex items-center gap-2">
             <span className="text-primary">✨</span>
             Customized Resume
           </h3>
-          <div className="prose prose-sm max-w-none">
-            <pre className="whitespace-pre-wrap font-sans text-sm text-text-primary leading-relaxed">
+          <div className="max-w-none">
+            <pre className="whitespace-pre-wrap break-words font-sans text-xs sm:text-sm text-text-primary leading-relaxed bg-transparent" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               {customizedResume.customizedText}
             </pre>
           </div>

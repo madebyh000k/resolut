@@ -6,6 +6,9 @@ export interface ScrapedJob {
   description: string;
   requirements: string[];
   rawHtml: string;
+  companyDetectionMethod?: 'selector' | 'url' | 'meta' | 'text-pattern' | 'domain' | 'unknown';
+  companyConfidence?: 'high' | 'medium' | 'low';
+  needsManualCompanyInput?: boolean;
 }
 
 const PLATFORM_SELECTORS = {
@@ -62,27 +65,23 @@ export async function scrapeJobDescription(url: string): Promise<ScrapedJob> {
     let company = '';
     let description = '';
 
+    // Extract title
     if (selectors) {
-      // Use platform-specific selectors
       title = $(selectors.title).first().text().trim();
-      company = $(selectors.company).first().text().trim();
-      description = $(selectors.description).first().text().trim();
     }
 
-    // Fallback: generic extraction if platform-specific fails
+    // Fallback: generic title extraction
     if (!title) {
       title =
         $('h1').first().text().trim() ||
         $('[class*="title"]').first().text().trim() ||
-        $('title').text().trim();
+        $('[class*="job-title"]').first().text().trim() ||
+        $('title').text().replace(/\s*\|\s*.+$/, '').trim(); // Remove site name from page title
     }
 
-    if (!company) {
-      company =
-        $('[class*="company"]').first().text().trim() ||
-        $('meta[property="og:site_name"]').attr('content') ||
-        '';
-    }
+    // Smart company name extraction with multiple strategies
+    const companyResult = extractCompanyName(url, $, selectors);
+    company = companyResult.company;
 
     if (!description) {
       // Try to find the main content
@@ -99,12 +98,17 @@ export async function scrapeJobDescription(url: string): Promise<ScrapedJob> {
     // Extract requirements
     const requirements = extractRequirements(description);
 
+    console.log(`[Job Scraper] Company extraction: ${company} (method: ${companyResult.method}, confidence: ${companyResult.confidence})`);
+
     return {
       title: title || 'Unknown Position',
-      company: company || 'Unknown Company',
+      company: company || 'Company Name',
       description,
       requirements,
       rawHtml: html,
+      companyDetectionMethod: companyResult.method as any,
+      companyConfidence: companyResult.confidence,
+      needsManualCompanyInput: companyResult.needsManual,
     };
   } catch (error) {
     throw new Error(
@@ -124,6 +128,228 @@ function detectPlatform(url: string): keyof typeof PLATFORM_SELECTORS | null {
   if (urlLower.includes('myworkdayjobs.com')) return 'workday';
 
   return null;
+}
+
+/**
+ * Extract company name from URL structure
+ * Examples:
+ * - boards.greenhouse.io/company-name/jobs/123 -> company-name
+ * - jobs.lever.co/companyname -> companyname
+ * - myworkdayjobs.com/companyname/job/123 -> companyname
+ */
+function extractCompanyFromUrl(url: string): string | null {
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname.toLowerCase();
+    const pathname = urlObj.pathname;
+
+    // Greenhouse pattern: boards.greenhouse.io/COMPANY/jobs/...
+    if (hostname.includes('greenhouse.io')) {
+      const match = pathname.match(/^\/([^\/]+)\/jobs?/);
+      if (match && match[1]) {
+        return formatCompanyName(match[1]);
+      }
+    }
+
+    // Lever pattern: jobs.lever.co/COMPANY or jobs.lever.co/COMPANY/...
+    if (hostname.includes('lever.co')) {
+      const match = pathname.match(/^\/([^\/]+)/);
+      if (match && match[1]) {
+        return formatCompanyName(match[1]);
+      }
+    }
+
+    // Workday pattern: myworkdayjobs.com/COMPANY/... or COMPANY.wd1.myworkdayjobs.com
+    if (hostname.includes('myworkdayjobs.com')) {
+      // Check subdomain first
+      const subdomainMatch = hostname.match(/^([^.]+)\.wd\d+\.myworkdayjobs/);
+      if (subdomainMatch && subdomainMatch[1]) {
+        return formatCompanyName(subdomainMatch[1]);
+      }
+      // Check path
+      const pathMatch = pathname.match(/^\/([^\/]+)/);
+      if (pathMatch && pathMatch[1]) {
+        return formatCompanyName(pathMatch[1]);
+      }
+    }
+
+    // Career page pattern: careers.company.com or company.com/careers
+    if (hostname.includes('careers') || pathname.includes('/careers') || pathname.includes('/jobs')) {
+      const domainParts = hostname.split('.');
+      if (domainParts.length >= 2) {
+        // Get the main domain (before .com/.io/etc)
+        const mainDomain = domainParts[domainParts.length - 2];
+        if (mainDomain !== 'careers' && mainDomain !== 'jobs') {
+          return formatCompanyName(mainDomain);
+        }
+        // If careers subdomain, try parent domain
+        if (domainParts.length >= 3 && domainParts[0] === 'careers') {
+          return formatCompanyName(domainParts[domainParts.length - 2]);
+        }
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Format company name from URL slug
+ * Examples:
+ * - "acme-corp" -> "Acme Corp"
+ * - "google" -> "Google"
+ * - "meta_platforms" -> "Meta Platforms"
+ */
+function formatCompanyName(slug: string): string {
+  return slug
+    .replace(/[-_]/g, ' ') // Replace dashes/underscores with spaces
+    .split(' ')
+    .map(word => {
+      // Capitalize first letter of each word
+      if (word.length === 0) return '';
+      // Keep all caps words as is (like "IBM", "AWS")
+      if (word === word.toUpperCase() && word.length > 1) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(' ')
+    .trim();
+}
+
+/**
+ * Extract company name from description text patterns
+ */
+function extractCompanyFromText(description: string): string | null {
+  // Pattern 1: "About [Company Name]" or "About Company Name"
+  const aboutMatch = description.match(/About\s+([A-Z][A-Za-z\s&,.]+?)(?:\n|$|is|was|:|—)/);
+  if (aboutMatch && aboutMatch[1]) {
+    const candidate = aboutMatch[1].trim();
+    if (candidate.split(' ').length <= 4) {
+      // Reasonable company name length
+      return candidate;
+    }
+  }
+
+  // Pattern 2: "[Company Name] is looking for" or "[Company Name] seeks"
+  const seekingMatch = description.match(/^([A-Z][A-Za-z\s&,.]+?)\s+(?:is|are)\s+(?:looking for|seeking|hiring)/m);
+  if (seekingMatch && seekingMatch[1]) {
+    const candidate = seekingMatch[1].trim();
+    if (candidate.split(' ').length <= 4) {
+      return candidate;
+    }
+  }
+
+  // Pattern 3: "Join [Company Name]" or "Come work at [Company Name]"
+  const joinMatch = description.match(/(?:Join|Come work (?:at|with))\s+([A-Z][A-Za-z\s&,.]+?)(?:\n|$|!|\.)/);
+  if (joinMatch && joinMatch[1]) {
+    const candidate = joinMatch[1].trim();
+    if (candidate.split(' ').length <= 4) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Smart company name extraction with multiple fallback strategies
+ */
+function extractCompanyName(url: string, $: cheerio.CheerioAPI, selectors: typeof PLATFORM_SELECTORS[keyof typeof PLATFORM_SELECTORS] | null): {
+  company: string;
+  method: string;
+  confidence: 'high' | 'medium' | 'low';
+  needsManual: boolean;
+} {
+  let company = '';
+  let method = 'unknown';
+  let confidence: 'high' | 'medium' | 'low' = 'low';
+
+  // Strategy 1: Platform-specific selectors (highest confidence)
+  if (selectors) {
+    company = $(selectors.company).first().text().trim();
+    // Also try alt attribute for logos
+    if (!company && selectors.company.includes('img')) {
+      company = $(selectors.company).first().attr('alt') || '';
+    }
+    if (company) {
+      method = 'selector';
+      confidence = 'high';
+      return { company, method, confidence, needsManual: false };
+    }
+  }
+
+  // Strategy 2: Extract from URL structure (high confidence)
+  const urlCompany = extractCompanyFromUrl(url);
+  if (urlCompany) {
+    company = urlCompany;
+    method = 'url';
+    confidence = 'high';
+    return { company, method, confidence, needsManual: false };
+  }
+
+  // Strategy 3: Meta tags (medium-high confidence)
+  const metaCompany =
+    $('meta[property="og:site_name"]').attr('content') ||
+    $('meta[name="author"]').attr('content') ||
+    $('meta[name="company"]').attr('content') ||
+    '';
+  if (metaCompany) {
+    company = metaCompany.trim();
+    method = 'meta';
+    confidence = 'medium';
+    return { company, method, confidence, needsManual: false };
+  }
+
+  // Strategy 4: Generic class-based selectors (medium confidence)
+  const genericCompany =
+    $('[class*="company-name"]').first().text().trim() ||
+    $('[class*="employer"]').first().text().trim() ||
+    $('[data-company]').first().attr('data-company') ||
+    '';
+  if (genericCompany) {
+    company = genericCompany;
+    method = 'selector';
+    confidence = 'medium';
+    return { company, method, confidence, needsManual: false };
+  }
+
+  // Strategy 5: Extract from page text (low-medium confidence)
+  const bodyText = $('body').text();
+  const textCompany = extractCompanyFromText(bodyText);
+  if (textCompany) {
+    company = textCompany;
+    method = 'text-pattern';
+    confidence = 'medium';
+    return { company, method, confidence, needsManual: false };
+  }
+
+  // Strategy 6: Domain name as last resort (low confidence)
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname.toLowerCase();
+    const domainParts = hostname.split('.');
+    if (domainParts.length >= 2) {
+      const mainDomain = domainParts[domainParts.length - 2];
+      // Skip generic domains
+      if (!['jobs', 'careers', 'boards', 'greenhouse', 'lever', 'indeed', 'linkedin', 'workday'].includes(mainDomain)) {
+        company = formatCompanyName(mainDomain);
+        method = 'domain';
+        confidence = 'low';
+        return { company, method, confidence, needsManual: true };
+      }
+    }
+  } catch {
+    // Ignore URL parsing errors
+  }
+
+  // Failed to extract company name
+  return {
+    company: 'Company Name',
+    method: 'unknown',
+    confidence: 'low',
+    needsManual: true,
+  };
 }
 
 function cleanText(text: string): string {
