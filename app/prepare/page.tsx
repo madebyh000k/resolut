@@ -33,6 +33,14 @@ export default function PreparePage() {
   const [localFormat, setLocalFormat] = useState<'30min' | '60min'>(briefFormat);
   const [showResumeUploader, setShowResumeUploader] = useState(false);
 
+  // Check beta access on page load
+  useEffect(() => {
+    const hasAccess = localStorage.getItem('resolut_beta_access') === 'true';
+    if (!hasAccess) {
+      router.push('/');
+    }
+  }, [router]);
+
   // Fetch company news when job description is added
   useEffect(() => {
     if (jobDescription && !companyNews && !isProcessing) {

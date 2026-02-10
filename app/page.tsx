@@ -1,17 +1,52 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Target, Briefcase, TrendingUp, FileText, MessageSquare, ArrowRight } from 'lucide-react';
+import { PasswordGateModal } from '@/components/auth/PasswordGateModal';
 
 export default function LandingPage() {
   const router = useRouter();
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+
+  const checkBetaAccess = (route: string) => {
+    const hasAccess = typeof window !== 'undefined' && localStorage.getItem('resolut_beta_access') === 'true';
+
+    if (!hasAccess) {
+      setPendingRoute(route);
+      setShowPasswordModal(true);
+      return false;
+    }
+
+    router.push(route);
+    return true;
+  };
+
+  const handlePasswordSuccess = () => {
+    if (pendingRoute) {
+      router.push(pendingRoute);
+      setPendingRoute(null);
+    }
+  };
 
   return (
     <AppLayout>
+      {/* Password Gate Modal */}
+      <PasswordGateModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onSuccess={handlePasswordSuccess}
+      />
+
       {/* Hero Section */}
       <section className="text-center py-12 sm:py-20">
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-primary/10 border border-primary/20">
+          <span className="text-xl">🔒</span>
+          <span className="text-sm font-medium text-primary">Private Beta</span>
+        </div>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
           Land your dream job,
           <br />
@@ -25,7 +60,7 @@ export default function LandingPage() {
           <Button
             variant="primary"
             size="lg"
-            onClick={() => router.push('/optimize')}
+            onClick={() => checkBetaAccess('/optimize')}
             className="px-8 py-4 sm:px-12 sm:py-6 text-base sm:text-lg w-full sm:w-auto"
           >
             <Sparkles className="h-6 w-6 mr-3" />
@@ -154,7 +189,7 @@ export default function LandingPage() {
               </p>
               <Button
                 variant="primary"
-                onClick={() => router.push('/optimize')}
+                onClick={() => checkBetaAccess('/optimize')}
                 className="group"
               >
                 Start Optimizing
@@ -200,7 +235,7 @@ export default function LandingPage() {
               </p>
               <Button
                 variant="primary"
-                onClick={() => router.push('/prepare')}
+                onClick={() => checkBetaAccess('/prepare')}
                 className="group"
               >
                 Start Preparing
@@ -291,7 +326,7 @@ export default function LandingPage() {
         <Button
           variant="primary"
           size="lg"
-          onClick={() => router.push('/optimize')}
+          onClick={() => checkBetaAccess('/optimize')}
           className="px-8 py-4 sm:px-12 sm:py-6 text-base sm:text-lg"
         >
           <Sparkles className="h-6 w-6 mr-3" />

@@ -23,6 +23,14 @@ export default function CustomizePage() {
     clearError,
   } = useResumeStore();
 
+  // Check beta access on page load
+  useEffect(() => {
+    const hasAccess = localStorage.getItem('resolut_beta_access') === 'true';
+    if (!hasAccess) {
+      router.push('/');
+    }
+  }, [router]);
+
   // Debug: Log the analysis structure when it changes
   useEffect(() => {
     if (customizedResume?.analysis) {
