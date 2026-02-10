@@ -293,51 +293,6 @@ export default function LandingPage() {
           Get Started Free
         </Button>
       </section>
-
-      {/* Bottom Email Signup */}
-      <section className="py-16 sm:py-20 bg-surface border-t border-text-muted/20">
-        <div className="max-w-2xl mx-auto text-center px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-lg text-text-secondary mb-8">
-            Join the beta and get instant access to all features.
-          </p>
-
-          {/* Mailchimp Form */}
-          <form
-            action="https://tools.us15.list-manage.com/subscribe/post?u=b4a4e83bc62b08f39a2be6939&id=2ff1ffe83b&f_id=0082c2e1f0"
-            method="post"
-            target="_blank"
-            className="max-w-md mx-auto mb-4"
-          >
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                name="EMAIL"
-                placeholder="Enter your email"
-                required
-                className="flex-1 px-4 py-3 rounded-full border-2 border-text-muted/30 bg-background text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
-              />
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                className="sm:w-auto whitespace-nowrap"
-              >
-                Get Access
-              </Button>
-            </div>
-
-            {/* Mailchimp required hidden field */}
-            <div style={{ position: 'absolute', left: '-5000px' }} aria-hidden="true">
-              <input type="text" name="b_b4a4e83bc62b08f39a2be6939_2ff1ffe83b" tabIndex={-1} value="" readOnly />
-            </div>
-          </form>
-
-          <p className="text-sm text-text-muted">
-            Free while in beta. Limited to 50 testers.
-          </p>
-        </div>
-      </section>
     </AppLayout>
   );
 }
