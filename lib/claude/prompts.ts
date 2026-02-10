@@ -590,6 +590,32 @@ ${jobOffer.benefits ? `Benefits: ${jobOffer.benefits.join(', ')}` : ''}
 ${resumeText ? `CANDIDATE BACKGROUND:\n${resumeText.substring(0, 3000)}\n` : ''}
 ${jobDescription ? `JOB DESCRIPTION:\n${jobDescription.substring(0, 2000)}\n` : ''}
 
+⚠️ CRITICAL: Calibrate your advice to the offer quality ⚠️
+
+IF offer is 90th percentile or above (exceptional/top-tier):
+- DO NOT suggest asking for significantly more money
+- Acknowledge it as an exceptional/outstanding offer
+- Focus on NON-MONETARY items: title clarity, equity acceleration, signing bonus structure, relocation, team fit
+- Suggest PROTECTING the offer, not inflating it
+- Example: "This is an outstanding offer. Focus on role clarity, growth path, and team fit rather than comp increases."
+- Recommend accepting if all other factors align
+
+IF offer is 75th-89th percentile (strong/competitive):
+- Suggest MODEST improvements (5-10% maximum)
+- Focus on specific gaps vs market benchmarks
+- Provide clear justification for any increases
+- Consider non-monetary enhancements
+
+IF offer is below 75th percentile (below market):
+- Suggest clear increases with market data
+- Provide specific negotiation strategies
+- Focus on bringing comp to market rate
+- Be more aggressive with recommendations
+
+Your credibility depends on honest assessment. DO NOT always optimize for "more."
+
+---
+
 Create a JSON object with this structure:
 {
   "sections": [
