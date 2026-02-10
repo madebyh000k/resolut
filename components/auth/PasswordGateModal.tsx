@@ -17,6 +17,7 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [signupError, setSignupError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
   // Reset state when modal opens
   useEffect(() => {
@@ -27,8 +28,21 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
       setSignupSuccess(false);
       setSignupError('');
       setSubmitting(false);
+      setCountdown(5);
     }
   }, [isOpen]);
+
+  // Auto-close countdown for success state
+  useEffect(() => {
+    if (signupSuccess && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (signupSuccess && countdown === 0) {
+      onClose();
+    }
+  }, [signupSuccess, countdown, onClose]);
 
   const handlePasswordSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,34 +69,31 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
     const email = (formData.get('email') as string).trim();
 
     try {
-      // Send to Mailchimp with 'beta-tester' tag
-      // This triggers the Mailchimp automation that sends welcome email
       const response = await fetch('/api/mailchimp/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email,
-          tags: ['beta-tester'], // This triggers the welcome email automation
+          tags: ['beta-tester'],
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Success! Mailchimp will send the welcome email
         setSignupSuccess(true);
         setShowSignupForm(false);
+        setCountdown(5); // Reset countdown
       } else {
-        // Handle error (email already exists, invalid email, etc.)
         if (data.error && data.error.toLowerCase().includes('already a list member')) {
-          setSignupError('This email is already registered. Check your inbox for your access code.');
+          setSignupError('This email is already registered. Check your inbox!');
         } else {
-          setSignupError(data.error || 'Something went wrong. Please try again or email hello@resolut.tools');
+          setSignupError(data.error || 'Something went wrong. Please try again.');
         }
       }
     } catch (error) {
       console.error('Signup error:', error);
-      setSignupError('Connection error. Please check your internet and try again.');
+      setSignupError('Connection error. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -101,19 +112,7 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
   return (
     <div className="password-modal-overlay" onClick={handleOverlayClick}>
       <div className="password-modal-content" onClick={handleContentClick}>
-        {/* Success State */}
-        {signupSuccess && (
-          <div className="success-state">
-            <div className="success-icon">✓</div>
-            <h2>Check Your Email!</h2>
-            <p>We just sent your beta access code to your inbox. It should arrive within 1-2 minutes.</p>
-            <button onClick={() => onClose()} className="close-button" type="button">
-              Close
-            </button>
-          </div>
-        )}
-
-        {/* Password Form */}
+        {/* STATE 1: Password Entry */}
         {!showSignupForm && !signupSuccess && (
           <>
             <h2>Beta Access Required</h2>
@@ -130,29 +129,37 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
                 autoFocus
                 autoComplete="off"
               />
-              <button type="submit">Access Beta</button>
+              <button type="submit" className="primary-button">
+                Access Beta
+              </button>
             </form>
 
             {error && <p className="error-message">{error}</p>}
 
-            <div className="help-text">
+            <p className="help-text">
               Don't have a code?{' '}
               <button
-                onClick={() => setShowSignupForm(true)}
+                onClick={() => {
+                  setShowSignupForm(true);
+                  setError('');
+                }}
                 className="link-button"
                 type="button"
               >
                 Request access
               </button>
-            </div>
+            </p>
           </>
         )}
 
-        {/* Email Signup Form */}
+        {/* STATE 2: Email Signup */}
         {showSignupForm && !signupSuccess && (
-          <div className="signup-form-section">
+          <>
             <button
-              onClick={() => setShowSignupForm(false)}
+              onClick={() => {
+                setShowSignupForm(false);
+                setSignupError('');
+              }}
               className="back-button"
               type="button"
             >
@@ -160,23 +167,54 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
             </button>
 
             <h2>Request Beta Access</h2>
-            <p>We'll email you an access code instantly.</p>
+            <p>Enter your email and we'll send you an access code instantly.</p>
 
             <form onSubmit={handleSignupSubmit}>
               <input
                 type="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder="your@email.com"
                 required
                 className="email-input"
                 autoFocus
               />
-              <button type="submit" disabled={submitting}>
+              <button type="submit" className="primary-button" disabled={submitting}>
                 {submitting ? 'Sending...' : 'Request Access Code'}
               </button>
             </form>
 
             {signupError && <p className="error-message">{signupError}</p>}
+          </>
+        )}
+
+        {/* STATE 3: Success */}
+        {signupSuccess && (
+          <div className="success-state">
+            <div className="success-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path
+                  d="M9 16L14 21L23 11"
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+
+            <h2>Beta Access Sent! 🚀</h2>
+            <p className="success-message">
+              Check your inbox! We just sent your access code. It should arrive within 1-2
+              minutes.
+            </p>
+
+            <p className="success-hint">Don't see it? Check your spam folder.</p>
+
+            <button onClick={onClose} className="secondary-button" type="button">
+              Close
+            </button>
+
+            <p className="auto-close-text">Closing automatically in {countdown} seconds...</p>
           </div>
         )}
       </div>
@@ -235,9 +273,7 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
           color: #1a1a1a;
         }
 
-        .password-modal-content > p,
-        .signup-form-section > p,
-        .success-state > p {
+        .password-modal-content > p {
           color: #737373;
           margin: 0 0 24px 0;
           font-size: 15px;
@@ -253,21 +289,23 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
 
         .password-input,
         .email-input {
+          width: 100%;
           padding: 14px 16px;
           border: 2px solid #efecea;
           border-radius: 8px;
           font-size: 16px;
-          text-align: center;
           transition: border-color 0.2s;
         }
 
         .password-input {
           font-family: 'Courier New', monospace;
           letter-spacing: 1px;
+          text-align: center;
         }
 
         .email-input {
           font-family: inherit;
+          text-align: left;
         }
 
         .password-input:focus,
@@ -276,8 +314,8 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
           border-color: #1b4332;
         }
 
-        .password-modal-content button[type='submit'],
-        .close-button {
+        .primary-button {
+          width: 100%;
           padding: 14px;
           background: #1b4332;
           color: #faf9f6;
@@ -286,43 +324,60 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
           font-size: 16px;
           font-weight: 500;
           cursor: pointer;
-          transition: background-color 0.2s;
+          transition: background 0.2s;
         }
 
-        .password-modal-content button[type='submit']:hover,
-        .close-button:hover {
+        .primary-button:hover:not(:disabled) {
           background: #14331f;
         }
 
-        .password-modal-content button[type='submit']:disabled {
-          background: #9ca3af;
+        .primary-button:disabled {
+          opacity: 0.6;
           cursor: not-allowed;
+        }
+
+        .secondary-button {
+          padding: 12px 32px;
+          background: #f5f3ef;
+          color: #1a1a1a;
+          border: 1px solid #efecea;
+          border-radius: 8px;
+          font-size: 15px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .secondary-button:hover {
+          background: #efecea;
         }
 
         .error-message {
           color: #dc2626;
           font-size: 14px;
-          margin: 0;
+          margin: 0 0 16px 0;
           padding: 12px;
           background-color: rgba(220, 38, 38, 0.1);
           border-radius: 6px;
           border-left: 3px solid #dc2626;
+          text-align: left;
         }
 
         .help-text {
           font-size: 13px;
           color: #999999;
-          margin: 0;
+          margin: 16px 0 0 0;
+          text-align: center;
         }
 
         .link-button {
-          color: #1b4332;
           background: none;
           border: none;
-          padding: 0;
-          font-size: 13px;
+          color: #1b4332;
           font-weight: 500;
           cursor: pointer;
+          padding: 0;
+          font-size: inherit;
           text-decoration: none;
         }
 
@@ -331,51 +386,77 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
         }
 
         .back-button {
-          position: absolute;
-          top: 20px;
-          left: 20px;
           background: none;
           border: none;
-          color: #1b4332;
+          color: #737373;
           font-size: 14px;
-          font-weight: 500;
           cursor: pointer;
-          padding: 8px;
-          transition: opacity 0.2s;
+          padding: 0;
+          margin-bottom: 20px;
+          display: block;
+          transition: color 0.2s;
+          text-align: left;
         }
 
         .back-button:hover {
-          opacity: 0.7;
+          color: #1b4332;
         }
 
-        .signup-form-section {
-          animation: slideUp 0.3s ease;
-        }
-
-        .signup-form-section h2 {
-          margin-top: 20px;
-        }
-
+        /* Success State */
         .success-state {
+          text-align: center;
+          padding: 20px 0;
           animation: slideUp 0.3s ease;
         }
 
         .success-icon {
           width: 64px;
           height: 64px;
+          background: linear-gradient(135deg, #059669 0%, #047857 100%);
           border-radius: 50%;
-          background: #10b981;
-          color: white;
-          font-size: 32px;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin: 0 auto 20px;
-          font-weight: bold;
+          margin: 0 auto 24px;
+          animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleIn {
+          from {
+            transform: scale(0);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
         }
 
         .success-state h2 {
-          color: #10b981;
+          font-size: 24px;
+          font-weight: 600;
+          margin: 0 0 12px 0;
+          color: #1a1a1a;
+        }
+
+        .success-message {
+          font-size: 15px;
+          line-height: 22px;
+          color: #4a4a4a;
+          margin: 0 0 16px 0;
+        }
+
+        .success-hint {
+          font-size: 13px;
+          color: #999999;
+          margin: 0 0 24px 0;
+        }
+
+        .auto-close-text {
+          font-size: 12px;
+          color: #cccccc;
+          margin: 16px 0 0 0;
+          font-style: italic;
         }
 
         /* Mobile responsive */
@@ -387,11 +468,6 @@ export function PasswordGateModal({ isOpen, onClose, onSuccess }: PasswordGateMo
 
           .password-modal-content h2 {
             font-size: 20px;
-          }
-
-          .back-button {
-            top: 16px;
-            left: 16px;
           }
         }
       `}</style>
