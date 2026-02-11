@@ -107,7 +107,26 @@ Final resume MUST fit 2 pages (100-120 lines). Apply this hierarchy:
 2. CONDENSE: Roles 3-5 years old to 2-3 bullets
 3. REMOVE: Roles older than 10 years if not relevant
 
-Return ONLY valid JSON with the exact flat structure shown above. NO markdown, NO additional text.`;
+⚠️ CRITICAL JSON FORMATTING RULES ⚠️
+
+YOU MUST RETURN VALID JSON. COMMON ERRORS TO AVOID:
+1. ✅ USE: Double quotes for ALL property names: "propertyName"
+2. ❌ NEVER: Single quotes or unquoted property names
+3. ✅ ESCAPE: Internal quotes in strings with backslash: \\"
+4. ❌ NEVER: Unescaped quotes in string values
+5. ✅ USE: \\n for line breaks in strings, NEVER literal newlines
+6. ❌ NEVER: Actual line breaks inside string values
+7. ✅ USE: Escape special chars: \\t (tab), \\r (carriage return)
+8. ❌ NEVER: Trailing commas before closing braces/brackets
+
+VALIDATION CHECKLIST:
+- All property names have double quotes
+- All string values properly escaped
+- No literal newlines in strings (use \\n)
+- No trailing commas
+- Proper bracket/brace matching
+
+Return ONLY valid JSON with the exact flat structure shown above. NO markdown, NO additional text, NO code fences.`;
 }
 
 /**

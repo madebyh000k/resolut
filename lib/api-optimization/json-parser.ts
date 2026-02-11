@@ -40,8 +40,33 @@ function validateAndFixJSON(jsonStr: string): any {
         fn: (str) => str.replace(/,(\s*[}\]])/g, '$1'),
       },
       {
-        name: 'Remove control characters',
-        fn: (str) => str.replace(/[\x00-\x1F\x7F-\x9F]/g, ''),
+        name: 'Remove control characters (except tab/newline)',
+        fn: (str) => str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, ''),
+      },
+      {
+        name: 'Fix single-quoted property names',
+        fn: (str) => str.replace(/'([^']+)'(\s*:)/g, '"$1"$2'),
+      },
+      {
+        name: 'Fix unquoted property names',
+        fn: (str) => str.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g, '$1"$2"$3'),
+      },
+      {
+        name: 'Escape unescaped quotes in string values',
+        fn: (str) => {
+          // Find all strings and escape internal quotes
+          return str.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, (match) => {
+            // Don't modify if already properly escaped
+            if (!match.includes('\\"')) {
+              return match.replace(/"/g, (q, offset) => {
+                // Don't escape first and last quote
+                if (offset === 0 || offset === match.length - 1) return q;
+                return '\\"';
+              });
+            }
+            return match;
+          });
+        },
       },
       {
         name: 'Fix missing commas between array elements',
@@ -52,21 +77,48 @@ function validateAndFixJSON(jsonStr: string): any {
         fn: (str) => str.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, ''),
       },
       {
-        name: 'Fix unescaped newlines in strings',
-        fn: (str) => str.replace(/([^\\])\n/g, '$1\\n'),
+        name: 'Fix literal newlines in string values',
+        fn: (str) => {
+          // Replace unescaped newlines within strings
+          return str.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (match) => {
+            return match.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+          });
+        },
       },
       {
-        name: 'Combined: trailing commas + control chars',
-        fn: (str) => str.replace(/,(\s*[}\]])/g, '$1').replace(/[\x00-\x1F\x7F-\x9F]/g, ''),
-      },
-      {
-        name: 'Combined: all fixes',
+        name: 'Combined: basic fixes',
         fn: (str) => str
           .replace(/,(\s*[}\]])/g, '$1') // trailing commas
-          .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // control chars
-          .replace(/\/\/.*$/gm, '') // single-line comments
-          .replace(/\/\*[\s\S]*?\*\//g, '') // multi-line comments
-          .replace(/("\s*)\n(\s*")/g, '$1,\n$2'), // missing commas
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, ''), // control chars
+      },
+      {
+        name: 'Combined: property name fixes',
+        fn: (str) => str
+          .replace(/'([^']+)'(\s*:)/g, '"$1"$2') // single quotes to double
+          .replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g, '$1"$2"$3') // unquoted to quoted
+          .replace(/,(\s*[}\]])/g, '$1'), // trailing commas
+      },
+      {
+        name: 'Combined: ALL aggressive fixes',
+        fn: (str) => {
+          let fixed = str;
+          // 1. Remove control characters
+          fixed = fixed.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');
+          // 2. Remove comments
+          fixed = fixed.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+          // 3. Fix property names
+          fixed = fixed.replace(/'([^']+)'(\s*:)/g, '"$1"$2');
+          fixed = fixed.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g, '$1"$2"$3');
+          // 4. Fix trailing commas
+          fixed = fixed.replace(/,(\s*[}\]])/g, '$1');
+          // 5. Fix missing commas
+          fixed = fixed.replace(/("\s*)\n(\s*")/g, '$1,\n$2');
+          // 6. Fix newlines in strings
+          fixed = fixed.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (match) => {
+            return match.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+          });
+          return fixed;
+        },
       },
     ];
 
@@ -81,6 +133,41 @@ function validateAndFixJSON(jsonStr: string): any {
       } catch (e) {
         console.error(`[JSON Parser] ❌ Fix #${i + 1} didn't work:`, e instanceof Error ? e.message : String(e));
       }
+    }
+
+    // NUCLEAR OPTION: Try to salvage whatever JSON we can find
+    console.error('[JSON Parser] ⚠️ Attempting NUCLEAR JSON extraction...');
+    try {
+      // Try to find the main JSON object boundaries
+      const firstBrace = jsonStr.indexOf('{');
+      const lastBrace = jsonStr.lastIndexOf('}');
+
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        let extracted = jsonStr.substring(firstBrace, lastBrace + 1);
+        console.error('[JSON Parser] Nuclear: Extracted JSON boundaries');
+
+        // Apply all aggressive fixes to the extracted portion
+        extracted = extracted
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '') // control chars
+          .replace(/\/\/.*$/gm, '') // comments
+          .replace(/'([^']+)'(\s*:)/g, '"$1"$2') // single-quoted props
+          .replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g, '$1"$2"$3') // unquoted props
+          .replace(/,(\s*[}\]])/g, '$1') // trailing commas
+          .replace(/("\s*)\n(\s*")/g, '$1,\n$2'); // missing commas
+
+        // Try to fix unterminated strings by finding and closing them
+        const stringMatches = [...extracted.matchAll(/"([^"]*)$/gm)];
+        if (stringMatches.length > 0) {
+          console.error('[JSON Parser] Nuclear: Found unterminated strings, attempting fix');
+          extracted = extracted.replace(/"([^"]*)$/gm, '"$1"');
+        }
+
+        const nuclearParsed = JSON.parse(extracted);
+        console.error('[JSON Parser] ✅ NUCLEAR extraction worked!');
+        return nuclearParsed;
+      }
+    } catch (nuclearError) {
+      console.error('[JSON Parser] ❌ Nuclear extraction failed:', nuclearError instanceof Error ? nuclearError.message : String(nuclearError));
     }
 
     // If all fixes fail, show detailed breakdown
@@ -111,7 +198,7 @@ function validateAndFixJSON(jsonStr: string): any {
       console.error('[JSON Parser] Could not save to file:', fsError);
     }
 
-    throw new Error(`JSON validation failed after trying all fixes. ${firstError instanceof Error ? firstError.message : 'Unknown error'}`);
+    throw new Error(`JSON validation failed after trying all fixes including nuclear option. ${firstError instanceof Error ? firstError.message : 'Unknown error'}`);
   }
 }
 
