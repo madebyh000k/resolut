@@ -59,51 +59,66 @@ interface ResumeDocumentProps {
 }
 
 // Create the PDF document component
-const ResumeDocument = ({ resumeText, structure }: ResumeDocumentProps) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      {/* Header with contact info */}
-      {structure.contact && (
-        <View style={styles.header}>
-          {structure.contact.name && <Text style={styles.name}>{structure.contact.name}</Text>}
-          {structure.contact.email && (
-            <Text style={styles.contactInfo}>{structure.contact.email}</Text>
-          )}
-          {structure.contact.phone && (
-            <Text style={styles.contactInfo}>{structure.contact.phone}</Text>
-          )}
-          {structure.contact.location && (
-            <Text style={styles.contactInfo}>{structure.contact.location}</Text>
-          )}
-        </View>
-      )}
+const ResumeDocument = ({ resumeText, structure }: ResumeDocumentProps) => {
+  // Parse the customized resume text into lines
+  const lines = resumeText.split('\n').filter(line => line.trim());
 
-      {/* Sections */}
-      {structure.sections
-        .filter((section) => section.type !== 'contact')
-        .map((section, index) => (
-          <View key={index} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <View style={styles.sectionContent}>
-              {section.content.split('\n').map((line, lineIndex) => {
-                const trimmedLine = line.trim();
-                if (!trimmedLine) return null;
-
-                // Check if it's a bullet point
-                const isBullet = /^[•\-\*]/.test(trimmedLine);
-
-                return (
-                  <Text key={lineIndex} style={isBullet ? styles.bulletPoint : {}}>
-                    {trimmedLine}
-                  </Text>
-                );
-              })}
-            </View>
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header with contact info - use structure for contact since it's consistently formatted */}
+        {structure.contact && (
+          <View style={styles.header}>
+            {structure.contact.name && <Text style={styles.name}>{structure.contact.name}</Text>}
+            {structure.contact.email && (
+              <Text style={styles.contactInfo}>{structure.contact.email}</Text>
+            )}
+            {structure.contact.phone && (
+              <Text style={styles.contactInfo}>{structure.contact.phone}</Text>
+            )}
+            {structure.contact.location && (
+              <Text style={styles.contactInfo}>{structure.contact.location}</Text>
+            )}
           </View>
-        ))}
-    </Page>
-  </Document>
-);
+        )}
+
+        {/* CRITICAL FIX: Render the CUSTOMIZED resume text, not the original structure */}
+        <View style={styles.section}>
+          {lines.map((line, lineIndex) => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return null;
+
+            // Check if it's a section heading (all caps, no punctuation at end)
+            const isSectionHeading = /^[A-Z\s]+$/.test(trimmedLine) && trimmedLine.length > 2;
+
+            // Check if it's a bullet point
+            const isBullet = /^[•\-\*]/.test(trimmedLine);
+
+            if (isSectionHeading) {
+              return (
+                <Text key={lineIndex} style={styles.sectionTitle}>
+                  {trimmedLine}
+                </Text>
+              );
+            }
+
+            return (
+              <Text
+                key={lineIndex}
+                style={[
+                  styles.sectionContent,
+                  isBullet ? styles.bulletPoint : {}
+                ]}
+              >
+                {trimmedLine}
+              </Text>
+            );
+          })}
+        </View>
+      </Page>
+    </Document>
+  );
+};
 
 export async function generateResumePDF(
   resumeText: string,
