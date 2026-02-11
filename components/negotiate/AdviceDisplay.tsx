@@ -51,6 +51,26 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
   const isExceptional = advice.marketPosition.percentile >= 95;
   const isAbsurd = advice.marketPosition.percentile >= 99;
 
+  // Helper function to get next level for promotion discussions
+  const getNextLevel = (currentLevel: string): string => {
+    const levelMap: { [key: string]: string } = {
+      'Senior PM': 'Staff PM',
+      'Staff PM': 'Principal PM',
+      'Principal PM': 'Senior Principal PM',
+      'Senior Designer': 'Staff Designer',
+      'Staff Designer': 'Principal Designer',
+      'Principal Designer': 'Design Director',
+      'Creative Director': 'Senior Creative Director',
+      'Senior Creative': 'Creative Director',
+      'Senior Marketing Manager': 'Director of Marketing',
+      'Director of Marketing': 'VP Marketing',
+      'Senior Engineer': 'Staff Engineer',
+      'Staff Engineer': 'Principal Engineer',
+    };
+
+    return levelMap[currentLevel] || 'the next level';
+  };
+
   return (
     <div className="space-y-6">
       {/* Key Insights */}
@@ -87,7 +107,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center p-4 rounded-lg bg-surface">
             <div className={`text-3xl font-bold mb-1 ${percentileInfo.color.split(' ')[0]}`}>
-              {advice.marketPosition.percentile}th
+              {advice.marketPosition.percentile}th percentile
             </div>
             <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${percentileInfo.color}`}>
               {percentileInfo.emoji} {percentileInfo.label}
@@ -275,6 +295,88 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
           </div>
         )}
       </Card>
+
+      {/* Additional Insights - only show for 70th+ percentile */}
+      {advice.marketPosition.percentile >= 70 && (
+        <div className="mt-8">
+          <h3 className="text-2xl font-semibold mb-6">💼 Additional Insights</h3>
+
+          {/* Pay Band Ceiling Warning - 85th+ */}
+          {advice.marketPosition.percentile >= 85 && (
+            <Card className="p-6 mb-4 bg-yellow-50 border-l-4 border-yellow-500">
+              <div className="flex gap-4">
+                <div className="text-3xl flex-shrink-0">⚠️</div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold mb-2">Pay Band Ceiling Risk</h4>
+                  <p className="text-sm leading-relaxed text-text-primary mb-0">
+                    {advice.marketPosition.percentile >= 95
+                      ? 'You are at the top of the pay band for this level. Future raises will be minimal (2-3% annually). If you want significant comp growth, your next move is a promotion or company change.'
+                      : 'You are approaching the top of the pay band for this level. You likely have 2-3 years of meaningful raises left before hitting the ceiling. Plan your next career move accordingly.'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Promotion Timing - 85th+ */}
+          {advice.marketPosition.percentile >= 85 && (
+            <Card className="p-6 mb-4 bg-blue-50 border-l-4 border-blue-500">
+              <div className="flex gap-4">
+                <div className="text-3xl flex-shrink-0">📈</div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold mb-2">Consider Promotion Timeline</h4>
+                  <p className="text-sm leading-relaxed text-text-primary mb-3">
+                    At this compensation level, ask about promotion timeline during negotiation. Questions to ask:
+                  </p>
+                  <ul className="text-sm space-y-2 ml-5 list-disc text-text-primary">
+                    <li>"What does the path to the next level look like from this role?"</li>
+                    <li>"What's the typical timeline for someone at this comp to get promoted?"</li>
+                    <li>"Are there level considerations we should discuss given the comp package?"</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Level Negotiation - 95th+ */}
+          {advice.marketPosition.percentile >= 95 && (
+            <Card className="p-6 mb-4 bg-green-50 border-l-4 border-green-600">
+              <div className="flex gap-4">
+                <div className="text-3xl flex-shrink-0">🎯</div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold mb-2">Consider Negotiating Level Instead of Comp</h4>
+                  <p className="text-sm leading-relaxed text-text-primary mb-3">
+                    Your offer is at or above the ceiling for this level. If the company won't budge on comp, consider asking: "Given this compensation package, should we discuss entering at a higher level instead?"
+                  </p>
+                  <p className="text-xs italic text-text-muted mt-3 pt-3 border-t border-text-muted/20">
+                    This sets you up for better long-term comp growth and removes the ceiling constraint.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Equity vs Cash - 70th to 84th percentile */}
+          {advice.marketPosition.percentile >= 70 && advice.marketPosition.percentile < 85 && (
+            <Card className="p-6 mb-4 bg-blue-50 border-l-4 border-blue-500">
+              <div className="flex gap-4">
+                <div className="text-3xl flex-shrink-0">💰</div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold mb-2">Equity vs Cash Considerations</h4>
+                  <p className="text-sm leading-relaxed text-text-primary mb-3">
+                    At this comp level, you have negotiation leverage. If they won't move on base salary, consider asking for:
+                  </p>
+                  <ul className="text-sm space-y-2 ml-5 list-disc text-text-primary">
+                    <li>Additional equity grant (10-20% more RSUs)</li>
+                    <li>Larger signing bonus (one-time bump)</li>
+                    <li>Earlier equity refresh timeline (front-load value)</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          )}
+        </div>
+      )}
 
       {/* Generate New Button */}
       <div className="text-center pt-6 border-t border-text-muted/20">
