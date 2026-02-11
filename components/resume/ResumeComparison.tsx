@@ -63,10 +63,10 @@ export function ResumeComparison() {
           Download <span className="font-bold underline decoration-2 underline-offset-2">Optimized</span> Resume (PDF)
         </Button>
         <Button
-          variant="secondary"
+          variant="outline"
           size="lg"
           onClick={handleCopyText}
-          className="flex-1"
+          className="flex-1 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
         >
           {copiedText ? (
             <>
