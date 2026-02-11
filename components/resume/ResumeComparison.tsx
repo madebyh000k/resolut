@@ -57,7 +57,7 @@ export function ResumeComparison() {
           variant="primary"
           size="lg"
           onClick={downloadPDF}
-          className="flex-1 tracking-[0.3px]"
+          className="flex-1 tracking-[0.3px] [word-spacing:4px]"
         >
           <Download className="h-5 w-5 mr-2" />
           Download <span className="font-bold underline decoration-2 underline-offset-2 tracking-[0.5px]">Optimized</span> Resume (PDF)
@@ -66,7 +66,7 @@ export function ResumeComparison() {
           variant="outline"
           size="lg"
           onClick={handleCopyText}
-          className="flex-1 tracking-[0.3px] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+          className="flex-1 tracking-[0.3px] [word-spacing:4px] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
         >
           {copiedText ? (
             <>
