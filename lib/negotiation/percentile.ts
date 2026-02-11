@@ -92,7 +92,7 @@ export function getRecommendation(percentile: number, totalComp: number, role: s
       bottomLine: {
         tldr: 'ACCEPT IMMEDIATELY',
         reasoning: `Wait, is this real?? $${totalComp.toLocaleString()} for a ${role}? If these numbers are correct, this is once-in-a-career compensation. DO NOT negotiate. DO NOT overthink. Sign the offer today.`,
-        action: 'Your only job: Say "yes", ask "when do I start?", sign the paperwork.',
+        action: "Your only job: Say \"yes\", ask \"when do I start?\", sign the paperwork.",
         humor: true
       }
     };
@@ -151,7 +151,7 @@ export function getRecommendation(percentile: number, totalComp: number, role: s
     bottomLine: {
       tldr: 'NEGOTIATE significantly (20-30% increase)',
       reasoning: `This is ${percentile}th percentile - below market for ${role}. Push for 20-30% increase with data, or consider declining.`,
-      action: 'Be prepared to walk away if they won't move substantially.',
+      action: "Be prepared to walk away if they won't move substantially.",
       humor: false
     }
   };
