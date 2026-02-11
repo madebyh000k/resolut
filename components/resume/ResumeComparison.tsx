@@ -60,7 +60,7 @@ export function ResumeComparison() {
           className="flex-1 tracking-[0.3px] [word-spacing:4px]"
         >
           <Download className="h-5 w-5 mr-2" />
-          Download <span className="font-bold underline decoration-2 underline-offset-2 tracking-[0.5px]">Optimized</span> Resume (PDF)
+          Download <span className="font-bold tracking-[0.5px]">Optimized</span> Resume (PDF)
         </Button>
         <Button
           variant="outline"
@@ -76,7 +76,7 @@ export function ResumeComparison() {
           ) : (
             <>
               <Copy className="h-5 w-5 mr-2" />
-              Copy <span className="font-bold underline decoration-2 underline-offset-2 tracking-[0.5px]">Optimized</span> Text
+              Copy <span className="font-bold tracking-[0.5px]">Optimized</span> Text
             </>
           )}
         </Button>
