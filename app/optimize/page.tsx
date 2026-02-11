@@ -159,25 +159,25 @@ export default function CustomizePage() {
 
               {/* Upload Tips */}
               {!originalResume && (
-                <div className="mb-6 p-4 rounded-lg bg-blue-50 border-l-4 border-blue-500">
-                  <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                <div className="mb-6 p-4 rounded-lg bg-primary/[0.08] border-l-4 border-primary">
+                  <h4 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
                     📄 For best results:
                   </h4>
                   <ul className="space-y-2 mb-3">
                     <li className="text-sm text-gray-700 flex items-start gap-2">
-                      <span className="text-blue-600 mt-0.5">•</span>
+                      <span className="text-primary mt-0.5">•</span>
                       <span>Use a <strong className="text-gray-900 font-semibold">text-based resume</strong> (not image-heavy)</span>
                     </li>
                     <li className="text-sm text-gray-700 flex items-start gap-2">
-                      <span className="text-blue-600 mt-0.5">•</span>
+                      <span className="text-primary mt-0.5">•</span>
                       <span>Avoid complex graphics, charts, or design elements</span>
                     </li>
                     <li className="text-sm text-gray-700 flex items-start gap-2">
-                      <span className="text-blue-600 mt-0.5">•</span>
+                      <span className="text-primary mt-0.5">•</span>
                       <span>PDF or DOCX from Word/Google Docs works best</span>
                     </li>
                   </ul>
-                  <p className="text-xs text-gray-600 italic pt-3 border-t border-gray-200 m-0">
+                  <p className="text-xs text-gray-600 italic pt-3 border-t border-primary/15 m-0">
                     💡 Heavy design elements can interfere with text extraction. Keep it simple for ATS compatibility anyway!
                   </p>
                 </div>
