@@ -40,11 +40,12 @@ ${companyName ? `TARGET COMPANY: ${companyName}` : ''}
 
 Perform a comprehensive 5-dimensional analysis and provide an optimized resume.
 
-Return a JSON object with this EXACT FLAT structure (NO nested arrays or objects):
+Return your analysis in TWO PARTS:
+
+PART 1: JSON analysis object with this EXACT FLAT structure (NO nested arrays or objects):
 
 {
   "overallScore": <number 0-10>,
-  "customizedResume": "<optimized resume text - MUST fit 2 pages max>",
   "atsScore": <number 0-10>,
   "atsIssues": "<newline-separated list of formatting issues>",
   "atsFixes": "<newline-separated list of exact fixes>",
@@ -72,6 +73,10 @@ Return a JSON object with this EXACT FLAT structure (NO nested arrays or objects
   "lengthNote": "<1-2 sentences explaining length optimization>"
 }
 
+PART 2: After the JSON, on a new line, output the delimiter "---RESUME---" followed by the full customized resume text.
+
+DO NOT include the resume text in the JSON - it breaks parsing. Output it separately after the delimiter.
+
 DIMENSION 1: ATS COMPATIBILITY (/10)
 Evaluate format parsing, critical keywords present, file format issues.
 Provide: score, specific issues (newline-separated), exact fixes (newline-separated), parseability.
@@ -92,14 +97,19 @@ DIMENSION 5: LEVEL-APPROPRIATE LANGUAGE (/10)
 Evaluate if language matches target seniority.
 Provide: score, target level, current level, issues with fixes (newline-separated).
 
-CUSTOMIZED RESUME:
-In the "customizedResume" field, return the original resume with ONLY:
+CUSTOMIZED RESUME (Output after ---RESUME--- delimiter):
+After the JSON, output the customized resume with ONLY:
 - ATS formatting fixes (no tables/columns)
 - Naturally missing keywords that fit existing experience
 - Grammar/typo fixes
 - MUST fit on 2 pages maximum (~100-120 lines)
 
 DO NOT add fabricated metrics or exaggerate achievements.
+
+Format:
+{JSON object here}
+---RESUME---
+[Full customized resume text here - plain text, any length, any characters]
 
 LENGTH OPTIMIZATION:
 Final resume MUST fit 2 pages (100-120 lines). Apply this hierarchy:
@@ -109,24 +119,28 @@ Final resume MUST fit 2 pages (100-120 lines). Apply this hierarchy:
 
 ⚠️ CRITICAL JSON FORMATTING RULES ⚠️
 
-YOU MUST RETURN VALID JSON. COMMON ERRORS TO AVOID:
+THE JSON PART MUST BE VALID JSON. COMMON ERRORS TO AVOID:
 1. ✅ USE: Double quotes for ALL property names: "propertyName"
 2. ❌ NEVER: Single quotes or unquoted property names
 3. ✅ ESCAPE: Internal quotes in strings with backslash: \\"
 4. ❌ NEVER: Unescaped quotes in string values
 5. ✅ USE: \\n for line breaks in strings, NEVER literal newlines
-6. ❌ NEVER: Actual line breaks inside string values
+6. ❌ NEVER: Actual line breaks inside JSON string values
 7. ✅ USE: Escape special chars: \\t (tab), \\r (carriage return)
 8. ❌ NEVER: Trailing commas before closing braces/brackets
 
 VALIDATION CHECKLIST:
 - All property names have double quotes
 - All string values properly escaped
-- No literal newlines in strings (use \\n)
+- No literal newlines in JSON strings (use \\n)
 - No trailing commas
 - Proper bracket/brace matching
 
-Return ONLY valid JSON with the exact flat structure shown above. NO markdown, NO additional text, NO code fences.`;
+OUTPUT FORMAT:
+First, output ONLY the valid JSON object (no markdown, no code fences).
+Then output a blank line.
+Then output: ---RESUME---
+Then output the full customized resume text (can contain any characters - it's not in the JSON).`;
 }
 
 /**

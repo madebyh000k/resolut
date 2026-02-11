@@ -74,49 +74,57 @@ export async function POST(request: NextRequest) {
     console.log('=== END RAW TEXT ===');
     console.log('Full text length:', content.text.length, 'characters');
 
-    // NUCLEAR PRE-PROCESSING: Clean up common JSON issues BEFORE parsing
-    let cleanedText = content.text;
+    // NEW APPROACH: Split response into JSON and resume parts
+    const rawResponse = content.text;
+    const delimiterIndex = rawResponse.indexOf('---RESUME---');
 
-    // 1. Remove markdown code fences first
-    cleanedText = cleanedText.replace(/```json\s*/gi, '');
-    cleanedText = cleanedText.replace(/```\s*/g, '');
-
-    // 2. Find the actual JSON object boundaries
-    const jsonStart = cleanedText.indexOf('{');
-    const jsonEnd = cleanedText.lastIndexOf('}');
-
-    if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
-      cleanedText = cleanedText.substring(jsonStart, jsonEnd + 1);
-      console.log('📍 Extracted JSON boundaries:', jsonStart, 'to', jsonEnd);
+    if (delimiterIndex === -1) {
+      console.error('❌ Missing ---RESUME--- delimiter in response');
+      throw new Error('Invalid response format: missing resume delimiter');
     }
 
-    // 3. Fix literal newlines in long string values (like customizedResume field)
-    // This is the main culprit - Claude puts actual newlines in JSON strings
+    // Extract the two parts
+    const jsonPart = rawResponse.substring(0, delimiterIndex).trim();
+    const resumePart = rawResponse.substring(delimiterIndex + 12).trim(); // 12 = length of '---RESUME---'
+
+    console.log('📍 Split response into JSON (' + jsonPart.length + ' chars) and resume (' + resumePart.length + ' chars)');
+
+    // Clean the JSON part (remove markdown fences, extract boundaries)
+    let cleanedJson = jsonPart
+      .replace(/```json\s*/gi, '')
+      .replace(/```\s*/g, '')
+      .trim();
+
+    // Extract JSON object boundaries
+    const jsonStart = cleanedJson.indexOf('{');
+    const jsonEnd = cleanedJson.lastIndexOf('}');
+
+    if (jsonStart === -1 || jsonEnd === -1) {
+      console.error('❌ No JSON object found in response');
+      throw new Error('Invalid response format: no JSON object found');
+    }
+
+    cleanedJson = cleanedJson.substring(jsonStart, jsonEnd + 1);
+    console.log('📍 Extracted JSON boundaries:', jsonStart, 'to', jsonEnd);
+    console.log('First 500 chars of JSON:', cleanedJson.substring(0, 500));
+
+    // Parse the JSON (should be clean now - no resume text to break it)
+    console.log('Attempting to parse JSON...');
+    let analysis: ResumeAnalysis;
+
     try {
-      // Replace literal newlines with \n in string values
-      // Match "field": "value with\nnewlines" and fix it
-      cleanedText = cleanedText.replace(/"customizedResume"\s*:\s*"([^"]*)"/gs, (match, content) => {
-        const fixed = content
-          .replace(/\n/g, '\\n')
-          .replace(/\r/g, '\\r')
-          .replace(/\t/g, '\\t')
-          .replace(/(?<!\\)"/g, '\\"'); // Escape unescaped quotes
-        return `"customizedResume": "${fixed}"`;
-      });
-
-      console.log('✅ Pre-processed customizedResume field');
-    } catch (preprocessError) {
-      console.error('⚠️ Preprocessing failed:', preprocessError);
-      // Continue anyway, the parser might still handle it
+      analysis = JSON.parse(cleanedJson);
+      console.log('✅ JSON parsed successfully with native JSON.parse');
+    } catch (parseError) {
+      console.error('❌ Native JSON.parse failed, trying robust parser:', parseError);
+      // Fallback to robust parser if native parse fails
+      analysis = parseClaudeJsonResponse<ResumeAnalysis>(cleanedJson);
+      console.log('✅ Robust parser succeeded');
     }
 
-    console.log('Pre-processed text length:', cleanedText.length);
-    console.log('Pre-processed first 500 chars:', cleanedText.substring(0, 500));
-
-    // Parse JSON response with robust parser (now with pre-processed text)
-    console.log('Attempting to parse JSON with parseClaudeJsonResponse...');
-    const analysis = parseClaudeJsonResponse<ResumeAnalysis>(cleanedText);
-    console.log('✅ Successfully parsed resume analysis');
+    // Add the resume text back to the analysis object
+    (analysis as any).customizedResume = resumePart;
+    console.log('✅ Added customized resume text (' + resumePart.length + ' chars) to analysis');
 
     // Validate required fields (simplified flat structure)
     validateRequiredFields(
