@@ -147,39 +147,66 @@ CRITICAL: Your recommended base salary MUST be HIGHER than the current offer of 
  * - "100000" → 100000 (assumes annual)
  */
 function parseEquityToAnnual(equityString: string): number {
-  if (!equityString) return 0;
+  console.log('===== EQUITY PARSING START =====');
+  console.log('Input string:', equityString);
+  console.log('Input type:', typeof equityString);
+
+  if (!equityString) {
+    console.log('Empty equity input, returning 0');
+    console.log('===== EQUITY PARSING END =====');
+    return 0;
+  }
 
   const lower = equityString.toLowerCase().trim();
+  console.log('Normalized input:', lower);
 
   // Extract the first number (total amount)
   const match = lower.match(/[\d,]+\.?\d*/);
-  if (!match) return 0;
+  console.log('Regex match result:', match);
+
+  if (!match) {
+    console.log('No number found in input, returning 0');
+    console.log('===== EQUITY PARSING END =====');
+    return 0;
+  }
 
   let amount = parseFloat(match[0].replace(/,/g, ''));
+  console.log('Base amount extracted:', amount);
 
   // Handle 'k' or 'K' suffix (thousands)
   if (lower.includes('k')) {
     amount *= 1000;
+    console.log('Found "k" suffix, multiplied by 1000:', amount);
   }
 
   // Handle 'm' or 'M' suffix (millions) - rare but possible
   if (lower.includes('m') && !lower.includes('k')) {
     amount *= 1000000;
+    console.log('Found "m" suffix, multiplied by 1000000:', amount);
   }
 
   // If it says "/year" or "per year", it's already annual - no adjustment needed
   if (lower.includes('/year') || lower.includes('per year') || lower.includes('annually')) {
+    console.log('Found annual indicator, returning as-is:', amount);
+    console.log('===== EQUITY PARSING END =====');
     return amount;
   }
 
   // If it mentions "over X years", divide by X to get annual
   const yearsMatch = lower.match(/over\s+(\d+)\s+years?/i);
+  console.log('Year pattern match:', yearsMatch);
+
   if (yearsMatch) {
     const years = parseInt(yearsMatch[1]);
-    return amount / years;
+    const annualAmount = amount / years;
+    console.log(`Found "${years} years", dividing ${amount} by ${years} = ${annualAmount}`);
+    console.log('===== EQUITY PARSING END =====');
+    return annualAmount;
   }
 
   // Default: assume the number is annual equity
+  console.log('No year indicator found, treating as annual:', amount);
+  console.log('===== EQUITY PARSING END =====');
   return amount;
 }
 

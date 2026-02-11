@@ -219,8 +219,8 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">⚠️</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2">Pay Band Ceiling Risk</h4>
-                  <p className="text-sm leading-relaxed text-text-primary mb-0">
+                  <h4 className="text-lg font-semibold mb-2 text-yellow-900">Pay Band Ceiling Risk</h4>
+                  <p className="text-sm leading-relaxed text-yellow-800 mb-0">
                     {advice.marketPosition.percentile >= 95
                       ? 'You are at the top of the pay band for this level. Future raises will be minimal (2-3% annually). If you want significant comp growth, your next move is a promotion or company change.'
                       : 'You are approaching the top of the pay band for this level. You likely have 2-3 years of meaningful raises left before hitting the ceiling. Plan your next career move accordingly.'}
@@ -236,11 +236,11 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">📈</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2">Consider Promotion Timeline</h4>
-                  <p className="text-sm leading-relaxed text-text-primary mb-3">
+                  <h4 className="text-lg font-semibold mb-2 text-blue-900">Consider Promotion Timeline</h4>
+                  <p className="text-sm leading-relaxed text-blue-800 mb-3">
                     At this compensation level, ask about promotion timeline during negotiation. Questions to ask:
                   </p>
-                  <ul className="text-sm space-y-2 ml-5 list-disc text-text-primary">
+                  <ul className="text-sm space-y-2 ml-5 list-disc text-blue-800">
                     <li>"What does the path to the next level look like from this role?"</li>
                     <li>"What's the typical timeline for someone at this comp to get promoted?"</li>
                     <li>"Are there level considerations we should discuss given the comp package?"</li>
@@ -256,11 +256,11 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">🎯</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2">Consider Negotiating Level Instead of Comp</h4>
-                  <p className="text-sm leading-relaxed text-text-primary mb-3">
+                  <h4 className="text-lg font-semibold mb-2 text-green-900">Consider Negotiating Level Instead of Comp</h4>
+                  <p className="text-sm leading-relaxed text-green-800 mb-3">
                     Your offer is at or above the ceiling for this level. If the company won't budge on comp, consider asking: "Given this compensation package, should we discuss entering at a higher level instead?"
                   </p>
-                  <p className="text-xs italic text-text-muted mt-3 pt-3 border-t border-text-muted/20">
+                  <p className="text-xs italic text-green-700 mt-3 pt-3 border-t border-green-200">
                     This sets you up for better long-term comp growth and removes the ceiling constraint.
                   </p>
                 </div>
@@ -274,11 +274,11 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">💰</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2">Equity vs Cash Considerations</h4>
-                  <p className="text-sm leading-relaxed text-text-primary mb-3">
+                  <h4 className="text-lg font-semibold mb-2 text-blue-900">Equity vs Cash Considerations</h4>
+                  <p className="text-sm leading-relaxed text-blue-800 mb-3">
                     At this comp level, you have negotiation leverage. If they won't move on base salary, consider asking for:
                   </p>
-                  <ul className="text-sm space-y-2 ml-5 list-disc text-text-primary">
+                  <ul className="text-sm space-y-2 ml-5 list-disc text-blue-800">
                     <li>Additional equity grant (10-20% more RSUs)</li>
                     <li>Larger signing bonus (one-time bump)</li>
                     <li>Earlier equity refresh timeline (front-load value)</li>
