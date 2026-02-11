@@ -8,6 +8,14 @@ import { CompanyNews, InterviewBrief } from '@/types/prepare';
 import { JobOffer, NegotiationStrategy } from '@/types/negotiate';
 import type { ResumeAnalysis } from '@/types/resume-analysis';
 
+export interface StructuredError {
+  error: string;
+  message?: string;
+  suggestions?: string[];
+  tip?: string;
+  technicalError?: string;
+}
+
 interface ResumeStore {
   // State
   originalResume: Resume | null;
@@ -19,7 +27,7 @@ interface ResumeStore {
   jobOffer: JobOffer | null;
   negotiationStrategy: NegotiationStrategy | null;
   isProcessing: boolean;
-  error: string | null;
+  error: string | StructuredError | null;
 
   // Actions
   uploadResume: (file: File) => Promise<void>;
@@ -67,7 +75,21 @@ export const useResumeStore = create<ResumeStore>()(
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to parse resume');
+
+            // Check if it's a structured error with suggestions
+            if (errorData.message && errorData.suggestions) {
+              set({
+                error: errorData,
+                isProcessing: false,
+              });
+            } else {
+              // Fallback to simple error
+              set({
+                error: errorData.error || 'Failed to parse resume',
+                isProcessing: false,
+              });
+            }
+            return;
           }
 
           const { resume } = await response.json();

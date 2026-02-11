@@ -70,9 +70,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ resume }, { status: 200 });
   } catch (error) {
     console.error('Parse error:', error);
+
+    // Return helpful, structured error message
     return NextResponse.json(
       {
-        error: `Failed to parse resume: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error: 'Unable to analyze resume',
+        message: 'Your resume may contain design elements that interfere with text extraction.',
+        suggestions: [
+          'Try using a simpler, text-based resume format',
+          'Remove graphics, charts, or complex layouts',
+          'Save as PDF from a clean Word or Google Docs template',
+          'Contact us if you need help: hello@resolut.tools'
+        ],
+        tip: 'Heavily designed resumes often fail ATS systems anyway - keeping it simple helps both our tool and real applicant tracking systems!',
+        technicalError: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );

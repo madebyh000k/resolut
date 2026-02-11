@@ -51,17 +51,51 @@ export default function CustomizePage() {
     <AppLayout>
         {/* Error Banner */}
         {error && (
-          <div className="mb-6 p-4 rounded-lg bg-error/10 border-2 border-error flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-error flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-error font-medium">{error}</p>
+          <div className="mb-6 p-5 rounded-lg bg-red-50 border-l-4 border-red-500">
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="text-lg font-semibold text-red-900 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
+                {typeof error === 'string' ? 'Error' : error.error}
+              </h3>
+              <button
+                onClick={clearError}
+                className="text-red-600 hover:text-red-800 transition-colors text-xl leading-none"
+              >
+                ✕
+              </button>
             </div>
-            <button
-              onClick={clearError}
-              className="text-error hover:text-error/80 transition-colors"
-            >
-              ✕
-            </button>
+
+            {typeof error === 'string' ? (
+              <p className="text-sm text-gray-700">{error}</p>
+            ) : (
+              <>
+                {error.message && (
+                  <p className="text-sm text-gray-700 mb-4">{error.message}</p>
+                )}
+
+                {error.suggestions && error.suggestions.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2">What to try:</h4>
+                    <ul className="space-y-2">
+                      {error.suggestions.map((suggestion, i) => (
+                        <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                          <span className="text-red-500 mt-0.5">•</span>
+                          <span>{suggestion}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {error.tip && (
+                  <div className="pt-4 border-t border-red-200">
+                    <p className="text-sm text-gray-600">
+                      <strong className="text-gray-900">💡 Pro tip:</strong> {error.tip}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
 
@@ -122,6 +156,33 @@ export default function CustomizePage() {
                   Upload your current resume in PDF or DOCX format
                 </p>
               </div>
+
+              {/* Upload Tips */}
+              {!originalResume && (
+                <div className="mb-6 p-4 rounded-lg bg-blue-50 border-l-4 border-blue-500">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                    📄 For best results:
+                  </h4>
+                  <ul className="space-y-2 mb-3">
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <span className="text-blue-600 mt-0.5">•</span>
+                      <span>Use a <strong className="text-gray-900 font-semibold">text-based resume</strong> (not image-heavy)</span>
+                    </li>
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <span className="text-blue-600 mt-0.5">•</span>
+                      <span>Avoid complex graphics, charts, or design elements</span>
+                    </li>
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <span className="text-blue-600 mt-0.5">•</span>
+                      <span>PDF or DOCX from Word/Google Docs works best</span>
+                    </li>
+                  </ul>
+                  <p className="text-xs text-gray-600 italic pt-3 border-t border-gray-200 m-0">
+                    💡 Heavy design elements can interfere with text extraction. Keep it simple for ATS compatibility anyway!
+                  </p>
+                </div>
+              )}
+
               <ResumeUploader />
             </section>
 
