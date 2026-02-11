@@ -127,7 +127,7 @@ export function SimpleOfferForm({ onSubmit, isProcessing }: SimpleOfferFormProps
 
         <div>
           <label htmlFor="equity" className="block text-sm font-medium mb-2">
-            Equity (optional)
+            Equity (annual value)
           </label>
           <input
             type="text"
@@ -136,13 +136,16 @@ export function SimpleOfferForm({ onSubmit, isProcessing }: SimpleOfferFormProps
             value={formData.equity}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-text-muted/30 bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="e.g., $400k RSUs over 4 years"
+            placeholder="$100k/year or $400k over 4 years"
           />
+          <p className="text-xs text-text-muted mt-1">
+            Enter annual value or total over X years
+          </p>
         </div>
 
         <div>
           <label htmlFor="bonus" className="block text-sm font-medium mb-2">
-            Bonus (optional)
+            Bonus (annual)
           </label>
           <input
             type="text"
@@ -151,8 +154,11 @@ export function SimpleOfferForm({ onSubmit, isProcessing }: SimpleOfferFormProps
             value={formData.bonus}
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-text-muted/30 bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="e.g., 15% or 20000"
+            placeholder="15% or $25k"
           />
+          <p className="text-xs text-text-muted mt-1">
+            Percentage of base or dollar amount
+          </p>
         </div>
       </div>
 

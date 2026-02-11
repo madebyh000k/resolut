@@ -139,32 +139,47 @@ CRITICAL: Your recommended base salary MUST be HIGHER than the current offer of 
 
 /**
  * Parse equity string to get ANNUAL value
- * Examples:
+ * Handles multiple formats:
  * - "$400k over 4 years" → 100000
- * - "$100k/year" → 100000
- * - "100000" → 100000
+ * - "$130k/year" → 130000
+ * - "$130,000/year" → 130000
+ * - "520000 over 4 years" → 130000
+ * - "100000" → 100000 (assumes annual)
  */
 function parseEquityToAnnual(equityString: string): number {
   if (!equityString) return 0;
 
+  const lower = equityString.toLowerCase().trim();
+
   // Extract the first number (total amount)
-  const match = equityString.match(/[\d,]+\.?\d*/);
+  const match = lower.match(/[\d,]+\.?\d*/);
   if (!match) return 0;
 
   let amount = parseFloat(match[0].replace(/,/g, ''));
 
-  // Handle 'k' suffix (thousands)
-  if (equityString.toLowerCase().includes('k')) {
+  // Handle 'k' or 'K' suffix (thousands)
+  if (lower.includes('k')) {
     amount *= 1000;
   }
 
-  // If it mentions "over X years", divide by X to get annual
-  const yearsMatch = equityString.match(/over\s+(\d+)\s+years?/i);
-  if (yearsMatch) {
-    const years = parseInt(yearsMatch[1]);
-    amount = amount / years;
+  // Handle 'm' or 'M' suffix (millions) - rare but possible
+  if (lower.includes('m') && !lower.includes('k')) {
+    amount *= 1000000;
   }
 
+  // If it says "/year" or "per year", it's already annual - no adjustment needed
+  if (lower.includes('/year') || lower.includes('per year') || lower.includes('annually')) {
+    return amount;
+  }
+
+  // If it mentions "over X years", divide by X to get annual
+  const yearsMatch = lower.match(/over\s+(\d+)\s+years?/i);
+  if (yearsMatch) {
+    const years = parseInt(yearsMatch[1]);
+    return amount / years;
+  }
+
+  // Default: assume the number is annual equity
   return amount;
 }
 
