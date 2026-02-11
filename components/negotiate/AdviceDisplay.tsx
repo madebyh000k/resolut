@@ -120,15 +120,49 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
         )}
       </Card>
 
-      {/* Recommended Ask */}
-      <Card className="p-6">
-        <div className="flex items-start gap-3 mb-4">
-          <DollarSign className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-          <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-1">Recommended Ask</h3>
-            <p className="text-sm text-text-secondary">What you should negotiate for</p>
+      {/* Bottom Line Section */}
+      <Card className="p-8 bg-surface/50">
+        <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+          <Lightbulb className="h-6 w-6 text-primary" />
+          Bottom Line
+        </h3>
+
+        {/* TLDR Box */}
+        <div className="mb-6 p-6 rounded-lg bg-gradient-to-br from-primary to-primary/90">
+          <div className="text-xs font-semibold uppercase tracking-wider text-background/70 mb-2">
+            RECOMMENDATION
+          </div>
+          <div className="text-3xl font-bold text-background leading-tight">
+            {advice.recommendedAsk.base}
           </div>
         </div>
+
+        {/* Reasoning */}
+        <div className="mb-4 text-base leading-relaxed text-text-primary">
+          <span className="font-semibold text-text-primary">Why: </span>
+          {advice.recommendedAsk.rationale}
+        </div>
+
+        {/* Humor callout for absurd offers */}
+        {isAbsurd && advice.redFlags && advice.redFlags.length > 0 && (
+          <div className="mt-6 p-4 rounded-lg bg-primary/10 border-l-4 border-primary">
+            <p className="text-sm font-medium text-primary mb-0">
+              🚀 Seriously though - if the numbers are correct, take it and don't look back.
+            </p>
+          </div>
+        )}
+      </Card>
+
+      {/* Recommended Ask - Only show for offers that need negotiation */}
+      {!isExceptional && (
+        <Card className="p-6">
+          <div className="flex items-start gap-3 mb-4">
+            <DollarSign className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <div className="flex-1">
+              <h3 className="text-xl font-semibold mb-1">Recommended Ask</h3>
+              <p className="text-sm text-text-secondary">What you should negotiate for</p>
+            </div>
+          </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/30">
@@ -151,7 +185,8 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
             <p className="text-sm leading-relaxed">{advice.recommendedAsk.rationale}</p>
           </div>
         </div>
-      </Card>
+        </Card>
+      )}
 
       {/* Email Template */}
       <Card className="p-6">
