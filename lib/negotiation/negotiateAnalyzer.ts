@@ -129,19 +129,98 @@ This offer is at the ${percentile}th percentile for ${role}.
 Recommendation: ${recommendation.bottomLine.tldr}
 Reasoning: ${recommendation.bottomLine.reasoning}
 
-Your job is to provide specific, actionable negotiation tactics within this framework. ${recommendation.type === 'FAIR' ? 'Suggest a modest 8-12% increase.' : 'Suggest a significant 20-30% increase with strong data justification.'}`;
+Your job is to provide specific, actionable negotiation tactics within this framework. ${recommendation.type === 'FAIR' ? 'Suggest a modest 8-12% increase.' : 'Suggest a significant 20-30% increase with strong data justification.'}
+
+CRITICAL: Your recommended base salary MUST be HIGHER than the current offer of $${baseSalary.toLocaleString()}. NEVER suggest negotiating DOWN. If the current offer is already strong for the market, suggest accepting it rather than negotiating for less.`;
   }
 
   return basePrompt;
 }
 
+/**
+ * Parse equity string to get ANNUAL value
+ * Examples:
+ * - "$400k over 4 years" → 100000
+ * - "$100k/year" → 100000
+ * - "100000" → 100000
+ */
+function parseEquityToAnnual(equityString: string): number {
+  if (!equityString) return 0;
+
+  // Extract the first number (total amount)
+  const match = equityString.match(/[\d,]+\.?\d*/);
+  if (!match) return 0;
+
+  let amount = parseFloat(match[0].replace(/,/g, ''));
+
+  // Handle 'k' suffix (thousands)
+  if (equityString.toLowerCase().includes('k')) {
+    amount *= 1000;
+  }
+
+  // If it mentions "over X years", divide by X to get annual
+  const yearsMatch = equityString.match(/over\s+(\d+)\s+years?/i);
+  if (yearsMatch) {
+    const years = parseInt(yearsMatch[1]);
+    amount = amount / years;
+  }
+
+  return amount;
+}
+
+/**
+ * Parse bonus to annual value
+ * Examples:
+ * - "15%" → percentage of base (calculated later)
+ * - "20000" → 20000
+ * - "$25k" → 25000
+ */
+function parseBonusToAnnual(bonusString: string | number | undefined, baseSalary: number): number {
+  if (!bonusString) return 0;
+
+  const bonusStr = typeof bonusString === 'string' ? bonusString : bonusString.toString();
+
+  // Check if it's a percentage
+  if (bonusStr.includes('%')) {
+    const percentage = parseFloat(bonusStr.replace(/[^0-9.]/g, ''));
+    return (baseSalary * percentage) / 100;
+  }
+
+  // Parse as dollar amount
+  const match = bonusStr.match(/[\d,]+\.?\d*/);
+  if (!match) return 0;
+
+  let amount = parseFloat(match[0].replace(/,/g, ''));
+
+  // Handle 'k' suffix
+  if (bonusStr.toLowerCase().includes('k')) {
+    amount *= 1000;
+  }
+
+  return amount;
+}
+
 export async function analyzeAndAdvise(input: OfferInput): Promise<NegotiationAdvice> {
   try {
-    // Calculate total compensation
+    // Calculate total ANNUAL compensation
     const baseSalary = input.baseSalary;
-    const equity = input.equity ? parseFloat(input.equity.replace(/[^0-9.]/g, '')) || 0 : 0;
-    const bonus = input.bonus ? parseFloat(input.bonus.replace(/[^0-9.]/g, '')) || 0 : 0;
-    const totalComp = baseSalary + equity + bonus;
+    const annualEquity = parseEquityToAnnual(input.equity || '');
+    const annualBonus = parseBonusToAnnual(input.bonus, baseSalary);
+    const totalComp = baseSalary + annualEquity + annualBonus;
+
+    console.log('=== NEGOTIATE INPUT DEBUG ===');
+    console.log('Input received:', {
+      baseSalary: input.baseSalary,
+      equityRaw: input.equity,
+      bonusRaw: input.bonus,
+      role: input.role
+    });
+    console.log('Parsed values:', {
+      baseSalary,
+      annualEquity,
+      annualBonus,
+      totalComp
+    });
 
     // Calculate percentile and get recommendation
     const percentile = calculatePercentile(totalComp, input.role);
@@ -219,6 +298,20 @@ export async function analyzeAndAdvise(input: OfferInput): Promise<NegotiationAd
 
     // Override percentile with our calculated value
     advice.marketPosition.percentile = percentile;
+
+    // CRITICAL VALIDATION: Ensure we never suggest negotiating DOWN
+    // Extract the recommended base salary and verify it's higher than current
+    const recommendedBaseMatch = advice.recommendedAsk.base.match(/[\d,]+/);
+    if (recommendedBaseMatch) {
+      const recommendedBase = parseFloat(recommendedBaseMatch[0].replace(/,/g, ''));
+      if (recommendedBase < baseSalary) {
+        console.warn(`⚠️ WARNING: Recommended base ($${recommendedBase}) is LOWER than current offer ($${baseSalary}). Fixing...`);
+        // Fix: Suggest 10% higher than current offer
+        const correctedBase = Math.round(baseSalary * 1.1);
+        advice.recommendedAsk.base = `$${correctedBase.toLocaleString()}`;
+        advice.recommendedAsk.rationale = `Based on market data for ${input.role}, a ${percentile}th percentile offer would be around $${correctedBase.toLocaleString()} base salary. This represents a modest ${Math.round(((correctedBase - baseSalary) / baseSalary) * 100)}% increase that aligns with your experience and the role requirements.`;
+      }
+    }
 
     return advice;
   } catch (error) {
