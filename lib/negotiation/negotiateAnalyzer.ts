@@ -67,7 +67,8 @@ Return JSON with this EXACT structure:
 {
   "marketPosition": {
     "percentile": <number 0-100>,
-    "totalComp4Year": "<formatted string like '$850k over 4 years'>",
+    "totalCompAnnual": "<formatted like '$212,500/year'>",
+    "totalComp4Year": "<formatted like '$850,000'>",
     "gap": "<e.g., '15% below market' or 'at market' or '10% above market'>"
   },
   "recommendedAsk": {
@@ -280,7 +281,8 @@ export async function analyzeAndAdvise(input: OfferInput): Promise<NegotiationAd
       return {
         marketPosition: {
           percentile,
-          totalComp4Year: `$${(totalComp * 4).toLocaleString()} over 4 years`,
+          totalCompAnnual: `$${totalComp.toLocaleString()}/year`,
+          totalComp4Year: `$${(totalComp * 4).toLocaleString()}`,
           gap: percentile >= 99 ? 'WAY ABOVE market (99th+ percentile)' : `${percentile - 50}% above market`
         },
         recommendedAsk: {

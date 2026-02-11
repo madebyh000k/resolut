@@ -20,7 +20,8 @@ export interface NegotiationAdvice {
 
 export interface MarketPosition {
   percentile: number; // e.g., 55
-  totalComp4Year: string; // e.g., "$850k over 4 years"
+  totalCompAnnual: string; // e.g., "$212,500/year"
+  totalComp4Year: string; // e.g., "$850,000"
   gap: string; // e.g., "15% below market for this role/level"
 }
 
