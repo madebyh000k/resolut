@@ -239,8 +239,8 @@ export default function LandingPage() {
               </p>
               <Button
                 variant="outline"
-                onClick={() => checkBetaAccess('/negotiate')}
-                className="group opacity-60 cursor-default"
+                disabled
+                className="group opacity-60 cursor-not-allowed"
               >
                 Coming Soon
               </Button>
