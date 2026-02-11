@@ -69,7 +69,9 @@ export default function PreparePage() {
         <div className="mb-6 p-4 rounded-lg bg-error/10 border-2 border-error flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-error flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-error font-medium">{error}</p>
+            <p className="text-error font-medium">
+              {typeof error === 'string' ? error : error.error || 'An error occurred'}
+            </p>
           </div>
           <button
             onClick={clearError}
