@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { OfferInput, NegotiationAdvice } from '@/types/offer-advice';
 import { makeOptimizedApiCall, getMaxTokens } from '@/lib/api-optimization/optimized-api-call';
 import { parseClaudeJsonResponse, validateRequiredFields } from '@/lib/api-optimization/json-parser';
+import { calculatePercentile, getRecommendation } from './percentile';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -22,7 +23,7 @@ interface AnalyzeResult {
   };
 }
 
-function createNegotiationPrompt(input: OfferInput): string {
+function createNegotiationPrompt(input: OfferInput, percentile?: number, recommendation?: any): string {
   const { baseSalary, equity, bonus, company, role, location, yearsOfExperience } = input;
 
   // Format bonus display
@@ -31,7 +32,7 @@ function createNegotiationPrompt(input: OfferInput): string {
     bonusDisplay = typeof bonus === 'string' ? bonus : `$${bonus.toLocaleString()}`;
   }
 
-  return `You are an expert compensation negotiator. Analyze this job offer and provide ONE focused recommendation with specific numbers and actionable scripts.
+  let basePrompt = `You are an expert compensation negotiator. Analyze this job offer and provide ONE focused recommendation with specific numbers and actionable scripts.
 
 OFFER DETAILS:
 Company: ${company}
@@ -119,11 +120,73 @@ TONE ADAPTATION:
 Keep your email under 250 words. Be direct, specific, and actionable.
 
 Return ONLY the JSON object, no markdown or additional text.`;
+
+  if (percentile !== undefined && recommendation) {
+    basePrompt += `
+
+PERCENTILE CONTEXT:
+This offer is at the ${percentile}th percentile for ${role}.
+Recommendation: ${recommendation.bottomLine.tldr}
+Reasoning: ${recommendation.bottomLine.reasoning}
+
+Your job is to provide specific, actionable negotiation tactics within this framework. ${recommendation.type === 'FAIR' ? 'Suggest a modest 8-12% increase.' : 'Suggest a significant 20-30% increase with strong data justification.'}`;
+  }
+
+  return basePrompt;
 }
 
 export async function analyzeAndAdvise(input: OfferInput): Promise<NegotiationAdvice> {
   try {
-    const prompt = createNegotiationPrompt(input);
+    // Calculate total compensation
+    const baseSalary = input.baseSalary;
+    const equity = input.equity ? parseFloat(input.equity.replace(/[^0-9.]/g, '')) || 0 : 0;
+    const bonus = input.bonus ? parseFloat(input.bonus.replace(/[^0-9.]/g, '')) || 0 : 0;
+    const totalComp = baseSalary + equity + bonus;
+
+    // Calculate percentile and get recommendation
+    const percentile = calculatePercentile(totalComp, input.role);
+    const recommendation = getRecommendation(percentile, totalComp, input.role);
+
+    console.log(`Offer analysis: $${totalComp.toLocaleString()} total comp at ${percentile}th percentile for ${input.role}`);
+    console.log(`Recommendation type: ${recommendation.type}, shouldNegotiate: ${recommendation.shouldNegotiate}`);
+
+    // For exceptional offers (95th+ percentile), return hardcoded response
+    // DO NOT call Claude - we control the message
+    if (!recommendation.shouldNegotiate) {
+      console.log('Exceptional offer detected - using hardcoded response (bypassing Claude)');
+
+      // Return hardcoded exceptional offer advice
+      return {
+        marketPosition: {
+          percentile,
+          totalComp4Year: `$${(totalComp * 4).toLocaleString()} over 4 years`,
+          gap: percentile >= 99 ? 'WAY ABOVE market (99th+ percentile)' : `${percentile - 50}% above market`
+        },
+        recommendedAsk: {
+          base: recommendation.bottomLine.tldr,
+          rationale: recommendation.bottomLine.reasoning
+        },
+        emailTemplate: generateExceptionalEmailTemplate(input, recommendation),
+        pushbackResponses: [
+          {
+            theySay: "We need an answer soon",
+            youSay: "I'm excited about this opportunity and ready to move forward. I just need a few days to review the details with my family. Can we connect on [specific date]?"
+          },
+          {
+            theySay: "Can you give us a verbal yes now?",
+            youSay: "I'm very enthusiastic about joining the team. I'd like to review the written offer carefully to ensure I understand all the details, but I'm planning to accept."
+          }
+        ],
+        redFlags: recommendation.bottomLine.humor
+          ? ["Seriously - if these numbers are wrong, go back and fix them. If they're right, stop reading this and accept the offer."]
+          : []
+      };
+    }
+
+    // For offers that need negotiation (<95th percentile), call Claude for nuanced advice
+    console.log('Standard offer - calling Claude for nuanced analysis');
+
+    const prompt = createNegotiationPrompt(input, percentile, recommendation);
 
     // Use Sonnet 4.5 for sophisticated analysis
     const message = await anthropic.messages.create({
@@ -154,6 +217,9 @@ export async function analyzeAndAdvise(input: OfferInput): Promise<NegotiationAd
       'negotiation advice'
     );
 
+    // Override percentile with our calculated value
+    advice.marketPosition.percentile = percentile;
+
     return advice;
   } catch (error) {
     console.error('Error analyzing offer:', error);
@@ -165,3 +231,40 @@ export async function analyzeAndAdvise(input: OfferInput): Promise<NegotiationAd
     throw error;
   }
 }
+
+/**
+ * Generate email template for exceptional offers (no negotiation)
+ */
+function generateExceptionalEmailTemplate(input: OfferInput, recommendation: any): string {
+  const { company, role } = input;
+
+  if (recommendation.bottomLine.humor) {
+    return `Hi [Hiring Manager],
+
+Thank you so much for the incredible offer to join ${company} as a ${role}. I'm genuinely excited about this opportunity and the compensation package you've offered.
+
+I've reviewed the details carefully and I'm ready to accept. When can we move forward with next steps?
+
+Looking forward to joining the team!
+
+Best,
+[Your Name]`;
+  }
+
+  return `Hi [Hiring Manager],
+
+Thank you for the generous offer to join ${company} as a ${role}. I'm very excited about the opportunity and impressed by the compensation package.
+
+I've reviewed the offer and am ready to move forward. Before I formally accept, I'd love to discuss:
+- Team composition and who I'll be working with closely
+- Key priorities for the first 90 days
+- Growth opportunities and path to the next level
+
+The compensation is excellent and I'm not looking to negotiate on that front. I'm focused on ensuring this is the right fit for both of us.
+
+Could we schedule a brief call this week?
+
+Best,
+[Your Name]`;
+}
+

@@ -30,6 +30,27 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
     setTimeout(() => setEmailCopied(false), 2000);
   };
 
+  // Determine percentile color and label
+  const getPercentileInfo = (percentile: number) => {
+    if (percentile >= 99) {
+      return { color: 'text-purple-600 bg-purple-100', label: 'ABSURDLY HIGH', emoji: '🚀' };
+    }
+    if (percentile >= 95) {
+      return { color: 'text-green-600 bg-green-100', label: 'EXCEPTIONAL', emoji: '🏆' };
+    }
+    if (percentile >= 85) {
+      return { color: 'text-blue-600 bg-blue-100', label: 'STRONG', emoji: '💪' };
+    }
+    if (percentile >= 70) {
+      return { color: 'text-yellow-600 bg-yellow-100', label: 'FAIR', emoji: '✅' };
+    }
+    return { color: 'text-red-600 bg-red-100', label: 'BELOW MARKET', emoji: '⚠️' };
+  };
+
+  const percentileInfo = getPercentileInfo(advice.marketPosition.percentile);
+  const isExceptional = advice.marketPosition.percentile >= 95;
+  const isAbsurd = advice.marketPosition.percentile >= 99;
+
   return (
     <div className="space-y-6">
       {/* Key Insights */}
@@ -65,10 +86,12 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center p-4 rounded-lg bg-surface">
-            <div className="text-3xl font-bold text-primary mb-1">
+            <div className={`text-3xl font-bold mb-1 ${percentileInfo.color.split(' ')[0]}`}>
               {advice.marketPosition.percentile}th
             </div>
-            <div className="text-sm text-text-secondary">Percentile</div>
+            <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${percentileInfo.color}`}>
+              {percentileInfo.emoji} {percentileInfo.label}
+            </div>
           </div>
 
           <div className="text-center p-4 rounded-lg bg-surface">
@@ -81,6 +104,20 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
             <div className="text-sm text-text-secondary">Market Gap</div>
           </div>
         </div>
+
+        {/* Exceptional Offer Warning */}
+        {isExceptional && (
+          <div className={`mt-4 p-4 rounded-lg ${isAbsurd ? 'bg-purple-50 border-2 border-purple-300' : 'bg-green-50 border-2 border-green-300'}`}>
+            <p className="text-sm font-semibold mb-2">
+              {isAbsurd ? '🚀 Wait, is this real??' : '🏆 Exceptional Offer'}
+            </p>
+            <p className="text-sm">
+              {isAbsurd
+                ? 'This is once-in-a-career compensation. If these numbers are correct, DO NOT negotiate. Sign immediately.'
+                : 'This offer is in the top tier of market compensation. Negotiating higher risks the offer for minimal gain. Focus on team fit and role scope instead.'}
+            </p>
+          </div>
+        )}
       </Card>
 
       {/* Recommended Ask */}
