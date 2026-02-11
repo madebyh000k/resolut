@@ -230,6 +230,9 @@ export default function LandingPage() {
               <div className="flex items-center gap-3 justify-center md:justify-start mb-3">
                 <TrendingUp className="h-6 w-6 text-primary" />
                 <h3 className="text-2xl font-semibold">Negotiate Your Offer</h3>
+                <span className="inline-block bg-gray-200 text-gray-600 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full">
+                  Coming Friday
+                </span>
               </div>
               <p className="text-text-secondary mb-4">
                 Analyze your offer and get data-driven negotiation strategies with market insights, personalized email templates, and responses to common pushback scenarios.
@@ -237,10 +240,9 @@ export default function LandingPage() {
               <Button
                 variant="outline"
                 onClick={() => checkBetaAccess('/negotiate')}
-                className="group"
+                className="group opacity-60 cursor-default"
               >
-                Start Negotiating
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                Coming Soon
               </Button>
             </div>
             <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
