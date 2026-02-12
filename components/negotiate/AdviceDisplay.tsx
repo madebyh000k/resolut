@@ -132,11 +132,11 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
 
         {/* Exceptional Offer Warning */}
         {isExceptional && (
-          <div className={`mt-4 p-4 rounded-lg ${isAbsurd ? 'bg-purple-50 border-2 border-purple-300' : 'bg-green-50 border-2 border-green-300'}`}>
-            <p className="text-sm font-semibold mb-2">
+          <div className={`mt-4 p-4 rounded-lg ${isAbsurd ? 'bg-purple-50 dark:bg-purple-900/30 border-2 border-purple-300 dark:border-purple-400' : 'bg-green-50 dark:bg-green-900/30 border-2 border-green-300 dark:border-green-400'}`}>
+            <p className="text-sm font-semibold mb-2 text-purple-900 dark:text-purple-100">
               {isAbsurd ? '🚀 Wait, is this real??' : '🏆 Exceptional Offer'}
             </p>
-            <p className="text-sm">
+            <p className="text-sm text-purple-800 dark:text-purple-200">
               {isAbsurd
                 ? 'This is once-in-a-career compensation. If these numbers are correct, DO NOT negotiate. Sign immediately.'
                 : 'This offer is in the top tier of market compensation. Negotiating higher risks the offer for minimal gain. Focus on team fit and role scope instead.'}
