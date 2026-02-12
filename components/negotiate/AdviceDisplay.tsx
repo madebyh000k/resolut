@@ -105,8 +105,8 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center p-4 rounded-lg bg-surface">
-            <div className={`text-3xl font-bold mb-1 text-white`}>
+          <div className="text-center p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div className={`text-3xl font-bold mb-1 text-gray-900 dark:text-white`}>
               {advice.marketPosition.percentile}th percentile
             </div>
             <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${percentileInfo.color}`}>
@@ -114,19 +114,19 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
             </div>
           </div>
 
-          <div className="text-center p-4 rounded-lg bg-surface">
-            <div className="text-2xl font-bold mb-1 text-white">
+          <div className="text-center p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div className="text-2xl font-bold mb-1 text-gray-900 dark:text-white">
               {advice.marketPosition.totalCompAnnual}
             </div>
-            <div className="text-xs text-gray-300 mt-1">
+            <div className="text-xs text-gray-600 dark:text-gray-300 mt-1">
               ({advice.marketPosition.totalComp4Year} over 4 years)
             </div>
-            <div className="text-sm text-gray-400 mt-2">Annual Total Compensation</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">Annual Total Compensation</div>
           </div>
 
-          <div className="text-center p-4 rounded-lg bg-surface">
-            <div className="text-lg font-bold mb-1 text-white">{advice.marketPosition.gap}</div>
-            <div className="text-sm text-gray-400">Market Gap</div>
+          <div className="text-center p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div className="text-lg font-bold mb-1 text-gray-900 dark:text-white">{advice.marketPosition.gap}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Market Gap</div>
           </div>
         </div>
 
