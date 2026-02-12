@@ -193,14 +193,41 @@ function parseEquityToAnnual(equityString: string): number {
     return amount;
   }
 
-  // If it mentions "over X years", divide by X to get annual
-  const yearsMatch = lower.match(/over\s+(\d+)\s+years?/i);
-  console.log('Year pattern match:', yearsMatch);
+  // Map word numbers to digits
+  const wordToNumber: { [key: string]: number } = {
+    'one': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 7,
+    'eight': 8,
+    'nine': 9,
+    'ten': 10
+  };
 
-  if (yearsMatch) {
-    const years = parseInt(yearsMatch[1]);
+  // Check for numeric years first (e.g., "over 4 years")
+  const numericYearsMatch = lower.match(/over\s+(\d+)\s+years?/i);
+  console.log('Numeric year pattern match:', numericYearsMatch);
+
+  if (numericYearsMatch) {
+    const years = parseInt(numericYearsMatch[1]);
     const annualAmount = amount / years;
     console.log(`Found "${years} years", dividing ${amount} by ${years} = ${annualAmount}`);
+    console.log('===== EQUITY PARSING END =====');
+    return annualAmount;
+  }
+
+  // Check for word years (e.g., "over four years")
+  const wordYearsMatch = lower.match(/over\s+(one|two|three|four|five|six|seven|eight|nine|ten)\s+years?/i);
+  console.log('Word year pattern match:', wordYearsMatch);
+
+  if (wordYearsMatch) {
+    const wordNumber = wordYearsMatch[1].toLowerCase();
+    const years = wordToNumber[wordNumber];
+    const annualAmount = amount / years;
+    console.log(`Found "${wordNumber} years" (${years}), dividing ${amount} by ${years} = ${annualAmount}`);
     console.log('===== EQUITY PARSING END =====');
     return annualAmount;
   }
