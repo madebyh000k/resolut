@@ -23,7 +23,7 @@ export function ResumeComparison() {
   return (
     <div className="space-y-6">
       {/* Keywords Added Banner */}
-      {customizedResume.keywordsAdded.length > 0 && (
+      {customizedResume?.keywordsAdded?.length > 0 && (
         <Card className="p-4 bg-success/10 border-success">
           <div className="flex items-start gap-3">
             <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
