@@ -10,6 +10,11 @@
     --text-primary: 0 0% 10%;
     --text-secondary: 0 0% 45%;
     --text-muted: 0 0% 60%;
+
+    /* Celebration box colors (light mode) */
+    --celebration-text: #065F46;
+    --celebration-bg: rgba(240, 253, 244, 1);
+    --celebration-border: #4ADE80;
   }
 
   .dark {
@@ -19,6 +24,11 @@
     --text-primary: 45 33% 97%;
     --text-secondary: 0 0% 64%;
     --text-muted: 0 0% 45%;
+
+    /* Celebration box colors (dark mode) */
+    --celebration-text: #4ADE80;
+    --celebration-bg: #1B4332;
+    --celebration-border: #4ADE80;
   }
 
   body {

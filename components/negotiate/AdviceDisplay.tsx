@@ -170,8 +170,17 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
 
         {/* Humor callout for absurd offers */}
         {isAbsurd && advice.redFlags && advice.redFlags.length > 0 && (
-          <div className="mt-6 p-4 rounded-lg bg-primary/10 dark:bg-primary/30 border-l-4 border-primary dark:border-green-400">
-            <p className="text-sm font-medium text-primary dark:text-green-400 mb-0">
+          <div
+            className="mt-6 p-4 rounded-lg border-l-4"
+            style={{
+              backgroundColor: 'var(--celebration-bg, rgba(27, 67, 50, 0.1))',
+              borderColor: 'var(--celebration-border, #1B4332)'
+            }}
+          >
+            <p
+              className="text-sm font-medium mb-0"
+              style={{ color: 'var(--celebration-text, #1B4332)' }}
+            >
               🚀 Seriously though - if the numbers are correct, take it and don't look back.
             </p>
           </div>
