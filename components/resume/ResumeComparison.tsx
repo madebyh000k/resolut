@@ -57,16 +57,16 @@ export function ResumeComparison() {
           variant="primary"
           size="lg"
           onClick={downloadPDF}
-          className="flex-1 tracking-[0.3px] [word-spacing:4px]"
+          className="flex-1"
         >
           <Download className="h-5 w-5 mr-2" />
-          Download <span className="font-bold tracking-[0.5px]">Optimized</span> Resume (PDF)
+          Download <span className="font-bold">Optimized</span> Resume (PDF)
         </Button>
         <Button
           variant="outline"
           size="lg"
           onClick={handleCopyText}
-          className="flex-1 tracking-[0.3px] [word-spacing:4px] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
+          className="flex-1 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200"
         >
           {copiedText ? (
             <>
@@ -76,7 +76,7 @@ export function ResumeComparison() {
           ) : (
             <>
               <Copy className="h-5 w-5 mr-2" />
-              Copy <span className="font-bold tracking-[0.5px]">Optimized</span> Text
+              Copy <span className="font-bold">Optimized</span> Text
             </>
           )}
         </Button>
