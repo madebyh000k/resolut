@@ -10,40 +10,6 @@ import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { NegotiationAdvice } from '@/types/offer-advice';
 
 export default function NegotiatePage() {
-  // Feature flag - temporarily disabled on production
-  const isFeatureEnabled = process.env.NEXT_PUBLIC_NEGOTIATE_ENABLED === 'true';
-
-  // Show "Coming Soon" page if feature is disabled
-  if (!isFeatureEnabled) {
-    return (
-      <AppLayout>
-        <div className="min-h-screen flex items-center justify-center px-4">
-          <div className="max-w-md w-full text-center">
-            <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
-                <span className="text-4xl">🚀</span>
-              </div>
-              <h1 className="text-3xl font-bold mb-2">Negotiate</h1>
-              <p className="text-lg text-text-secondary mb-6">
-                This feature launches Friday, February 14th.
-              </p>
-              <p className="text-text-secondary mb-8">
-                Get data-driven offer analysis, pay band strategies, and personalized email templates.
-              </p>
-            </div>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Link>
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
-
   const [advice, setAdvice] = useState<NegotiationAdvice | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);

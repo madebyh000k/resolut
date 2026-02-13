@@ -8,7 +8,7 @@ import { FileText, Briefcase, TrendingUp } from 'lucide-react';
 const navItems = [
   { href: '/optimize', label: 'Optimize', icon: FileText, disabled: false },
   { href: '/prepare', label: 'Prepare', icon: Briefcase, disabled: false },
-  { href: '/negotiate', label: 'Negotiate', icon: TrendingUp, disabled: true, comingSoon: true },
+  { href: '/negotiate', label: 'Negotiate', icon: TrendingUp, disabled: false },
 ];
 
 export function MainNav() {
