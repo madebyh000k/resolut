@@ -132,7 +132,7 @@ export default function LandingPage() {
           {/* Step 1: Customize Resume */}
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary dark:bg-green-400 text-white dark:text-primary text-xl font-bold mb-4">
                 1
               </div>
               <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
@@ -178,7 +178,7 @@ export default function LandingPage() {
           {/* Step 2: Prepare for Interview */}
           <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-12">
             <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary dark:bg-green-400 text-white dark:text-primary text-xl font-bold mb-4">
                 2
               </div>
               <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
@@ -224,7 +224,7 @@ export default function LandingPage() {
           {/* Step 3: Negotiate Your Offer */}
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white text-xl font-bold mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary dark:bg-green-400 text-white dark:text-primary text-xl font-bold mb-4">
                 3
               </div>
               <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">

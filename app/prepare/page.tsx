@@ -103,7 +103,7 @@ export default function PreparePage() {
           <Card className="p-6">
             <div className="mb-4">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary dark:bg-green-400 text-white dark:text-primary text-sm font-bold">
                   1
                 </span>
                 Add Job Posting
@@ -123,7 +123,7 @@ export default function PreparePage() {
           <Card className="p-6">
             <div className="mb-4">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary dark:bg-green-400 text-white dark:text-primary text-sm font-bold">
                   2
                 </span>
                 Add Your Resume
@@ -151,7 +151,7 @@ export default function PreparePage() {
           <Card className="p-6">
             <div className="mb-4">
               <h2 className="text-xl font-semibold flex items-center gap-2">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary dark:bg-green-400 text-white dark:text-primary text-sm font-bold">
                   2
                 </span>
                 Upload Your Resume
