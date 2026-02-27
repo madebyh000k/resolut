@@ -141,6 +141,29 @@ export async function POST(request: NextRequest) {
       'resume analysis'
     );
 
+    // Calculate overallScore as the true average of 5 dimension scores
+    // Claude sometimes returns an inconsistent overallScore, so we compute it ourselves
+    const calculatedOverall = (
+      analysis.atsScore +
+      analysis.impactScore +
+      analysis.keywordScore +
+      analysis.narrativeScore +
+      analysis.levelScore
+    ) / 5;
+
+    console.log('Score calculation:', {
+      ats: analysis.atsScore,
+      impact: analysis.impactScore,
+      keywords: analysis.keywordScore,
+      narrative: analysis.narrativeScore,
+      level: analysis.levelScore,
+      claudeOverall: analysis.overallScore,
+      calculatedOverall: Math.round(calculatedOverall * 10) / 10,
+    });
+
+    // Override Claude's overall with calculated average
+    analysis.overallScore = Math.round(calculatedOverall * 10) / 10;
+
     return NextResponse.json({
       success: true,
       analysis,

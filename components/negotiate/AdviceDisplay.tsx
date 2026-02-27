@@ -33,18 +33,18 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
   // Determine percentile color and label
   const getPercentileInfo = (percentile: number) => {
     if (percentile >= 99) {
-      return { color: 'text-purple-600 bg-purple-100', label: 'ABSURDLY HIGH', emoji: '🚀' };
+      return { color: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30', label: 'ABSURDLY HIGH', emoji: '🚀' };
     }
     if (percentile >= 95) {
-      return { color: 'text-green-600 bg-green-100', label: 'EXCEPTIONAL', emoji: '🏆' };
+      return { color: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30', label: 'EXCEPTIONAL', emoji: '🏆' };
     }
     if (percentile >= 85) {
-      return { color: 'text-blue-600 bg-blue-100', label: 'STRONG', emoji: '💪' };
+      return { color: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30', label: 'STRONG', emoji: '💪' };
     }
     if (percentile >= 70) {
-      return { color: 'text-yellow-600 bg-yellow-100', label: 'FAIR', emoji: '✅' };
+      return { color: 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30', label: 'FAIR', emoji: '✅' };
     }
-    return { color: 'text-red-600 bg-red-100', label: 'BELOW MARKET', emoji: '⚠️' };
+    return { color: 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30', label: 'BELOW MARKET', emoji: '⚠️' };
   };
 
   const percentileInfo = getPercentileInfo(advice.marketPosition.percentile);
@@ -75,16 +75,16 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
     <div className="space-y-6">
       {/* Key Insights */}
       {advice.redFlags && advice.redFlags.length > 0 && (
-        <Card className="p-6 bg-primary/5 border-2 border-primary/30">
+        <Card className="p-6 bg-primary/5 dark:bg-green-900/20 border-2 border-primary/30 dark:border-green-400/30">
           <div className="flex items-start gap-3">
-            <Lightbulb className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <Lightbulb className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0 mt-1" />
             <div>
               <h3 className="text-lg font-semibold mb-1">Key Insights</h3>
               <p className="text-sm text-text-secondary mb-3">Important context for your negotiation</p>
               <ul className="space-y-2">
                 {advice.redFlags.map((flag, index) => (
                   <li key={index} className="text-sm flex items-start gap-2">
-                    <span className="text-primary mt-1">•</span>
+                    <span className="text-primary dark:text-green-400 mt-1">•</span>
                     <span>{flag}</span>
                   </li>
                 ))}
@@ -97,7 +97,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
       {/* Market Position */}
       <Card className="p-6">
         <div className="flex items-start gap-3 mb-4">
-          <TrendingUp className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+          <TrendingUp className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0 mt-1" />
           <div className="flex-1">
             <h3 className="text-xl font-semibold mb-1">Market Position</h3>
             <p className="text-sm text-text-secondary">Where your offer stands in the market</p>
@@ -148,7 +148,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
       {/* Bottom Line Section */}
       <Card className="p-8 bg-surface/50">
         <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-          <Lightbulb className="h-6 w-6 text-primary" />
+          <Lightbulb className="h-6 w-6 text-primary dark:text-green-400" />
           Bottom Line
         </h3>
 
@@ -191,7 +191,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
       {!isExceptional && (
         <Card className="p-6">
           <div className="flex items-start gap-3 mb-4">
-            <DollarSign className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <DollarSign className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0 mt-1" />
             <div className="flex-1">
               <h3 className="text-xl font-semibold mb-1">Recommended Ask</h3>
               <p className="text-sm text-text-secondary">What you should negotiate for</p>
@@ -199,10 +199,10 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
           </div>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/30">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 dark:bg-green-900/20 border border-primary/30 dark:border-green-400/30">
             <div>
               <div className="text-sm text-text-secondary mb-1">Base Salary</div>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-primary dark:text-green-400">
                 {advice.recommendedAsk.base}
               </div>
             </div>
@@ -229,12 +229,12 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
 
           {/* Pay Band Ceiling Warning - 85th+ */}
           {advice.marketPosition.percentile >= 85 && (
-            <Card className="p-6 mb-4 bg-yellow-50 border-l-4 border-yellow-500">
+            <Card className="p-6 mb-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500">
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">⚠️</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2 text-yellow-900">Pay Band Ceiling Risk</h4>
-                  <p className="text-sm leading-relaxed text-yellow-800 mb-0">
+                  <h4 className="text-lg font-semibold mb-2 text-yellow-900 dark:text-yellow-300">Pay Band Ceiling Risk</h4>
+                  <p className="text-sm leading-relaxed text-yellow-800 dark:text-yellow-200 mb-0">
                     {advice.marketPosition.percentile >= 95
                       ? 'You are at the top of the pay band for this level. Future raises will be minimal (2-3% annually). If you want significant comp growth, your next move is a promotion or company change.'
                       : 'You are approaching the top of the pay band for this level. You likely have 2-3 years of meaningful raises left before hitting the ceiling. Plan your next career move accordingly.'}
@@ -246,15 +246,15 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
 
           {/* Promotion Timing - 85th+ */}
           {advice.marketPosition.percentile >= 85 && (
-            <Card className="p-6 mb-4 bg-blue-50 border-l-4 border-blue-500">
+            <Card className="p-6 mb-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500">
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">📈</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2 text-blue-900">Consider Promotion Timeline</h4>
-                  <p className="text-sm leading-relaxed text-blue-800 mb-3">
+                  <h4 className="text-lg font-semibold mb-2 text-blue-900 dark:text-blue-300">Consider Promotion Timeline</h4>
+                  <p className="text-sm leading-relaxed text-blue-800 dark:text-blue-200 mb-3">
                     At this compensation level, ask about promotion timeline during negotiation. Questions to ask:
                   </p>
-                  <ul className="text-sm space-y-2 ml-5 list-disc text-blue-800">
+                  <ul className="text-sm space-y-2 ml-5 list-disc text-blue-800 dark:text-blue-200">
                     <li>"What does the path to the next level look like from this role?"</li>
                     <li>"What's the typical timeline for someone at this comp to get promoted?"</li>
                     <li>"Are there level considerations we should discuss given the comp package?"</li>
@@ -266,15 +266,15 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
 
           {/* Level Negotiation - 95th+ */}
           {advice.marketPosition.percentile >= 95 && (
-            <Card className="p-6 mb-4 bg-green-50 border-l-4 border-green-600">
+            <Card className="p-6 mb-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-600">
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">🎯</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2 text-green-900">Consider Negotiating Level Instead of Comp</h4>
-                  <p className="text-sm leading-relaxed text-green-800 mb-3">
+                  <h4 className="text-lg font-semibold mb-2 text-green-900 dark:text-green-300">Consider Negotiating Level Instead of Comp</h4>
+                  <p className="text-sm leading-relaxed text-green-800 dark:text-green-200 mb-3">
                     Your offer is at or above the ceiling for this level. If the company won't budge on comp, consider asking: "Given this compensation package, should we discuss entering at a higher level instead?"
                   </p>
-                  <p className="text-xs italic text-green-700 mt-3 pt-3 border-t border-green-200">
+                  <p className="text-xs italic text-green-700 dark:text-green-300 mt-3 pt-3 border-t border-green-200 dark:border-green-700">
                     This sets you up for better long-term comp growth and removes the ceiling constraint.
                   </p>
                 </div>
@@ -284,15 +284,15 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
 
           {/* Equity vs Cash - 70th to 84th percentile */}
           {advice.marketPosition.percentile >= 70 && advice.marketPosition.percentile < 85 && (
-            <Card className="p-6 mb-4 bg-blue-50 border-l-4 border-blue-500">
+            <Card className="p-6 mb-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500">
               <div className="flex gap-4">
                 <div className="text-3xl flex-shrink-0">💰</div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2 text-blue-900">Equity vs Cash Considerations</h4>
-                  <p className="text-sm leading-relaxed text-blue-800 mb-3">
+                  <h4 className="text-lg font-semibold mb-2 text-blue-900 dark:text-blue-300">Equity vs Cash Considerations</h4>
+                  <p className="text-sm leading-relaxed text-blue-800 dark:text-blue-200 mb-3">
                     At this comp level, you have negotiation leverage. If they won't move on base salary, consider asking for:
                   </p>
-                  <ul className="text-sm space-y-2 ml-5 list-disc text-blue-800">
+                  <ul className="text-sm space-y-2 ml-5 list-disc text-blue-800 dark:text-blue-200">
                     <li>Additional equity grant (10-20% more RSUs)</li>
                     <li>Larger signing bonus (one-time bump)</li>
                     <li>Earlier equity refresh timeline (front-load value)</li>
@@ -308,7 +308,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
       <Card className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start gap-3">
-            <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <Mail className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0 mt-1" />
             <div>
               <h3 className="text-xl font-semibold mb-1">Email Template</h3>
               <p className="text-sm text-text-secondary">
@@ -342,7 +342,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
           </pre>
         </div>
 
-        <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+        <div className="mt-4 p-4 rounded-lg bg-primary/5 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20">
           <p className="text-xs text-text-secondary">
             💡 <strong>Tips:</strong> Replace [Recruiter Name], [specific team/project], and
             [Your Name] with actual details before sending. Send from your personal email during
@@ -359,7 +359,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
         >
           <div className="flex items-center gap-3">
             <div className="text-xl font-semibold">Handling Pushback</div>
-            <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-medium">
+            <span className="px-3 py-1 rounded-full bg-primary/20 dark:bg-green-900/30 text-primary dark:text-green-400 text-xs font-medium">
               {advice.pushbackResponses.length} scenarios
             </span>
           </div>
@@ -383,7 +383,7 @@ export function AdviceDisplay({ advice }: AdviceDisplayProps) {
                   <div className="text-sm italic">"{response.theySay}"</div>
                 </div>
                 <div>
-                  <div className="text-xs font-medium text-primary mb-1">YOU SAY:</div>
+                  <div className="text-xs font-medium text-primary dark:text-green-400 mb-1">YOU SAY:</div>
                   <div className="text-sm">{response.youSay}</div>
                 </div>
               </div>

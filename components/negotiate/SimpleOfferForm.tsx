@@ -54,8 +54,8 @@ export function SimpleOfferForm({ onSubmit, isProcessing }: SimpleOfferFormProps
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Help Section */}
-      <div className="p-4 rounded-lg bg-surface border-l-4 border-primary">
-        <h4 className="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
+      <div className="p-4 rounded-lg bg-surface border-l-4 border-primary dark:border-green-400">
+        <h4 className="text-sm font-semibold text-primary dark:text-green-400 mb-2 flex items-center gap-2">
           💡 How to Enter Equity
         </h4>
         <p className="text-xs text-text-secondary mb-2">
@@ -63,10 +63,10 @@ export function SimpleOfferForm({ onSubmit, isProcessing }: SimpleOfferFormProps
         </p>
         <ul className="text-xs text-text-secondary space-y-1 ml-4 list-disc">
           <li>
-            <span className="font-mono bg-primary/10 px-1 rounded text-primary">130k/year</span> if your offer states annual value
+            <span className="font-mono bg-primary/10 dark:bg-green-900/30 px-1 rounded text-primary dark:text-green-400">130k/year</span> if your offer states annual value
           </li>
           <li>
-            <span className="font-mono bg-primary/10 px-1 rounded text-primary">520k over 4 years</span> if it shows total grant (we'll calculate annual)
+            <span className="font-mono bg-primary/10 dark:bg-green-900/30 px-1 rounded text-primary dark:text-green-400">520k over 4 years</span> if it shows total grant (we'll calculate annual)
           </li>
         </ul>
         <p className="text-xs text-text-muted italic mt-2">

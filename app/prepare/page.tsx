@@ -167,9 +167,9 @@ export default function PreparePage() {
 
       {/* Resume Choice Card (if coming from Optimize flow) */}
       {jobDescription && hasOptimizedResume && !interviewBrief && (
-        <Card className="p-6 mb-8 bg-primary/5 border-2 border-primary/30">
+        <Card className="p-6 mb-8 bg-primary/5 dark:bg-green-900/20 border-2 border-primary/30 dark:border-green-400/30">
           <div className="flex items-start gap-3">
-            <Check className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+            <Check className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0 mt-1" />
             <div className="flex-1">
               <h2 className="text-lg font-semibold mb-2">Using Optimized Resume</h2>
               <p className="text-text-secondary mb-4">

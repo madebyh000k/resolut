@@ -105,11 +105,11 @@ export function BriefViewer({ brief }: BriefViewerProps) {
 
                   {section.tips && section.tips.length > 0 && (
                     <div className="pt-4 border-t border-text-muted/20">
-                      <h4 className="font-medium mb-2 text-primary">Tips:</h4>
+                      <h4 className="font-medium mb-2 text-primary dark:text-green-400">Tips:</h4>
                       <ul className="space-y-1">
                         {section.tips.map((tip, i) => (
                           <li key={i} className="text-sm text-text-secondary flex gap-2">
-                            <span className="text-primary">•</span>
+                            <span className="text-primary dark:text-green-400">•</span>
                             <span>{tip}</span>
                           </li>
                         ))}

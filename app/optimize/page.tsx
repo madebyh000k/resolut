@@ -114,8 +114,8 @@ export default function CustomizePage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                   {/* Step 1 */}
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">1</span>
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mb-3">
+                      <span className="text-xl font-bold text-primary dark:text-green-400">1</span>
                     </div>
                     <h4 className="font-semibold mb-1">Upload Your Resume</h4>
                     <p className="text-xs text-text-secondary">
@@ -125,8 +125,8 @@ export default function CustomizePage() {
 
                   {/* Step 2 */}
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">2</span>
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mb-3">
+                      <span className="text-xl font-bold text-primary dark:text-green-400">2</span>
                     </div>
                     <h4 className="font-semibold mb-1">Add Your Job Posting</h4>
                     <p className="text-xs text-text-secondary">
@@ -136,8 +136,8 @@ export default function CustomizePage() {
 
                   {/* Step 3 */}
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                      <span className="text-xl font-bold text-primary">3</span>
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mb-3">
+                      <span className="text-xl font-bold text-primary dark:text-green-400">3</span>
                     </div>
                     <h4 className="font-semibold mb-1">Resolut Does the Rest</h4>
                     <p className="text-xs text-text-secondary">
@@ -245,7 +245,7 @@ export default function CustomizePage() {
             {/* Processing State */}
             {isProcessing && jobDescription && originalResume && (
               <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <Loader2 className="h-16 w-16 text-primary animate-spin" />
+                <Loader2 className="h-16 w-16 text-primary dark:text-green-400 animate-spin" />
                 <div className="text-center">
                   <p className="text-lg font-medium">Optimizing your resume...</p>
                   <p className="text-sm text-text-secondary mt-2">
@@ -262,7 +262,7 @@ export default function CustomizePage() {
           <section>
             <div className="mb-6">
               <h2 className="text-2xl font-bold flex items-center gap-2">
-                <span className="text-primary">✨</span>
+                <span className="text-primary dark:text-green-400">✨</span>
                 Your Resume Analysis
               </h2>
               <p className="text-text-secondary mt-1">
@@ -280,7 +280,7 @@ export default function CustomizePage() {
             {/* Resume Comparison */}
             <div className="mb-6">
               <h2 className="text-2xl font-bold flex items-center gap-2">
-                <span className="text-primary">✨</span>
+                <span className="text-primary dark:text-green-400">✨</span>
                 Your Customized Resume
               </h2>
               <p className="text-text-secondary mt-1">

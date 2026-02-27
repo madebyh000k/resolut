@@ -37,15 +37,15 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 8) return 'text-green-600';
-    if (score >= 6) return 'text-yellow-600';
-    return 'text-orange-600';
+    if (score >= 8) return 'text-green-600 dark:text-green-400';
+    if (score >= 6) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-orange-600 dark:text-orange-400';
   };
 
   const getScoreBg = (score: number) => {
-    if (score >= 8) return 'bg-green-100 border-green-300';
-    if (score >= 6) return 'bg-yellow-100 border-yellow-300';
-    return 'bg-orange-100 border-orange-300';
+    if (score >= 8) return 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-500';
+    if (score >= 6) return 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-500';
+    return 'bg-orange-100 dark:bg-orange-900/30 border-orange-300 dark:border-orange-500';
   };
 
   // Helper to split newline-separated strings into arrays
@@ -61,7 +61,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
   return (
     <div className="space-y-6">
       {/* Overall Score */}
-      <Card className="p-6 bg-primary/5 border-2 border-primary/30">
+      <Card className="p-6 bg-primary/5 dark:bg-green-900/20 border-2 border-primary/30 dark:border-green-400/30">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Overall Resume Score</h2>
           <div className={`text-6xl font-bold ${getScoreColor(analysis.overallScore)} mb-2`}>
@@ -80,7 +80,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
           className="w-full flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <FileCheck className="h-6 w-6 text-primary flex-shrink-0" />
+            <FileCheck className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0" />
             <div className="text-left">
               <h3 className="text-xl font-semibold">ATS Compatibility</h3>
               <p className="text-sm text-text-secondary">
@@ -105,13 +105,13 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
             {analysis.atsIssues && splitLines(analysis.atsIssues).length > 0 && (
               <div className="p-4 rounded-lg bg-surface border border-text-muted/20">
                 <h4 className="font-medium mb-2 flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-orange-600" />
+                  <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                   Formatting Issues
                 </h4>
                 <ul className="space-y-2">
                   {splitLines(analysis.atsIssues).map((issue, idx) => (
                     <li key={idx} className="text-sm flex items-start gap-2">
-                      <span className="text-orange-600 mt-1">•</span>
+                      <span className="text-orange-600 dark:text-orange-400 mt-1">•</span>
                       <span>{issue}</span>
                     </li>
                   ))}
@@ -120,15 +120,15 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
             )}
 
             {analysis.atsFixes && splitLines(analysis.atsFixes).length > 0 && (
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="p-4 rounded-lg bg-primary/5 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20">
                 <h4 className="font-medium mb-2 flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <CheckCircle className="h-4 w-4 text-primary dark:text-green-400" />
                   Recommended Fixes
                 </h4>
                 <ul className="space-y-2">
                   {splitLines(analysis.atsFixes).map((fix, idx) => (
                     <li key={idx} className="text-sm flex items-start gap-2">
-                      <span className="text-primary mt-1">✓</span>
+                      <span className="text-primary dark:text-green-400 mt-1">✓</span>
                       <span>{fix}</span>
                     </li>
                   ))}
@@ -146,7 +146,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
           className="w-full flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <TrendingUp className="h-6 w-6 text-primary flex-shrink-0" />
+            <TrendingUp className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0" />
             <div className="text-left">
               <h3 className="text-xl font-semibold">Impact Quantification</h3>
               <p className="text-sm text-text-secondary">
@@ -170,11 +170,11 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
           <div className="mt-6 space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-3 rounded-lg bg-surface">
-                <div className="text-2xl font-bold text-primary">{analysis.bulletsWithMetrics}</div>
+                <div className="text-2xl font-bold text-primary dark:text-green-400">{analysis.bulletsWithMetrics}</div>
                 <div className="text-xs text-text-secondary mt-1">With Metrics</div>
               </div>
               <div className="text-center p-3 rounded-lg bg-surface">
-                <div className="text-2xl font-bold text-orange-600">{analysis.bulletsWithoutMetrics}</div>
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{analysis.bulletsWithoutMetrics}</div>
                 <div className="text-xs text-text-secondary mt-1">Without Metrics</div>
               </div>
               <div className="text-center p-3 rounded-lg bg-surface">
@@ -204,7 +204,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
           className="w-full flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <Target className="h-6 w-6 text-primary flex-shrink-0" />
+            <Target className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0" />
             <div className="text-left">
               <h3 className="text-xl font-semibold">Keyword Optimization</h3>
               <p className="text-sm text-text-secondary">
@@ -233,9 +233,9 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
                   <span className="text-sm font-medium">Coverage Rate</span>
                   <span className="text-sm font-bold">{analysis.keywordCoverage}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div
-                    className="bg-primary h-2 rounded-full"
+                    className="bg-primary dark:bg-green-400 h-2 rounded-full"
                     style={{ width: `${analysis.keywordCoverage}%` }}
                   />
                 </div>
@@ -243,13 +243,13 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
               <div className="grid grid-cols-2 gap-3 mt-3">
                 <div>
                   <div className="text-xs text-text-secondary mb-1">Keywords Present</div>
-                  <div className="text-lg font-bold text-primary">
+                  <div className="text-lg font-bold text-primary dark:text-green-400">
                     {splitCommas(analysis.keywordsPresent).length}
                   </div>
                 </div>
                 <div>
                   <div className="text-xs text-text-secondary mb-1">Keywords Missing</div>
-                  <div className="text-lg font-bold text-orange-600">
+                  <div className="text-lg font-bold text-orange-600 dark:text-orange-400">
                     {splitLines(analysis.keywordsMissing).length}
                   </div>
                 </div>
@@ -258,16 +258,16 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
 
             {/* Present Keywords */}
             {analysis.keywordsPresent && splitCommas(analysis.keywordsPresent).length > 0 && (
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="p-4 rounded-lg bg-primary/5 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20">
                 <h4 className="font-medium mb-2 flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
+                  <CheckCircle className="h-4 w-4 text-primary dark:text-green-400" />
                   Present Keywords
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {splitCommas(analysis.keywordsPresent).map((keyword, idx) => (
                     <span
                       key={idx}
-                      className="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-medium"
+                      className="px-3 py-1 rounded-full bg-primary/20 dark:bg-green-900/30 text-primary dark:text-green-400 text-sm font-medium"
                     >
                       {keyword}
                     </span>
@@ -298,7 +298,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
           className="w-full flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <MessageSquare className="h-6 w-6 text-primary flex-shrink-0" />
+            <MessageSquare className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0" />
             <div className="text-left">
               <h3 className="text-xl font-semibold">Narrative Coherence</h3>
               <p className="text-sm text-text-secondary">Story clarity and positioning</p>
@@ -324,8 +324,8 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
                 <h4 className="font-medium mb-2 text-sm text-text-secondary">CURRENT NARRATIVE:</h4>
                 <p className="text-sm">{analysis.currentNarrative}</p>
               </div>
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                <h4 className="font-medium mb-2 text-sm text-primary">RECOMMENDED NARRATIVE:</h4>
+              <div className="p-4 rounded-lg bg-primary/5 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20">
+                <h4 className="font-medium mb-2 text-sm text-primary dark:text-green-400">RECOMMENDED NARRATIVE:</h4>
                 <p className="text-sm">{analysis.recommendedNarrative}</p>
               </div>
             </div>
@@ -352,7 +352,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
           className="w-full flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <Briefcase className="h-6 w-6 text-primary flex-shrink-0" />
+            <Briefcase className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0" />
             <div className="text-left">
               <h3 className="text-xl font-semibold">Level-Appropriate Language</h3>
               <p className="text-sm text-text-secondary">
@@ -380,9 +380,9 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
                 <div className="text-xs text-text-secondary mb-1">CURRENT LEVEL</div>
                 <div className="text-xl font-bold capitalize">{analysis.currentLevel}</div>
               </div>
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-center">
+              <div className="p-4 rounded-lg bg-primary/5 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20 text-center">
                 <div className="text-xs text-text-secondary mb-1">TARGET LEVEL</div>
-                <div className="text-xl font-bold capitalize text-primary">
+                <div className="text-xl font-bold capitalize text-primary dark:text-green-400">
                   {analysis.targetLevel}
                 </div>
               </div>
@@ -410,7 +410,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
           className="w-full flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <Ruler className="h-6 w-6 text-primary flex-shrink-0" />
+            <Ruler className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0" />
             <div className="text-left">
               <h3 className="text-xl font-semibold">Length Optimization</h3>
               <p className="text-sm text-text-secondary">
@@ -419,7 +419,7 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className={`text-3xl font-bold ${analysis.lengthWithinLimit ? 'text-green-600' : 'text-orange-600'}`}>
+            <div className={`text-3xl font-bold ${analysis.lengthWithinLimit ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
               {Math.round(analysis.lengthEstimatedPages * 60)}
             </div>
             {expandedSections.length ? (
@@ -439,13 +439,13 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
                 <div className="text-xs text-text-secondary mt-1">Lines</div>
               </div>
               <div className="text-center p-3 rounded-lg bg-surface">
-                <div className={`text-2xl font-bold ${analysis.lengthWithinLimit ? 'text-green-600' : 'text-orange-600'}`}>
+                <div className={`text-2xl font-bold ${analysis.lengthWithinLimit ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
                   {analysis.lengthEstimatedPages.toFixed(1)}
                 </div>
                 <div className="text-xs text-text-secondary mt-1">Pages</div>
               </div>
               <div className="text-center p-3 rounded-lg bg-surface">
-                <div className={`text-2xl font-bold ${analysis.lengthWithinLimit ? 'text-green-600' : 'text-orange-600'}`}>
+                <div className={`text-2xl font-bold ${analysis.lengthWithinLimit ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
                   {analysis.lengthWithinLimit ? '✓' : '✗'}
                 </div>
                 <div className="text-xs text-text-secondary mt-1">Status</div>
@@ -454,9 +454,9 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
 
             {/* Optimization Note */}
             {analysis.lengthNote && (
-              <div className="p-4 rounded-lg bg-primary/5 border-2 border-primary/30">
+              <div className="p-4 rounded-lg bg-primary/5 dark:bg-green-900/20 border-2 border-primary/30 dark:border-green-400/30">
                 <h4 className="font-medium mb-2 flex items-center gap-2">
-                  <Lightbulb className="h-4 w-4 text-primary" />
+                  <Lightbulb className="h-4 w-4 text-primary dark:text-green-400" />
                   Optimization Strategy
                 </h4>
                 <p className="text-sm">{analysis.lengthNote}</p>

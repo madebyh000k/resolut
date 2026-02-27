@@ -43,14 +43,14 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="text-center py-12 sm:py-20">
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-primary/10 border border-primary/20">
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-primary/10 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20">
           <span className="text-xl">🔒</span>
-          <span className="text-sm font-medium text-primary">Private Beta</span>
+          <span className="text-sm font-medium text-primary dark:text-green-400">Private Beta</span>
         </div>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
           Land your dream job,
           <br />
-          <span className="text-primary">with AI-powered preparation</span>
+          <span className="text-primary dark:text-green-400">with AI-powered preparation</span>
         </h1>
         <p className="text-lg sm:text-xl text-text-secondary mb-8 max-w-2xl mx-auto">
           Transform your resume for ATS systems, prepare for interviews, and negotiate with confidence.
@@ -85,8 +85,8 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
           {/* Value Prop 1 */}
           <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Target className="h-8 w-8 text-primary" />
+            <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-4">
+              <Target className="h-8 w-8 text-primary dark:text-green-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3">ATS-Optimized Resumes</h3>
             <p className="text-text-secondary">
@@ -96,8 +96,8 @@ export default function LandingPage() {
 
           {/* Value Prop 2 */}
           <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="h-8 w-8 text-primary" />
+            <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-4">
+              <MessageSquare className="h-8 w-8 text-primary dark:text-green-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Interview Preparation</h3>
             <p className="text-text-secondary">
@@ -107,8 +107,8 @@ export default function LandingPage() {
 
           {/* Value Prop 3 */}
           <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <TrendingUp className="h-8 w-8 text-primary" />
+            <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-4">
+              <TrendingUp className="h-8 w-8 text-primary dark:text-green-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Smart Negotiations</h3>
             <p className="text-text-secondary">
@@ -136,7 +136,7 @@ export default function LandingPage() {
                 1
               </div>
               <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
-                <FileText className="h-6 w-6 text-primary" />
+                <FileText className="h-6 w-6 text-primary dark:text-green-400" />
                 Optimize Your Resume
               </h3>
               <p className="text-text-secondary mb-4">
@@ -154,19 +154,19 @@ export default function LandingPage() {
             <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Upload PDF or DOCX resume</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Paste job posting URL</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Get ATS-optimized resume in seconds</span>
@@ -182,7 +182,7 @@ export default function LandingPage() {
                 2
               </div>
               <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
-                <Briefcase className="h-6 w-6 text-primary" />
+                <Briefcase className="h-6 w-6 text-primary dark:text-green-400" />
                 Prepare for Your Interview
               </h3>
               <p className="text-text-secondary mb-4">
@@ -200,19 +200,19 @@ export default function LandingPage() {
             <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Recent company news & insights</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Personalized talking points</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Strategic questions to ask</span>
@@ -228,7 +228,7 @@ export default function LandingPage() {
                 3
               </div>
               <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3 justify-center md:justify-start">
-                <TrendingUp className="h-6 w-6 text-primary" />
+                <TrendingUp className="h-6 w-6 text-primary dark:text-green-400" />
                 Negotiate Your Offer
               </h3>
               <p className="text-text-secondary mb-4">
@@ -246,19 +246,19 @@ export default function LandingPage() {
             <div className="flex-1 bg-surface rounded-lg p-8 border border-text-muted/20">
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Market position analysis</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Email templates & scripts</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
                   <span className="text-sm">Pushback response strategies</span>

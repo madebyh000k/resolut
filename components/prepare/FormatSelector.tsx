@@ -23,8 +23,8 @@ export function FormatSelector({
           'flex-1 p-4 rounded-lg border-2 transition-all',
           'flex items-center gap-3',
           selectedFormat === '30min'
-            ? 'border-primary bg-primary/10'
-            : 'border-text-muted/30 hover:border-primary/50',
+            ? 'border-primary dark:border-green-400 bg-primary/10 dark:bg-green-900/20'
+            : 'border-text-muted/30 hover:border-primary/50 dark:hover:border-green-400/50',
           disabled && 'opacity-50 cursor-not-allowed'
         )}
       >
@@ -42,8 +42,8 @@ export function FormatSelector({
           'flex-1 p-4 rounded-lg border-2 transition-all',
           'flex items-center gap-3',
           selectedFormat === '60min'
-            ? 'border-primary bg-primary/10'
-            : 'border-text-muted/30 hover:border-primary/50',
+            ? 'border-primary dark:border-green-400 bg-primary/10 dark:bg-green-900/20'
+            : 'border-text-muted/30 hover:border-primary/50 dark:hover:border-green-400/50',
           disabled && 'opacity-50 cursor-not-allowed'
         )}
       >

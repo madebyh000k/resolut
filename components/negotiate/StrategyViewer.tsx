@@ -111,7 +111,7 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
   const getPriorityBadge = (priority: string) => {
     const colors = {
       high: 'bg-error/20 text-error',
-      medium: 'bg-primary/20 text-primary',
+      medium: 'bg-primary/20 dark:bg-green-900/30 text-primary dark:text-green-400',
       low: 'bg-text-muted/20 text-text-muted',
     };
     return colors[priority as keyof typeof colors] || colors.medium;
@@ -168,7 +168,7 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold flex items-center gap-2 mb-2">
-              <span className="text-primary">💼</span>
+              <span className="text-primary dark:text-green-400">💼</span>
               Your Negotiation Strategy
             </h2>
             <p className="text-text-secondary">
@@ -217,17 +217,17 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
 
       {/* Bottom Line - Final Recommendation */}
       {strategy.bottomLine && (
-        <Card className="p-6 border-2 border-primary bg-primary/5">
+        <Card className="p-6 border-2 border-primary dark:border-green-400 bg-primary/5 dark:bg-green-900/20">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <span className="text-3xl">🎯</span>
               <div>
-                <h3 className="text-xl font-bold text-primary mb-1">Bottom Line</h3>
+                <h3 className="text-xl font-bold text-primary dark:text-green-400 mb-1">Bottom Line</h3>
                 <p className="text-sm text-text-secondary">Clear recommendation for your next move</p>
               </div>
             </div>
 
-            <div className="p-4 rounded-lg bg-background border-2 border-primary">
+            <div className="p-4 rounded-lg bg-background border-2 border-primary dark:border-green-400">
               <div className="flex items-center gap-2 mb-3">
                 <span className="px-3 py-1.5 rounded-full bg-primary text-white text-sm font-bold">
                   {strategy.bottomLine.recommendation}
@@ -236,8 +236,8 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
               <p className="text-base leading-relaxed mb-4">
                 {strategy.bottomLine.reasoning}
               </p>
-              <div className="p-3 rounded-lg bg-primary/10 border border-primary/30">
-                <p className="text-xs font-semibold text-primary mb-1">ONE-LINE ADVICE:</p>
+              <div className="p-3 rounded-lg bg-primary/10 dark:bg-green-900/20 border border-primary/30 dark:border-green-400/30">
+                <p className="text-xs font-semibold text-primary dark:text-green-400 mb-1">ONE-LINE ADVICE:</p>
                 <p className="text-sm font-medium">
                   {strategy.bottomLine.oneLineAdvice}
                 </p>
@@ -271,8 +271,8 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
                 </div>
                 <p className="mt-3 text-sm">{insight.insight}</p>
                 {insight.recommendation && (
-                  <div className="mt-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                    <p className="text-sm font-medium text-primary mb-1">Recommendation</p>
+                  <div className="mt-3 p-3 rounded-lg bg-primary/5 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20">
+                    <p className="text-sm font-medium text-primary dark:text-green-400 mb-1">Recommendation</p>
                     <p className="text-sm">{insight.recommendation}</p>
                   </div>
                 )}
@@ -324,12 +324,12 @@ export function StrategyViewer({ strategy, offer }: StrategyViewerProps) {
                   </div>
 
                   {section.tips && section.tips.length > 0 && (
-                    <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
-                      <p className="text-sm font-semibold text-primary mb-3">💡 Key Tips</p>
+                    <div className="mt-4 p-4 rounded-lg bg-primary/5 dark:bg-green-900/20 border border-primary/20 dark:border-green-400/20">
+                      <p className="text-sm font-semibold text-primary dark:text-green-400 mb-3">💡 Key Tips</p>
                       <ul className="space-y-2">
                         {section.tips.map((tip, tipIndex) => (
                           <li key={tipIndex} className="text-sm flex items-start gap-2">
-                            <span className="text-primary mt-1">•</span>
+                            <span className="text-primary dark:text-green-400 mt-1">•</span>
                             <span>{tip}</span>
                           </li>
                         ))}

@@ -31,10 +31,10 @@ export function ResumeUploader() {
 
   if (originalResume && !isProcessing) {
     return (
-      <Card className="p-6 border-2 border-success">
+      <Card className="p-6 border-2 border-success dark:border-green-400">
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0">
-            <FileText className="h-12 w-12 text-success" />
+            <FileText className="h-12 w-12 text-success dark:text-green-400" />
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{originalResume.fileName}</h3>
@@ -60,7 +60,7 @@ export function ResumeUploader() {
       <div className="flex flex-col items-center justify-center text-center space-y-4">
         {isProcessing ? (
           <>
-            <Loader2 className="h-12 w-12 text-primary animate-spin" />
+            <Loader2 className="h-12 w-12 text-primary dark:text-green-400 animate-spin" />
             <div>
               <p className="text-lg font-medium">Processing your resume...</p>
               <p className="text-sm text-text-secondary mt-1">This may take a few moments</p>
@@ -68,8 +68,8 @@ export function ResumeUploader() {
           </>
         ) : (
           <>
-            <div className="p-4 rounded-full bg-primary/10">
-              <Upload className="h-8 w-8 text-primary" />
+            <div className="p-4 rounded-full bg-primary/10 dark:bg-green-900/20">
+              <Upload className="h-8 w-8 text-primary dark:text-green-400" />
             </div>
             <div>
               <p className="text-lg font-medium">

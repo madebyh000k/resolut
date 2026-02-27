@@ -19,14 +19,14 @@ export function JobUrlInput() {
 
   if (jobDescription) {
     return (
-      <Card className="p-6 border-2 border-success">
+      <Card className="p-6 border-2 border-success dark:border-green-400">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
-            <Briefcase className="h-10 w-10 text-success" />
+            <Briefcase className="h-10 w-10 text-success dark:text-green-400" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="h-5 w-5 text-success" />
+              <CheckCircle className="h-5 w-5 text-success dark:text-green-400" />
               <h3 className="font-semibold text-lg">Job Description Loaded</h3>
             </div>
             <p className="text-xl font-medium mb-1">{jobDescription.title}</p>
@@ -36,7 +36,7 @@ export function JobUrlInput() {
                 {jobDescription.keywords.slice(0, 8).map((keyword, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium"
+                    className="px-3 py-1 rounded-full bg-primary/10 dark:bg-green-900/20 text-primary dark:text-green-400 text-xs font-medium"
                   >
                     {keyword.term}
                   </span>

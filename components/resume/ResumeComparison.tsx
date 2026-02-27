@@ -24,24 +24,24 @@ export function ResumeComparison() {
     <div className="space-y-6">
       {/* Keywords Added Banner */}
       {customizedResume?.keywordsAdded?.length > 0 && (
-        <Card className="p-4 bg-success/10 border-success">
+        <Card className="p-4 bg-success/10 dark:bg-green-900/30 border-success dark:border-green-400">
           <div className="flex items-start gap-3">
-            <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
+            <CheckCircle className="h-5 w-5 text-success dark:text-green-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-success mb-2">
+              <p className="font-medium text-success dark:text-green-400 mb-2">
                 Added {customizedResume.keywordsAdded.length} ATS keywords to your resume
               </p>
               <div className="flex flex-wrap gap-2">
                 {customizedResume.keywordsAdded.slice(0, 10).map((keyword, index) => (
                   <span
                     key={index}
-                    className="px-2 py-1 rounded-md bg-success/20 text-success text-xs font-medium"
+                    className="px-2 py-1 rounded-md bg-success/20 dark:bg-green-900/30 text-success dark:text-green-400 text-xs font-medium"
                   >
                     {keyword}
                   </span>
                 ))}
                 {customizedResume.keywordsAdded.length > 10 && (
-                  <span className="px-2 py-1 text-success text-xs font-medium">
+                  <span className="px-2 py-1 text-success dark:text-green-400 text-xs font-medium">
                     +{customizedResume.keywordsAdded.length - 10} more
                   </span>
                 )}
@@ -99,7 +99,7 @@ export function ResumeComparison() {
         {/* Customized Resume */}
         <Card className="p-6 overflow-hidden bg-background border-2 border-primary/20">
           <h3 className="text-lg font-semibold mb-4 pb-2 border-b border-primary/30 flex items-center gap-2">
-            <span className="text-primary">✨</span>
+            <span className="text-primary dark:text-green-400">✨</span>
             Customized Resume
           </h3>
           <div className="max-w-none">

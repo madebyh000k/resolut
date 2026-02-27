@@ -38,12 +38,12 @@ export function CompanyNameInput({
   // If high confidence and not manually edited, show success state
   if (confirmed && !needsManual) {
     return (
-      <Card className="p-4 bg-primary/10 border-primary/30">
+      <Card className="p-4 bg-primary/10 dark:bg-green-900/20 border-primary/30 dark:border-green-400/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Check className="h-5 w-5 text-primary" />
+            <Check className="h-5 w-5 text-primary dark:text-green-400" />
             <div>
-              <p className="font-medium text-primary">Company detected: {companyName}</p>
+              <p className="font-medium text-primary dark:text-green-400">Company detected: {companyName}</p>
               <p className="text-sm text-text-secondary">Auto-detected from job posting</p>
             </div>
           </div>
@@ -106,12 +106,12 @@ export function CompanyNameInput({
 
   // Confirmed state after manual input
   return (
-    <Card className="p-4 bg-primary/10 border-primary/30">
+    <Card className="p-4 bg-primary/10 dark:bg-green-900/20 border-primary/30 dark:border-green-400/30">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Check className="h-5 w-5 text-primary" />
+          <Check className="h-5 w-5 text-primary dark:text-green-400" />
           <div>
-            <p className="font-medium text-primary">Company confirmed: {companyName}</p>
+            <p className="font-medium text-primary dark:text-green-400">Company confirmed: {companyName}</p>
             <p className="text-sm text-text-secondary">Ready to optimize your resume</p>
           </div>
         </div>

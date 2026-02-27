@@ -28,7 +28,7 @@ export function CompanyNewsDisplay({ news }: CompanyNewsDisplayProps) {
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
-        <Newspaper className="h-5 w-5 text-primary" />
+        <Newspaper className="h-5 w-5 text-primary dark:text-green-400" />
         <h3 className="font-semibold">Recent Company News</h3>
         <span className="text-xs text-text-secondary">
           {news.articles.length} {news.articles.length === 1 ? 'article' : 'articles'}
@@ -51,7 +51,7 @@ export function CompanyNewsDisplay({ news }: CompanyNewsDisplayProps) {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:text-primary-hover"
+                  className="text-primary dark:text-green-400 hover:text-primary-hover dark:hover:text-green-300"
                 >
                   <ExternalLink className="h-4 w-4" />
                 </a>
@@ -61,7 +61,7 @@ export function CompanyNewsDisplay({ news }: CompanyNewsDisplayProps) {
               <span
                 className={cn(
                   'inline-block mt-2 px-2 py-1 rounded text-xs font-medium',
-                  article.relevance === 'high' && 'bg-success/20 text-success',
+                  article.relevance === 'high' && 'bg-success/20 text-success dark:text-green-400',
                   article.relevance === 'medium' && 'bg-warning/20 text-warning',
                   article.relevance === 'low' && 'bg-surface text-text-secondary'
                 )}

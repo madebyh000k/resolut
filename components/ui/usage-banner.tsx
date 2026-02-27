@@ -40,9 +40,9 @@ export function UsageBanner({ remaining, limit, resetsAt, feature, variant = 'su
   // Styles based on variant
   const styles = {
     success: {
-      bg: 'bg-primary/10',
-      border: 'border-primary/30',
-      text: 'text-primary',
+      bg: 'bg-primary/10 dark:bg-green-900/20',
+      border: 'border-primary/30 dark:border-green-400/30',
+      text: 'text-primary dark:text-green-400',
       icon: CheckCircle,
     },
     warning: {
