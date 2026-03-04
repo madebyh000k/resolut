@@ -26,6 +26,18 @@ interface ResumeStore {
   briefFormat: '30min' | '60min';
   jobOffer: JobOffer | null;
   negotiationStrategy: NegotiationStrategy | null;
+  recruiterVerdict: {
+    firstImpression: string;
+    wouldReadFurther: boolean;
+    reason: string;
+    strongestSignal: string;
+    biggestLiability: string;
+    atsRisks: string;
+    verdict: 'strong' | 'borderline' | 'pass';
+    coachingNote1: string;
+    coachingNote2: string;
+    coachingNote3: string;
+  } | null;
   isProcessing: boolean;
   error: string | StructuredError | null;
 
@@ -57,6 +69,7 @@ export const useResumeStore = create<ResumeStore>()(
       briefFormat: '30min',
       jobOffer: null,
       negotiationStrategy: null,
+      recruiterVerdict: null,
       isProcessing: false,
       error: null,
 
@@ -155,7 +168,7 @@ export const useResumeStore = create<ResumeStore>()(
             throw new Error(errorData.error || 'Failed to analyze resume');
           }
 
-          const { analysis } = await response.json();
+          const { analysis, recruiterVerdict: verdict } = await response.json();
 
           // Create customized resume object with analysis
           const customizedResume: CustomizedResume = {
@@ -170,7 +183,7 @@ export const useResumeStore = create<ResumeStore>()(
             customizedAt: new Date(),
           };
 
-          set({ customizedResume, isProcessing: false });
+          set({ customizedResume, recruiterVerdict: verdict ?? null, isProcessing: false });
         } catch (error) {
           set({
             error: error instanceof Error ? error.message : 'Failed to customize resume',
@@ -450,6 +463,7 @@ export const useResumeStore = create<ResumeStore>()(
           briefFormat: '30min',
           jobOffer: null,
           negotiationStrategy: null,
+          recruiterVerdict: null,
           isProcessing: false,
           error: null,
         });
@@ -471,6 +485,7 @@ export const useResumeStore = create<ResumeStore>()(
         briefFormat: state.briefFormat,
         jobOffer: state.jobOffer,
         negotiationStrategy: state.negotiationStrategy,
+        recruiterVerdict: state.recruiterVerdict,
       }),
     }
   )

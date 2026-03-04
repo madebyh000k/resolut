@@ -6,7 +6,7 @@
 interface CostRecord {
   timestamp: Date;
   userId: string;
-  feature: 'optimize' | 'prepare' | 'negotiate';
+  feature: string;
   inputTokens: number;
   outputTokens: number;
   cost: number;
@@ -59,7 +59,7 @@ export function calculateCost(inputTokens: number, outputTokens: number): number
  */
 export function logApiCall(
   userId: string,
-  feature: 'optimize' | 'prepare' | 'negotiate',
+  feature: string,
   inputTokens: number,
   outputTokens: number,
   cacheHit: boolean = false
@@ -148,8 +148,12 @@ export function getDailySummary(date: Date = new Date()): DailyCostSummary {
   };
 
   todayRecords.forEach((record) => {
-    costByFeature[record.feature] += record.cost;
-    callsByFeature[record.feature]++;
+    // Agent sub-steps aggregate under 'optimize'; only track pipeline features in summary
+    const summaryFeature = record.feature.startsWith('agent-') ? 'optimize' : record.feature;
+    if (summaryFeature in costByFeature) {
+      costByFeature[summaryFeature as keyof typeof costByFeature] += record.cost;
+      callsByFeature[summaryFeature as keyof typeof callsByFeature]++;
+    }
   });
 
   return {

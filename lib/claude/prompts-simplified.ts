@@ -219,3 +219,237 @@ CRITICAL CONSTRAINTS:
 - NO line breaks (use \\n)
 - Return ONLY the JSON object, nothing else`;
 }
+
+// ============================================================
+// 4-AGENT PIPELINE PROMPTS
+// ============================================================
+
+/**
+ * AGENT 1 — JD ANALYST (Haiku)
+ * Extracts structured signal from the job description.
+ * Narrow scope, tight JSON output.
+ */
+export function createJdAnalystPrompt(jobDescription: string): string {
+  return `You are a job description analyst. Your only job is to extract structured signal from a job posting.
+
+JOB DESCRIPTION:
+${jobDescription}
+
+Return ONLY a valid JSON object. No preamble, no markdown fences.
+
+{
+  "requiredSkills": "<comma-separated list of must-have skills>",
+  "preferredSkills": "<comma-separated list of nice-to-have skills>",
+  "senioritySignals": "<comma-separated list of phrases indicating level and scope>",
+  "repeatedThemes": "<comma-separated list of concepts mentioned more than once>",
+  "culturalLanguage": "<comma-separated list of values or tone words used>",
+  "implicitPriorities": "<comma-separated list of what this role actually cares about most>",
+  "redFlags": "<comma-separated list of vague, contradictory, or unrealistic requirements — empty string if none>",
+  "targetTitle": "<the most accurate title for this role in 4 words or fewer>",
+  "topKeywords": "<15 most important keywords for ATS matching, comma-separated>"
+}
+
+Rules:
+- Be precise. Do not infer beyond what the text supports.
+- All values are strings. No nested objects or arrays.
+- Return ONLY the JSON object.`;
+}
+
+/**
+ * AGENT 2 — STRATEGIST + WRITER (Sonnet)
+ * Merged agent: reasons through strategy first as internal chain-of-thought,
+ * then executes the rewrite in a single pass. Saves one Sonnet call vs
+ * the split approach while preserving deliberate, strategy-led output quality.
+ *
+ * Output format: JSON strategy brief + ---RESUME--- delimiter + plain text resume.
+ * Matches the existing delimiter parsing pattern in the route.
+ */
+export function createStrategistWriterPrompt(
+  resumeText: string,
+  jdAnalysis: string,
+  jobDescription: string,
+  companyName?: string
+): string {
+  return `⚠️ CRITICAL ETHICAL CONSTRAINT — READ FIRST ⚠️
+
+You MUST NEVER add, invent, or fabricate ANY information not explicitly present in the original resume.
+
+❌ FORBIDDEN:
+- Adding metrics, percentages, dollar amounts, team sizes not in the original
+- Inventing timeframes, scope details, or quantification not already there
+- Exaggerating or inflating any achievement
+
+✅ ALLOWED:
+- Rewriting bullets with better structure and stronger action verbs
+- Reframing existing content to better match the role
+- Incorporating keywords where they naturally fit existing experience
+- Fixing grammar, spelling, formatting
+- Reorganizing content that's already present
+
+---
+
+You are a senior career strategist and resume writer. You think before you write.
+
+ORIGINAL RESUME:
+${resumeText}
+
+JD ANALYSIS (structured signal from the job description):
+${jdAnalysis}
+
+JOB DESCRIPTION (for keyword context):
+${jobDescription}
+
+${companyName ? `TARGET COMPANY: ${companyName}` : ''}
+
+Your task has two parts:
+
+PART 1 — STRATEGY (think first, output as JSON)
+Before writing a single word of the resume, reason through your approach.
+Return a JSON strategy brief with this EXACT flat structure:
+
+{
+  "headlineRecommendation": "<what the resume title/summary should lead with — 1 sentence>",
+  "narrativeThread": "<the single story this resume should tell for this role — 2 sentences max>",
+  "strongMatches": "<comma-separated list of existing content that maps well — keep and amplify>",
+  "reframeOpportunities": "<newline-separated list: '[current framing] → [recommended framing]'>",
+  "gapsToAddress": "<newline-separated list of gaps to surface from real existing experience only>",
+  "suppress": "<comma-separated list of content that dilutes focus for this role>",
+  "bulletPriorities": "<newline-separated list: '[role]: lead with [topic] not [topic]'>",
+  "toneAdjustment": "<1 sentence on language register>",
+  "keywordsToIncorporate": "<comma-separated keywords from JD analysis to weave in naturally>"
+}
+
+PART 2 — REWRITE (execute the strategy)
+After the JSON strategy brief, output the delimiter "---RESUME---" on its own line,
+then output the full rewritten resume as clean plain text.
+
+Execution rules:
+- Follow the headline recommendation exactly
+- Apply all reframe opportunities from the brief
+- Lead each role's bullets per the priority guidance
+- Suppress content flagged in the brief
+- Match the tone adjustment
+- Weave in keywords naturally — never force them
+- Preserve ALL factual content and real metrics from the original
+- Final resume MUST fit 2 pages (100–120 lines max)
+- Condense roles older than 5 years to 2–3 bullets
+- Plain text only after the delimiter — no JSON, no markdown, no commentary
+
+⚠️ CRITICAL JSON FORMATTING RULES ⚠️
+- Double quotes for ALL property names and string values
+- Escape internal quotes with backslash: \\"
+- Use \\n for line breaks in strings, NEVER literal newlines inside JSON values
+- No trailing commas
+- No markdown fences around the JSON
+
+OUTPUT FORMAT:
+{JSON strategy brief here}
+---RESUME---
+[Full rewritten resume as plain text here]`;
+}
+
+/**
+ * AGENT 3 — RECRUITER/ATS REVIEWER (Sonnet)
+ * Adversarial independent review. Fresh context — does not know what the writer intended.
+ * The most distinctive new output in the pipeline.
+ */
+export function createRecruiterPrompt(
+  rewrittenResume: string,
+  jobDescription: string
+): string {
+  return `You are a senior recruiter at a top-tier firm with 15 years of experience. You are reviewing a resume for a specific role.
+
+You are busy. You are skeptical. You have seen every trick.
+
+RESUME:
+${rewrittenResume}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+You have 30 seconds. Give your honest professional assessment. Return ONLY a valid JSON object. No preamble, no markdown fences.
+
+{
+  "firstImpression": "<what you notice in the first 5 seconds — 1 sentence, direct>",
+  "wouldReadFurther": <true or false>,
+  "reason": "<honest reason why or why not — 1–2 sentences>",
+  "strongestSignal": "<the single thing on this resume that earns attention for THIS role>",
+  "biggestLiability": "<the single thing most likely to lose the recruiter for THIS role>",
+  "atsRisks": "<newline-separated list of formatting or keyword gaps that could get filtered before human review — empty string if none>",
+  "verdict": "<exactly one of: strong, borderline, pass>",
+  "coachingNote1": "<most impactful specific fix — 1 sentence>",
+  "coachingNote2": "<second most impactful specific fix — 1 sentence>",
+  "coachingNote3": "<third specific fix — 1 sentence>"
+}
+
+Rules:
+- Be direct. Be honest. Do not soften feedback.
+- Evaluate what's actually on the page, not what was intended.
+- Coaching notes must be specific to THIS resume and THIS role — no generic advice.
+- All values are strings except wouldReadFurther which is boolean.
+- Return ONLY the JSON object.`;
+}
+
+/**
+ * AGENT 4 — SCORER (Haiku)
+ * Quantified 5-dimension scoring, informed by the recruiter's flags.
+ * Scores must reflect recruiter findings — not independent of them.
+ */
+export function createScorerPrompt(
+  rewrittenResume: string,
+  jobDescription: string,
+  recruiterAssessment: string
+): string {
+  return `You are a resume scoring system. Score a resume across 5 dimensions.
+
+RESUME:
+${rewrittenResume}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+RECRUITER ASSESSMENT (independent expert review — your scores must reflect these findings):
+${recruiterAssessment}
+
+Return ONLY a valid JSON object. No preamble, no markdown fences.
+
+{
+  "overallScore": <number 0–10>,
+  "atsScore": <number 0–10>,
+  "atsIssues": "<newline-separated list of formatting issues — empty string if none>",
+  "atsFixes": "<newline-separated list of exact fixes — empty string if none>",
+  "atsParseability": "<excellent, good, fair, or poor>",
+  "impactScore": <number 0–10>,
+  "bulletsWithMetrics": <number>,
+  "bulletsWithoutMetrics": <number>,
+  "totalBullets": <number>,
+  "weakBulletsText": "<newline-separated: '- [bullet] → [specific improvement]' — top 3 max>",
+  "keywordScore": <number 0–10>,
+  "criticalKeywords": "<comma-separated — top 15 from JD>",
+  "keywordsPresent": "<comma-separated — which critical keywords appear in resume>",
+  "keywordsMissing": "<newline-separated: '- [keyword] — where to add it' — empty string if none>",
+  "keywordCoverage": <number 0–100>,
+  "narrativeScore": <number 0–10>,
+  "currentNarrative": "<1–2 sentences describing the story the resume currently tells>",
+  "recommendedNarrative": "<1–2 sentences describing the optimal story for this role>",
+  "narrativeFixes": "<newline-separated list of reframing suggestions — empty string if none>",
+  "levelScore": <number 0–10>,
+  "targetLevel": "<senior, mid, or junior>",
+  "currentLevel": "<senior, mid, or junior>",
+  "levelIssues": "<newline-separated: '- [issue]: [fix]' — empty string if none>",
+  "starScore": <number 0–10>,
+  "starBulletsStrong": "<newline-separated list of bullets that satisfy at least 3 of 4 STAR components>",
+  "starBulletsWeak": "<newline-separated list of bullets missing Action clarity or Result>",
+  "starWeakExamples": "<newline-separated: '- [weak bullet] → [STAR rewrite]' — top 3 max>",
+  "ownershipFlags": "<newline-separated list of bullets using vague ownership language (contributed to, supported, assisted) — empty string if none>",
+  "lengthEstimatedPages": <number>,
+  "lengthWithinLimit": <true or false>,
+  "lengthNote": "<1–2 sentences on length>"
+}
+
+Rules:
+- Scores MUST reflect the recruiter assessment. If the recruiter flagged a liability, it must show in the relevant dimension score.
+- overallScore = average of the 5 dimension scores, rounded to 1 decimal.
+- All values match their declared types. Booleans are not strings.
+- Return ONLY the JSON object.`;
+}

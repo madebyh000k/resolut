@@ -16,14 +16,34 @@ import {
   FileCheck,
   Lightbulb,
   Ruler,
+  Shield,
+  Star,
+  Eye,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
+
+interface RecruiterVerdict {
+  firstImpression: string;
+  wouldReadFurther: boolean;
+  reason: string;
+  strongestSignal: string;
+  biggestLiability: string;
+  atsRisks: string;
+  verdict: 'strong' | 'borderline' | 'pass';
+  coachingNote1: string;
+  coachingNote2: string;
+  coachingNote3: string;
+}
 
 interface AnalysisDisplayProps {
   analysis: ResumeAnalysis;
+  recruiterVerdict: RecruiterVerdict | null;
 }
 
-export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
+export function AnalysisDisplay({ analysis, recruiterVerdict }: AnalysisDisplayProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    star: false,
     ats: false,
     impact: false,
     keywords: false,
@@ -71,6 +91,179 @@ export function AnalysisDisplay({ analysis }: AnalysisDisplayProps) {
             Based on comprehensive 5-dimensional analysis
           </p>
         </div>
+      </Card>
+
+      {/* Recruiter Verdict */}
+      {recruiterVerdict && (
+        <Card className="p-6 bg-slate-900 dark:bg-slate-950 border border-slate-700 dark:border-slate-600 text-white">
+          {/* Zone 1: Verdict Badge + First Impression */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 mb-3">
+              <Shield className="h-5 w-5 text-slate-300" />
+              <span className="text-xs font-medium tracking-widest uppercase text-slate-400">Recruiter Verdict</span>
+            </div>
+            <div className="mb-3">
+              <span className={`inline-block px-5 py-2 rounded-full text-sm font-bold tracking-wide uppercase ${
+                recruiterVerdict.verdict === 'strong'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                  : recruiterVerdict.verdict === 'borderline'
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                    : 'bg-red-500/20 text-red-400 border border-red-500/40'
+              }`}>
+                {recruiterVerdict.verdict}
+              </span>
+            </div>
+            <p className="text-sm text-slate-300 max-w-xl mx-auto">{recruiterVerdict.firstImpression}</p>
+            <div className="mt-3 flex items-center justify-center gap-2">
+              {recruiterVerdict.wouldReadFurther ? (
+                <>
+                  <Eye className="h-4 w-4 text-green-400" />
+                  <span className="text-xs text-green-400 font-medium">Would read further</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="h-4 w-4 text-red-400" />
+                  <span className="text-xs text-red-400 font-medium">Would not read further</span>
+                </>
+              )}
+            </div>
+            {recruiterVerdict.reason && (
+              <p className="text-xs text-slate-400 mt-1 max-w-lg mx-auto">{recruiterVerdict.reason}</p>
+            )}
+          </div>
+
+          {/* Zone 2: Strongest Signal vs Biggest Liability */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="p-4 rounded-lg bg-slate-800/60 border border-slate-700">
+              <div className="flex items-center gap-2 mb-2">
+                <ThumbsUp className="h-4 w-4 text-green-400" />
+                <h4 className="text-xs font-medium tracking-wide uppercase text-green-400">Strongest Signal</h4>
+              </div>
+              <p className="text-sm text-slate-200">{recruiterVerdict.strongestSignal}</p>
+            </div>
+            <div className="p-4 rounded-lg bg-red-950/40 border border-red-500/30">
+              <div className="flex items-center gap-2 mb-2">
+                <ThumbsDown className="h-4 w-4 text-red-400" />
+                <h4 className="text-xs font-medium tracking-wide uppercase text-red-400">Biggest Liability</h4>
+              </div>
+              <p className="text-sm text-slate-200">{recruiterVerdict.biggestLiability}</p>
+            </div>
+          </div>
+
+          {/* Zone 3: Coaching Notes */}
+          <div>
+            <h4 className="text-xs font-medium tracking-wide uppercase text-slate-400 mb-3">Coaching Notes</h4>
+            <div className="space-y-2">
+              {[recruiterVerdict.coachingNote1, recruiterVerdict.coachingNote2, recruiterVerdict.coachingNote3].map((note, idx) => (
+                note && (
+                  <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/40">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
+                      {idx + 1}
+                    </span>
+                    <p className="text-sm text-slate-300">{note}</p>
+                  </div>
+                )
+              ))}
+            </div>
+            {recruiterVerdict.atsRisks && recruiterVerdict.atsRisks.trim() && (
+              <div className="mt-3 p-3 rounded-lg bg-amber-950/30 border border-amber-500/30">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertCircle className="h-4 w-4 text-amber-400" />
+                  <h4 className="text-xs font-medium tracking-wide uppercase text-amber-400">ATS Risks</h4>
+                </div>
+                <ul className="space-y-1">
+                  {recruiterVerdict.atsRisks.split('\n').filter(r => r.trim()).map((risk, idx) => (
+                    <li key={idx} className="text-sm text-slate-300 flex items-start gap-2">
+                      <span className="text-amber-400 mt-0.5">•</span>
+                      <span>{risk}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* STAR Story Quality */}
+      <Card className="p-6">
+        <button
+          onClick={() => toggleSection('star')}
+          className="w-full flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <Star className="h-6 w-6 text-primary dark:text-green-400 flex-shrink-0" />
+            <div className="text-left">
+              <h3 className="text-xl font-semibold">STAR Story Quality</h3>
+              <p className="text-sm text-text-secondary">
+                Situation, Task, Action, Result structure
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className={`text-3xl font-bold ${getScoreColor(analysis.starScore)}`}>
+              {analysis.starScore}/10
+            </div>
+            {expandedSections.star ? (
+              <ChevronUp className="h-5 w-5 text-text-secondary" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-text-secondary" />
+            )}
+          </div>
+        </button>
+
+        {expandedSections.star && (
+          <div className="mt-6 space-y-4">
+            {/* Strong vs Weak Bullet Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 rounded-lg bg-surface">
+                <div className="text-2xl font-bold text-primary dark:text-green-400">
+                  {analysis.starBulletsStrong ? splitLines(analysis.starBulletsStrong).length : 0}
+                </div>
+                <div className="text-xs text-text-secondary mt-1">Strong STAR Bullets</div>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-surface">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {analysis.starBulletsWeak ? splitLines(analysis.starBulletsWeak).length : 0}
+                </div>
+                <div className="text-xs text-text-secondary mt-1">Weak STAR Bullets</div>
+              </div>
+            </div>
+
+            {/* Weak Examples with Fixes */}
+            {analysis.starWeakExamples && splitLines(analysis.starWeakExamples).length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-medium">Bullets Missing STAR Components</h4>
+                {splitLines(analysis.starWeakExamples).map((example, idx) => (
+                  <div key={idx} className="p-4 rounded-lg bg-surface border border-text-muted/20">
+                    <div className="text-sm">{example}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Ownership Flags */}
+            {analysis.ownershipFlags && analysis.ownershipFlags.trim() && (
+              <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-500/30">
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  Vague Ownership Language
+                </h4>
+                <p className="text-xs text-text-secondary mb-3">
+                  Phrases like &quot;contributed to&quot; or &quot;supported&quot; signal shared credit rather than direct ownership — elite hiring processes filter for candidates who clearly drove outcomes.
+                </p>
+                <ul className="space-y-2">
+                  {splitLines(analysis.ownershipFlags).map((flag, idx) => (
+                    <li key={idx} className="text-sm flex items-start gap-2">
+                      <span className="text-orange-600 dark:text-orange-400 mt-0.5">•</span>
+                      <span>{flag}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </Card>
 
       {/* Dimension 1: ATS Compatibility */}

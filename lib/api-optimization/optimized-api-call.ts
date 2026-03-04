@@ -8,8 +8,16 @@ import { generateCacheKey, getCachedResult, setCachedResult } from './cache-mana
 import { logApiCall } from './cost-tracker';
 import Anthropic from '@anthropic-ai/sdk';
 
+// Pipeline features (user-facing, rate-limited)
+type PipelineFeature = 'optimize' | 'prepare' | 'negotiate';
+
+// Agent features (internal steps within a pipeline, not individually rate-limited)
+type AgentFeature = 'agent-jd-analyst' | 'agent-strategist' | 'agent-recruiter' | 'agent-scorer';
+
+type Feature = PipelineFeature | AgentFeature;
+
 interface OptimizedApiCallOptions {
-  feature: 'optimize' | 'prepare' | 'negotiate';
+  feature: Feature;
   inputs: Record<string, any>;
   anthropicCall: () => Promise<Anthropic.Message>;
   request: Request;
@@ -33,116 +41,118 @@ interface OptimizedApiResult<T = any> {
   };
 }
 
-// Beta token limits (reduced to save costs)
-export const BETA_TOKEN_LIMITS = {
+// Token limits per feature
+// Agents: Haiku tasks (JD Analyst, Scorer) are tight; Sonnet tasks (Strategist, Writer, Recruiter) need room
+export const BETA_TOKEN_LIMITS: Record<Feature, number> = {
+  // Pipeline features (existing)
   optimize: 2500,
   prepare: 2000,
   negotiate: 2000,
+  // Agent features (new)
+  'agent-jd-analyst': 800,    // Haiku — structured JSON extraction
+  'agent-strategist': 3500,   // Sonnet — strategy chain-of-thought + full rewrite (merged)
+  'agent-recruiter': 1200,    // Sonnet — adversarial review
+  'agent-scorer': 1500,       // Haiku — structured JSON scoring
 };
+
+// Agent features bypass per-call rate limiting — they're sub-steps of a single pipeline call
+const AGENT_FEATURES: Set<Feature> = new Set([
+  'agent-jd-analyst',
+  'agent-strategist',
+  'agent-recruiter',
+  'agent-scorer',
+]);
 
 /**
  * Make an optimized API call with rate limiting, caching, and cost tracking
- *
- * Usage:
- * ```
- * const result = await makeOptimizedApiCall({
- *   feature: 'optimize',
- *   inputs: { resumeText, jobDescription, companyName },
- *   anthropicCall: () => anthropic.messages.create({...}),
- *   request,
- * });
- * ```
  */
 export async function makeOptimizedApiCall<T = any>(
   options: OptimizedApiCallOptions
 ): Promise<OptimizedApiResult<T>> {
   const { feature, inputs, anthropicCall, request, estimatedTokens = 2000 } = options;
 
-  // 1. Get user identifier
+  const isAgentFeature = AGENT_FEATURES.has(feature);
   const userId = getUserIdentifier(request);
 
-  // 2. Check rate limit
-  const rateLimit = checkRateLimit(userId, feature);
+  // Rate limiting only applies to pipeline features, not individual agents
+  if (!isAgentFeature) {
+    const rateLimit = checkRateLimit(userId, feature as PipelineFeature);
 
-  if (!rateLimit.allowed) {
-    const resetTime = formatResetTime(rateLimit.resetsAt);
-    return {
-      success: false,
-      error: `Daily limit reached for ${feature}. You have ${rateLimit.remaining} uses remaining. Resets ${resetTime}.`,
-      usage: {
-        remaining: rateLimit.remaining,
-        limit: rateLimit.limit,
-        resetsAt: rateLimit.resetsAt,
-        cacheHit: false,
-      },
-    };
+    if (!rateLimit.allowed) {
+      const resetTime = formatResetTime(rateLimit.resetsAt);
+      return {
+        success: false,
+        error: `Daily limit reached for ${feature}. You have ${rateLimit.remaining} uses remaining. Resets ${resetTime}.`,
+        usage: {
+          remaining: rateLimit.remaining,
+          limit: rateLimit.limit,
+          resetsAt: rateLimit.resetsAt,
+          cacheHit: false,
+        },
+      };
+    }
   }
 
-  // 3. Check cache (except for negotiate)
+  // Cache check — agents can cache too (same inputs = same output)
   const cacheKey = generateCacheKey(feature, inputs);
   const cachedResult = getCachedResult(cacheKey);
 
   if (cachedResult) {
-    // Cache hit! Return cached result without incrementing rate limit or making API call
     console.log(`[${feature.toUpperCase()}] Cache hit, returning cached result`);
-
-    // Still log it for tracking (with 0 cost)
     logApiCall(userId, feature, estimatedTokens, estimatedTokens, true);
+
+    // Only check rate limit for pipeline features
+    const usageInfo = !isAgentFeature
+      ? checkRateLimit(userId, feature as PipelineFeature)
+      : { remaining: 999, limit: 999, resetsAt: new Date() };
 
     return {
       success: true,
       data: cachedResult as T,
       usage: {
-        remaining: rateLimit.remaining, // Don't decrement for cache hits
-        limit: rateLimit.limit,
-        resetsAt: rateLimit.resetsAt,
+        remaining: usageInfo.remaining,
+        limit: usageInfo.limit,
+        resetsAt: usageInfo.resetsAt,
         cacheHit: true,
       },
-      cost: {
-        inputTokens: 0,
-        outputTokens: 0,
-        estimatedCost: 0,
-      },
+      cost: { inputTokens: 0, outputTokens: 0, estimatedCost: 0 },
     };
   }
 
-  // 4. Make API call
+  // Make the API call
   try {
     console.log(`[${feature.toUpperCase()}] Making API call for user ${userId.substring(0, 10)}...`);
 
     const message = await anthropicCall();
 
-    // Extract token usage from response
     const inputTokens = message.usage?.input_tokens || 0;
     const outputTokens = message.usage?.output_tokens || 0;
+    const totalCost = (inputTokens * 0.000003) + (outputTokens * 0.000015);
 
-    // Calculate cost
-    const inputCost = inputTokens * 0.000003;
-    const outputCost = outputTokens * 0.000015;
-    const totalCost = inputCost + outputCost;
-
-    // 5. Log cost
     logApiCall(userId, feature, inputTokens, outputTokens, false);
 
-    // 6. Increment rate limit
-    incrementUsage(userId, feature);
+    // Only increment rate limit for pipeline features
+    if (!isAgentFeature) {
+      incrementUsage(userId, feature as PipelineFeature);
+    }
 
-    // 7. Cache the result (if applicable)
+    // Cache the result
     const content = message.content[0];
     if (content.type === 'text') {
       setCachedResult(cacheKey, content.text, feature, inputTokens + outputTokens);
     }
 
-    // 8. Return result with updated usage info
-    const updatedRateLimit = checkRateLimit(userId, feature);
+    const usageInfo = !isAgentFeature
+      ? checkRateLimit(userId, feature as PipelineFeature)
+      : { remaining: 999, limit: 999, resetsAt: new Date() };
 
     return {
       success: true,
       data: message as T,
       usage: {
-        remaining: updatedRateLimit.remaining,
-        limit: updatedRateLimit.limit,
-        resetsAt: updatedRateLimit.resetsAt,
+        remaining: usageInfo.remaining,
+        limit: usageInfo.limit,
+        resetsAt: usageInfo.resetsAt,
         cacheHit: false,
       },
       cost: {
@@ -154,16 +164,17 @@ export async function makeOptimizedApiCall<T = any>(
   } catch (error) {
     console.error(`[${feature.toUpperCase()}] API call failed:`, error);
 
-    // Don't increment rate limit on failure
-    const updatedRateLimit = checkRateLimit(userId, feature);
+    const usageInfo = !isAgentFeature
+      ? checkRateLimit(userId, feature as PipelineFeature)
+      : { remaining: 999, limit: 999, resetsAt: new Date() };
 
     return {
       success: false,
       error: error instanceof Error ? error.message : 'API call failed',
       usage: {
-        remaining: updatedRateLimit.remaining,
-        limit: updatedRateLimit.limit,
-        resetsAt: updatedRateLimit.resetsAt,
+        remaining: usageInfo.remaining,
+        limit: usageInfo.limit,
+        resetsAt: usageInfo.resetsAt,
         cacheHit: false,
       },
     };
@@ -171,8 +182,8 @@ export async function makeOptimizedApiCall<T = any>(
 }
 
 /**
- * Get max tokens for a feature based on beta limits
+ * Get max tokens for a feature
  */
-export function getMaxTokens(feature: 'optimize' | 'prepare' | 'negotiate'): number {
-  return BETA_TOKEN_LIMITS[feature];
+export function getMaxTokens(feature: Feature): number {
+  return BETA_TOKEN_LIMITS[feature] ?? 2000;
 }

@@ -38,6 +38,15 @@ export interface ResumeAnalysis {
   currentLevel: string; // same as above
   levelIssues: string; // Newline-separated list of language issues with fixes
 
+  // STAR Method Analysis
+  starScore: number; // 0-10
+  starBulletsStrong: string; // Newline-separated list of bullets that use STAR format well
+  starBulletsWeak: string; // Newline-separated list of bullets that lack STAR structure
+  starWeakExamples: string; // Newline-separated: '- [weak bullet] → [STAR rewrite]'
+
+  // Ownership Signals
+  ownershipFlags: string; // Newline-separated list of phrases showing ownership vs passive voice
+
   // Length Analysis
   lengthEstimatedPages: number; // Estimated pages (e.g., 1.5, 2.0)
   lengthWithinLimit: boolean; // true if <= 2 pages

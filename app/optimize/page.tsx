@@ -21,6 +21,7 @@ export default function CustomizePage() {
     error,
     customizeResume,
     clearError,
+    recruiterVerdict,
   } = useResumeStore();
 
   // Check beta access on page load
@@ -273,7 +274,7 @@ export default function CustomizePage() {
             {/* Analysis Display */}
             {customizedResume?.analysis && (
               <div className="mb-12">
-                <AnalysisDisplay analysis={customizedResume.analysis} />
+                <AnalysisDisplay analysis={customizedResume.analysis} recruiterVerdict={recruiterVerdict} />
               </div>
             )}
 

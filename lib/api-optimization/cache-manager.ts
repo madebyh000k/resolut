@@ -40,7 +40,7 @@ let totalTokensSaved = 0;
  * Generate cache key from inputs
  */
 export function generateCacheKey(
-  feature: 'optimize' | 'prepare' | 'negotiate',
+  feature: string,
   inputs: Record<string, any>
 ): string {
   // Create deterministic hash of inputs
@@ -83,10 +83,10 @@ export function getCachedResult(cacheKey: string): any | null {
 export function setCachedResult(
   cacheKey: string,
   result: any,
-  feature: 'optimize' | 'prepare' | 'negotiate',
+  feature: string,
   estimatedTokens: number = 2000
 ): void {
-  const ttl = CACHE_TTL[feature];
+  const ttl = CACHE_TTL[feature as keyof typeof CACHE_TTL] ?? CACHE_TTL.optimize;
 
   // Don't cache if TTL is 0
   if (ttl === 0) {
