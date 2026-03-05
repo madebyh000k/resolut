@@ -48,13 +48,12 @@ export default function LandingPage() {
           <span className="text-sm font-medium text-primary dark:text-green-400">Private Beta</span>
         </div>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
-          Land your dream job,
+          See what recruiters see
           <br />
-          <span className="text-primary dark:text-green-400">with AI-powered preparation</span>
+          <span className="text-primary dark:text-green-400">in your resume</span>
         </h1>
         <p className="text-lg sm:text-xl text-text-secondary mb-8 max-w-2xl mx-auto">
-          Transform your resume for ATS systems, prepare for interviews, and negotiate with confidence.
-          Resolut helps you stand out in every stage of the job search.
+          Get recruiter feedback in 60 seconds. Prepare for your interview. Negotiate your offer with confidence. All in one tool.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button
