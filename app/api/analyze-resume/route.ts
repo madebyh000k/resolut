@@ -239,7 +239,10 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error in 4-agent pipeline:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errStack = error instanceof Error ? error.stack : '';
+    console.error('Error in 4-agent pipeline:', errMsg);
+    console.error('Stack:', errStack);
 
     if (error instanceof Anthropic.APIError) {
       return NextResponse.json(

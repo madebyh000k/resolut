@@ -285,7 +285,7 @@ export function validateRequiredFields<T extends object>(
   requiredFields: (keyof T)[],
   entityName: string = 'response'
 ): void {
-  const missingFields = requiredFields.filter(field => !obj[field]);
+  const missingFields = requiredFields.filter(field => obj[field] === undefined || obj[field] === null);
 
   if (missingFields.length > 0) {
     console.error(`[JSON Parser] Missing required fields in ${entityName}:`, missingFields);
