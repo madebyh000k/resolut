@@ -26,17 +26,38 @@ function extractText(message: Anthropic.Message): string {
 
 // ─── Helper: parse JSON from agent response ───────────────────────────────────
 function parseAgentJson<T>(raw: string, agentName: string): T {
+  // Log first 300 chars for debugging
+  console.log(`[${agentName}] Raw response (first 300 chars):`, raw.substring(0, 300));
+
+  // Detect error-text responses (Claude returned prose instead of JSON)
+  const trimmed = raw.trim();
+  const errorPrefixes = ['An error', 'I apologize', 'Unfortunately', "I'm sorry", 'I cannot', 'Error:'];
+  for (const prefix of errorPrefixes) {
+    if (trimmed.startsWith(prefix)) {
+      console.error(`[${agentName}] Claude returned error text instead of JSON:`, trimmed.substring(0, 500));
+      throw new Error(`[${agentName}] Claude returned error text instead of JSON: "${trimmed.substring(0, 100)}..."`);
+    }
+  }
+
   // Strip markdown fences if present
   let cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
   const start = cleaned.indexOf('{');
   const end = cleaned.lastIndexOf('}');
   if (start === -1 || end === -1) {
-    throw new Error(`[${agentName}] No JSON object found in response`);
+    console.error(`[${agentName}] No JSON object found. Response (first 200 chars):`, cleaned.substring(0, 200));
+    throw new Error(`[${agentName}] No JSON object found in response. Starts with: "${cleaned.substring(0, 100)}..."`);
   }
+
+  // Warn if there was preamble text before the JSON
+  if (start > 0) {
+    console.warn(`[${agentName}] Stripped ${start} chars of preamble before JSON:`, cleaned.substring(0, start));
+  }
+
   cleaned = cleaned.substring(start, end + 1);
   try {
     return JSON.parse(cleaned);
-  } catch {
+  } catch (parseError) {
+    console.warn(`[${agentName}] JSON.parse failed, trying robust parser. Error:`, parseError instanceof Error ? parseError.message : String(parseError));
     // Fallback to robust parser
     return parseClaudeJsonResponse<T>(cleaned);
   }
@@ -58,6 +79,7 @@ async function runAgent(
         model,
         max_tokens: getMaxTokens(feature),
         temperature: 0.3,
+        system: 'You are a JSON-only API. Your entire response must be valid JSON (or JSON followed by a ---RESUME--- delimiter if instructed). NEVER output preamble, apologies, explanations, or error text before the JSON. Your first character must be {. If you cannot complete the task, return {"error": "reason"}.',
         messages: [{ role: 'user', content: prompt }],
       }),
     request,
@@ -74,6 +96,13 @@ async function runAgent(
 export async function POST(request: NextRequest) {
   try {
     const { resumeText, jobDescription, companyName } = await request.json();
+
+    console.log('📥 Input lengths:', {
+      resumeLength: resumeText?.length ?? 0,
+      jobDescLength: jobDescription?.length ?? 0,
+      totalChars: (resumeText?.length ?? 0) + (jobDescription?.length ?? 0),
+      companyName: companyName || '(not provided)',
+    });
 
     if (!resumeText || !jobDescription) {
       return NextResponse.json(
@@ -138,6 +167,7 @@ export async function POST(request: NextRequest) {
     // Parse the two-part response using existing delimiter pattern
     const sw_delimiterIndex = strategistWriterRaw.indexOf('---RESUME---');
     if (sw_delimiterIndex === -1) {
+      console.error('[Agent 2] Missing ---RESUME--- delimiter. Response (first 500 chars):', strategistWriterRaw.substring(0, 500));
       throw new Error('[Agent 2] Missing ---RESUME--- delimiter in response');
     }
     const strategyJsonRaw = strategistWriterRaw.substring(0, sw_delimiterIndex).trim();
