@@ -10,29 +10,9 @@ import {
   createScorerPrompt,
 } from '@/lib/claude/prompts-simplified';
 
-// Allow up to 60s for the 4-agent sequential pipeline
-export const maxDuration = 60;
-
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
-
-// ─── Error text detection patterns ───────────────────────────────────────────
-const ERROR_TEXT_PATTERNS = [
-  /^An error/i,
-  /^I apologize/i,
-  /^Unfortunately/i,
-  /^I'm sorry/i,
-  /^I cannot/i,
-  /^Error:/i,
-  /^I'm unable/i,
-  /^There was/i,
-];
-
-function isErrorText(text: string): boolean {
-  const trimmed = text.trim();
-  return ERROR_TEXT_PATTERNS.some(pattern => pattern.test(trimmed));
-}
 
 // ─── Helper: extract text from Claude response ────────────────────────────────
 function extractText(message: Anthropic.Message): string {
@@ -43,119 +23,54 @@ function extractText(message: Anthropic.Message): string {
 
 // ─── Helper: parse JSON from agent response ───────────────────────────────────
 function parseAgentJson<T>(raw: string, agentName: string): T {
-  // Log first 300 chars for debugging
-  console.log(`[${agentName}] Raw response (first 300 chars):`, raw.substring(0, 300));
-
   // Strip markdown fences if present
   let cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
   const start = cleaned.indexOf('{');
   const end = cleaned.lastIndexOf('}');
   if (start === -1 || end === -1) {
-    console.error(`[${agentName}] No JSON object found. Response (first 200 chars):`, cleaned.substring(0, 200));
-    throw new Error(`[${agentName}] No JSON object found in response. Starts with: "${cleaned.substring(0, 100)}..."`);
+    throw new Error(`[${agentName}] No JSON object found in response`);
   }
-
-  // Warn if there was preamble text before the JSON
-  if (start > 0) {
-    console.warn(`[${agentName}] Stripped ${start} chars of preamble before JSON:`, cleaned.substring(0, start));
-  }
-
   cleaned = cleaned.substring(start, end + 1);
   try {
     return JSON.parse(cleaned);
-  } catch (parseError) {
-    console.warn(`[${agentName}] JSON.parse failed, trying robust parser. Error:`, parseError instanceof Error ? parseError.message : String(parseError));
+  } catch {
     // Fallback to robust parser
     return parseClaudeJsonResponse<T>(cleaned);
   }
 }
 
-// ─── Custom error for error-text responses ──────────────────────────────────
-class ClaudeErrorTextError extends Error {
-  constructor(agentName: string, responseText: string) {
-    super(`[${agentName}] Claude returned error text instead of JSON`);
-    this.name = 'ClaudeErrorTextError';
-    (this as any).agentName = agentName;
-    (this as any).responsePreview = responseText.substring(0, 300);
-  }
-}
-
-// ─── Agent-specific system messages ──────────────────────────────────────────
-const SYSTEM_MSG_JSON_ONLY =
-  'You are a JSON-only API. Return ONLY a valid JSON object. No preamble, no apologies, no explanations. Your first character must be {. Your last character must be }. If you cannot complete the task, return {"error": "reason"}.';
-
-const SYSTEM_MSG_DELIMITER =
-  'You are a resume optimization expert. Return your response in exactly two parts: first a valid JSON object (starting with {), then the delimiter ---RESUME--- on its own line, then the full optimized resume as plain text. No preamble before the JSON. No markdown fences. Start immediately with {.';
-
-function getSystemMessage(feature: string): string {
-  return feature === 'agent-strategist' ? SYSTEM_MSG_DELIMITER : SYSTEM_MSG_JSON_ONLY;
-}
-
-// ─── Helper: run a single agent call (with retry on error-text) ─────────────
+// ─── Helper: run a single agent call ─────────────────────────────────────────
 async function runAgent(
   feature: Parameters<typeof makeOptimizedApiCall>[0]['feature'],
   model: string,
   prompt: string,
   inputs: Record<string, any>,
-  request: NextRequest,
-  maxRetries = 1
+  request: NextRequest
 ): Promise<string> {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    if (attempt > 0) {
-      console.warn(`[${feature}] Retry attempt ${attempt}/${maxRetries}...`);
-    }
+  const result = await makeOptimizedApiCall({
+    feature,
+    inputs,
+    anthropicCall: () =>
+      anthropic.messages.create({
+        model,
+        max_tokens: getMaxTokens(feature),
+        temperature: 0.3,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    request,
+  });
 
-    const result = await makeOptimizedApiCall({
-      feature,
-      inputs,
-      anthropicCall: () =>
-        anthropic.messages.create({
-          model,
-          max_tokens: getMaxTokens(feature),
-          temperature: 0.3,
-          system: getSystemMessage(feature),
-          messages: [{ role: 'user', content: prompt }],
-        }),
-      request,
-    });
-
-    if (!result.success) {
-      throw new Error(`Agent ${feature} failed: ${result.error}`);
-    }
-
-    const text = extractText(result.data as Anthropic.Message);
-
-    // Check for error-text response
-    if (isErrorText(text)) {
-      console.error(`[${feature}] Attempt ${attempt + 1}: Claude returned error text (${text.length} chars):`, text.substring(0, 500));
-      if (attempt < maxRetries) {
-        continue; // Retry
-      }
-      // Out of retries — throw specific error
-      throw new ClaudeErrorTextError(feature, text);
-    }
-
-    return text;
+  if (!result.success) {
+    throw new Error(`Agent ${feature} failed: ${result.error}`);
   }
 
-  // Should never reach here, but TypeScript needs it
-  throw new Error(`Agent ${feature} failed after ${maxRetries + 1} attempts`);
+  return extractText(result.data as Anthropic.Message);
 }
 
 // ─── Route handler ─────────────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
   try {
     const { resumeText, jobDescription, companyName } = await request.json();
-
-    console.log('=== INPUTS TO CLAUDE ===');
-    console.log('Resume length:', resumeText?.length ?? 0);
-    console.log('Resume first 300 chars:', resumeText?.substring(0, 300) ?? '(empty)');
-    console.log('Resume last 100 chars:', resumeText ? resumeText.substring(Math.max(0, resumeText.length - 100)) : '(empty)');
-    console.log('Job description length:', jobDescription?.length ?? 0);
-    console.log('Job first 300 chars:', jobDescription?.substring(0, 300) ?? '(empty)');
-    console.log('Company:', companyName || '(not provided)');
-    console.log('Total chars:', (resumeText?.length ?? 0) + (jobDescription?.length ?? 0));
-    console.log('========================');
 
     if (!resumeText || !jobDescription) {
       return NextResponse.json(
@@ -164,25 +79,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── Truncate oversized inputs to prevent timeouts ────────────────────────
-    let processedResume = resumeText;
-    let processedJobDesc = jobDescription;
-
-    if (jobDescription.length > 15000) {
-      console.warn(`Job description too long (${jobDescription.length} chars), truncating to 15000`);
-      processedJobDesc = jobDescription.substring(0, 15000) + '\n\n[Description truncated for analysis]';
-    }
-    if (resumeText.length > 12000) {
-      console.warn(`Resume too long (${resumeText.length} chars), truncating to 12000`);
-      processedResume = resumeText.substring(0, 12000) + '\n\n[Resume truncated for analysis]';
-    }
-
     // ── Rate limit check on the pipeline feature (not individual agents) ──────
     // We check 'optimize' once here before starting the chain.
     // Individual agent calls bypass rate limiting (they're sub-steps).
     const rateLimitCheck = await makeOptimizedApiCall({
       feature: 'optimize',
-      inputs: { resumeText: processedResume, jobDescription: processedJobDesc, companyName },
+      inputs: { resumeText, jobDescription, companyName },
       anthropicCall: () => Promise.reject(new Error('rate-limit-check-only')),
       request,
     });
@@ -204,8 +106,8 @@ export async function POST(request: NextRequest) {
     const jdAnalystRaw = await runAgent(
       'agent-jd-analyst',
       'claude-haiku-4-5-20251001',
-      createJdAnalystPrompt(processedJobDesc),
-      { jobDescription: processedJobDesc },
+      createJdAnalystPrompt(jobDescription),
+      { jobDescription },
       request
     );
     const jdAnalysis = parseAgentJson<Record<string, string>>(jdAnalystRaw, 'JD Analyst');
@@ -221,19 +123,18 @@ export async function POST(request: NextRequest) {
       'agent-strategist',
       'claude-sonnet-4-5-20250929',
       createStrategistWriterPrompt(
-        processedResume,
+        resumeText,
         JSON.stringify(jdAnalysis, null, 2),
-        processedJobDesc,
+        jobDescription,
         companyName
       ),
-      { resumeText: processedResume, jdAnalysis: JSON.stringify(jdAnalysis), jobDescription: processedJobDesc, companyName },
+      { resumeText, jdAnalysis: JSON.stringify(jdAnalysis), jobDescription, companyName },
       request
     );
 
     // Parse the two-part response using existing delimiter pattern
     const sw_delimiterIndex = strategistWriterRaw.indexOf('---RESUME---');
     if (sw_delimiterIndex === -1) {
-      console.error('[Agent 2] Missing ---RESUME--- delimiter. Response (first 500 chars):', strategistWriterRaw.substring(0, 500));
       throw new Error('[Agent 2] Missing ---RESUME--- delimiter in response');
     }
     const strategyJsonRaw = strategistWriterRaw.substring(0, sw_delimiterIndex).trim();
@@ -249,8 +150,8 @@ export async function POST(request: NextRequest) {
     const recruiterRaw = await runAgent(
       'agent-recruiter',
       'claude-sonnet-4-5-20250929',
-      createRecruiterPrompt(rewrittenResume, processedJobDesc),
-      { rewrittenResume, jobDescription: processedJobDesc },
+      createRecruiterPrompt(rewrittenResume, jobDescription),
+      { rewrittenResume, jobDescription },
       request
     );
     const recruiterVerdict = parseAgentJson<{
@@ -275,8 +176,8 @@ export async function POST(request: NextRequest) {
     const scorerRaw = await runAgent(
       'agent-scorer',
       'claude-haiku-4-5-20251001',
-      createScorerPrompt(rewrittenResume, processedJobDesc, JSON.stringify(recruiterVerdict, null, 2)),
-      { rewrittenResume, jobDescription: processedJobDesc, recruiterVerdict: JSON.stringify(recruiterVerdict) },
+      createScorerPrompt(rewrittenResume, jobDescription, JSON.stringify(recruiterVerdict, null, 2)),
+      { rewrittenResume, jobDescription, recruiterVerdict: JSON.stringify(recruiterVerdict) },
       request
     );
     const scoreData = parseAgentJson<ResumeAnalysis>(scorerRaw, 'Scorer');
@@ -338,33 +239,8 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    const errMsg = error instanceof Error ? error.message : String(error);
-    const errStack = error instanceof Error ? error.stack : '';
-    console.error('Error in 4-agent pipeline:', errMsg);
-    console.error('Stack:', errStack);
+    console.error('Error in 4-agent pipeline:', error);
 
-    // ── Claude returned error text instead of JSON (e.g. "An error occurred...") ──
-    if (error instanceof ClaudeErrorTextError) {
-      const preview = (error as any).responsePreview || '';
-      const agent = (error as any).agentName || 'unknown';
-      console.error(`ClaudeErrorTextError from ${agent}:`, preview);
-      return NextResponse.json(
-        {
-          error: 'Analysis failed',
-          message: 'Unable to process this resume and job combination. The AI returned an unexpected response. This may be due to unusual formatting or length.',
-          suggestions: [
-            'Try again — this is usually a temporary issue',
-            'Try with a simpler resume format (plain text, no complex layouts)',
-            'Try with a shorter job description',
-            'Contact us if the issue persists: hello@resolut.tools',
-          ],
-          technicalError: `Agent ${agent} returned text: "${preview.substring(0, 100)}..."`,
-        },
-        { status: 500 }
-      );
-    }
-
-    // ── Claude API-level error (rate limit, auth, etc.) ──
     if (error instanceof Anthropic.APIError) {
       return NextResponse.json(
         { error: `Claude API error: ${error.message}` },
@@ -374,7 +250,6 @@ export async function POST(request: NextRequest) {
 
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-    // ── JSON parsing failure ──
     if (errorMessage.includes('JSON') || errorMessage.includes('parse')) {
       return NextResponse.json(
         {

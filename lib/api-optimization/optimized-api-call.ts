@@ -52,7 +52,7 @@ export const BETA_TOKEN_LIMITS: Record<Feature, number> = {
   'agent-jd-analyst': 800,    // Haiku — structured JSON extraction
   'agent-strategist': 3500,   // Sonnet — strategy chain-of-thought + full rewrite (merged)
   'agent-recruiter': 1200,    // Sonnet — adversarial review
-  'agent-scorer': 2000,       // Haiku — structured JSON scoring (expanded with STAR + ownership fields)
+  'agent-scorer': 1500,       // Haiku — structured JSON scoring
 };
 
 // Agent features bypass per-call rate limiting — they're sub-steps of a single pipeline call
@@ -93,17 +93,18 @@ export async function makeOptimizedApiCall<T = any>(
     }
   }
 
-  // Cache check — skip for agent features (they return Anthropic.Message,
-  // but cache stores raw text, causing type mismatch on cache hit.
-  // Agents also chain sequentially so caching stale/error responses is dangerous.)
-  const cacheKey = !isAgentFeature ? generateCacheKey(feature, inputs) : null;
-  const cachedResult = cacheKey ? getCachedResult(cacheKey) : null;
+  // Cache check — agents can cache too (same inputs = same output)
+  const cacheKey = generateCacheKey(feature, inputs);
+  const cachedResult = getCachedResult(cacheKey);
 
   if (cachedResult) {
     console.log(`[${feature.toUpperCase()}] Cache hit, returning cached result`);
     logApiCall(userId, feature, estimatedTokens, estimatedTokens, true);
 
-    const usageInfo = checkRateLimit(userId, feature as PipelineFeature);
+    // Only check rate limit for pipeline features
+    const usageInfo = !isAgentFeature
+      ? checkRateLimit(userId, feature as PipelineFeature)
+      : { remaining: 999, limit: 999, resetsAt: new Date() };
 
     return {
       success: true,
@@ -135,12 +136,10 @@ export async function makeOptimizedApiCall<T = any>(
       incrementUsage(userId, feature as PipelineFeature);
     }
 
-    // Cache the result (skip for agent features)
-    if (cacheKey) {
-      const content = message.content[0];
-      if (content.type === 'text') {
-        setCachedResult(cacheKey, content.text, feature, inputTokens + outputTokens);
-      }
+    // Cache the result
+    const content = message.content[0];
+    if (content.type === 'text') {
+      setCachedResult(cacheKey, content.text, feature, inputTokens + outputTokens);
     }
 
     const usageInfo = !isAgentFeature
