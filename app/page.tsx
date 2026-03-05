@@ -140,7 +140,7 @@ export default function LandingPage() {
                 Optimize Your Resume
               </h3>
               <p className="text-text-secondary mb-4">
-                Upload your resume and paste any job URL. Resolut analyzes your writing style and the job requirements, then optimizes your resume for ATS systems while keeping your authentic voice intact.
+                See your resume through a recruiter's eyes. Upload your resume and paste any job posting — Resolut shows you exactly what's working, what's getting you rejected, and how to fix it before you apply.
               </p>
               <Button
                 variant="primary"
@@ -157,19 +157,19 @@ export default function LandingPage() {
                   <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
-                  <span className="text-sm">Upload PDF or DOCX resume</span>
+                  <span className="text-sm">Recruiter perspective analysis</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
-                  <span className="text-sm">Paste job posting URL</span>
+                  <span className="text-sm">ATS compatibility check</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-primary/20 dark:bg-green-900/30 flex items-center justify-center text-primary dark:text-green-400 text-sm font-bold">
                     ✓
                   </div>
-                  <span className="text-sm">Get ATS-optimized resume in seconds</span>
+                  <span className="text-sm">Tailored fixes in 60 seconds</span>
                 </div>
               </div>
             </div>
