@@ -93,18 +93,17 @@ export async function makeOptimizedApiCall<T = any>(
     }
   }
 
-  // Cache check — agents can cache too (same inputs = same output)
-  const cacheKey = generateCacheKey(feature, inputs);
-  const cachedResult = getCachedResult(cacheKey);
+  // Cache check — skip for agent features (they return Anthropic.Message,
+  // but cache stores raw text, causing type mismatch on cache hit.
+  // Agents also chain sequentially so caching stale/error responses is dangerous.)
+  const cacheKey = !isAgentFeature ? generateCacheKey(feature, inputs) : null;
+  const cachedResult = cacheKey ? getCachedResult(cacheKey) : null;
 
   if (cachedResult) {
     console.log(`[${feature.toUpperCase()}] Cache hit, returning cached result`);
     logApiCall(userId, feature, estimatedTokens, estimatedTokens, true);
 
-    // Only check rate limit for pipeline features
-    const usageInfo = !isAgentFeature
-      ? checkRateLimit(userId, feature as PipelineFeature)
-      : { remaining: 999, limit: 999, resetsAt: new Date() };
+    const usageInfo = checkRateLimit(userId, feature as PipelineFeature);
 
     return {
       success: true,
@@ -136,10 +135,12 @@ export async function makeOptimizedApiCall<T = any>(
       incrementUsage(userId, feature as PipelineFeature);
     }
 
-    // Cache the result
-    const content = message.content[0];
-    if (content.type === 'text') {
-      setCachedResult(cacheKey, content.text, feature, inputTokens + outputTokens);
+    // Cache the result (skip for agent features)
+    if (cacheKey) {
+      const content = message.content[0];
+      if (content.type === 'text') {
+        setCachedResult(cacheKey, content.text, feature, inputTokens + outputTokens);
+      }
     }
 
     const usageInfo = !isAgentFeature
