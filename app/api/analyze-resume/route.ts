@@ -10,6 +10,9 @@ import {
   createScorerPrompt,
 } from '@/lib/claude/prompts-simplified';
 
+// Allow up to 60s for the 4-agent sequential pipeline
+export const maxDuration = 60;
+
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
