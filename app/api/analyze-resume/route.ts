@@ -17,6 +17,23 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+// ─── Error text detection patterns ───────────────────────────────────────────
+const ERROR_TEXT_PATTERNS = [
+  /^An error/i,
+  /^I apologize/i,
+  /^Unfortunately/i,
+  /^I'm sorry/i,
+  /^I cannot/i,
+  /^Error:/i,
+  /^I'm unable/i,
+  /^There was/i,
+];
+
+function isErrorText(text: string): boolean {
+  const trimmed = text.trim();
+  return ERROR_TEXT_PATTERNS.some(pattern => pattern.test(trimmed));
+}
+
 // ─── Helper: extract text from Claude response ────────────────────────────────
 function extractText(message: Anthropic.Message): string {
   const content = message.content[0];
@@ -28,16 +45,6 @@ function extractText(message: Anthropic.Message): string {
 function parseAgentJson<T>(raw: string, agentName: string): T {
   // Log first 300 chars for debugging
   console.log(`[${agentName}] Raw response (first 300 chars):`, raw.substring(0, 300));
-
-  // Detect error-text responses (Claude returned prose instead of JSON)
-  const trimmed = raw.trim();
-  const errorPrefixes = ['An error', 'I apologize', 'Unfortunately', "I'm sorry", 'I cannot', 'Error:'];
-  for (const prefix of errorPrefixes) {
-    if (trimmed.startsWith(prefix)) {
-      console.error(`[${agentName}] Claude returned error text instead of JSON:`, trimmed.substring(0, 500));
-      throw new Error(`[${agentName}] Claude returned error text instead of JSON: "${trimmed.substring(0, 100)}..."`);
-    }
-  }
 
   // Strip markdown fences if present
   let cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
@@ -63,33 +70,65 @@ function parseAgentJson<T>(raw: string, agentName: string): T {
   }
 }
 
-// ─── Helper: run a single agent call ─────────────────────────────────────────
+// ─── Custom error for error-text responses ──────────────────────────────────
+class ClaudeErrorTextError extends Error {
+  constructor(agentName: string, responseText: string) {
+    super(`[${agentName}] Claude returned error text instead of JSON`);
+    this.name = 'ClaudeErrorTextError';
+    (this as any).agentName = agentName;
+    (this as any).responsePreview = responseText.substring(0, 300);
+  }
+}
+
+// ─── Helper: run a single agent call (with retry on error-text) ─────────────
 async function runAgent(
   feature: Parameters<typeof makeOptimizedApiCall>[0]['feature'],
   model: string,
   prompt: string,
   inputs: Record<string, any>,
-  request: NextRequest
+  request: NextRequest,
+  maxRetries = 1
 ): Promise<string> {
-  const result = await makeOptimizedApiCall({
-    feature,
-    inputs,
-    anthropicCall: () =>
-      anthropic.messages.create({
-        model,
-        max_tokens: getMaxTokens(feature),
-        temperature: 0.3,
-        system: 'You are a JSON-only API. Your entire response must be valid JSON (or JSON followed by a ---RESUME--- delimiter if instructed). NEVER output preamble, apologies, explanations, or error text before the JSON. Your first character must be {. If you cannot complete the task, return {"error": "reason"}.',
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    request,
-  });
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      console.warn(`[${feature}] Retry attempt ${attempt}/${maxRetries}...`);
+    }
 
-  if (!result.success) {
-    throw new Error(`Agent ${feature} failed: ${result.error}`);
+    const result = await makeOptimizedApiCall({
+      feature,
+      inputs,
+      anthropicCall: () =>
+        anthropic.messages.create({
+          model,
+          max_tokens: getMaxTokens(feature),
+          temperature: 0.3,
+          system: 'You are a JSON-only API. Your entire response must be valid JSON (or JSON followed by a ---RESUME--- delimiter if instructed). NEVER output preamble, apologies, explanations, or error text before the JSON. Your first character must be {. If you cannot complete the task, return {"error": "reason"}.',
+          messages: [{ role: 'user', content: prompt }],
+        }),
+      request,
+    });
+
+    if (!result.success) {
+      throw new Error(`Agent ${feature} failed: ${result.error}`);
+    }
+
+    const text = extractText(result.data as Anthropic.Message);
+
+    // Check for error-text response
+    if (isErrorText(text)) {
+      console.error(`[${feature}] Attempt ${attempt + 1}: Claude returned error text (${text.length} chars):`, text.substring(0, 500));
+      if (attempt < maxRetries) {
+        continue; // Retry
+      }
+      // Out of retries — throw specific error
+      throw new ClaudeErrorTextError(feature, text);
+    }
+
+    return text;
   }
 
-  return extractText(result.data as Anthropic.Message);
+  // Should never reach here, but TypeScript needs it
+  throw new Error(`Agent ${feature} failed after ${maxRetries + 1} attempts`);
 }
 
 // ─── Route handler ─────────────────────────────────────────────────────────────
@@ -97,12 +136,14 @@ export async function POST(request: NextRequest) {
   try {
     const { resumeText, jobDescription, companyName } = await request.json();
 
-    console.log('📥 Input lengths:', {
-      resumeLength: resumeText?.length ?? 0,
-      jobDescLength: jobDescription?.length ?? 0,
-      totalChars: (resumeText?.length ?? 0) + (jobDescription?.length ?? 0),
-      companyName: companyName || '(not provided)',
-    });
+    console.log('=== INPUT TO CLAUDE ===');
+    console.log('Resume length:', resumeText?.length ?? 0);
+    console.log('Job description length:', jobDescription?.length ?? 0);
+    console.log('Total chars:', (resumeText?.length ?? 0) + (jobDescription?.length ?? 0));
+    console.log('Company:', companyName || '(not provided)');
+    console.log('Resume first 200 chars:', resumeText?.substring(0, 200) ?? '(empty)');
+    console.log('Job first 200 chars:', jobDescription?.substring(0, 200) ?? '(empty)');
+    console.log('=======================');
 
     if (!resumeText || !jobDescription) {
       return NextResponse.json(
@@ -277,6 +318,28 @@ export async function POST(request: NextRequest) {
     console.error('Error in 4-agent pipeline:', errMsg);
     console.error('Stack:', errStack);
 
+    // ── Claude returned error text instead of JSON (e.g. "An error occurred...") ──
+    if (error instanceof ClaudeErrorTextError) {
+      const preview = (error as any).responsePreview || '';
+      const agent = (error as any).agentName || 'unknown';
+      console.error(`ClaudeErrorTextError from ${agent}:`, preview);
+      return NextResponse.json(
+        {
+          error: 'Analysis failed',
+          message: 'Unable to process this resume and job combination. The AI returned an unexpected response. This may be due to unusual formatting or length.',
+          suggestions: [
+            'Try again — this is usually a temporary issue',
+            'Try with a simpler resume format (plain text, no complex layouts)',
+            'Try with a shorter job description',
+            'Contact us if the issue persists: hello@resolut.tools',
+          ],
+          technicalError: `Agent ${agent} returned text: "${preview.substring(0, 100)}..."`,
+        },
+        { status: 500 }
+      );
+    }
+
+    // ── Claude API-level error (rate limit, auth, etc.) ──
     if (error instanceof Anthropic.APIError) {
       return NextResponse.json(
         { error: `Claude API error: ${error.message}` },
@@ -286,6 +349,7 @@ export async function POST(request: NextRequest) {
 
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
+    // ── JSON parsing failure ──
     if (errorMessage.includes('JSON') || errorMessage.includes('parse')) {
       return NextResponse.json(
         {
