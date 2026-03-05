@@ -136,14 +136,15 @@ export async function POST(request: NextRequest) {
   try {
     const { resumeText, jobDescription, companyName } = await request.json();
 
-    console.log('=== INPUT TO CLAUDE ===');
+    console.log('=== INPUTS TO CLAUDE ===');
     console.log('Resume length:', resumeText?.length ?? 0);
+    console.log('Resume first 300 chars:', resumeText?.substring(0, 300) ?? '(empty)');
+    console.log('Resume last 100 chars:', resumeText ? resumeText.substring(Math.max(0, resumeText.length - 100)) : '(empty)');
     console.log('Job description length:', jobDescription?.length ?? 0);
-    console.log('Total chars:', (resumeText?.length ?? 0) + (jobDescription?.length ?? 0));
+    console.log('Job first 300 chars:', jobDescription?.substring(0, 300) ?? '(empty)');
     console.log('Company:', companyName || '(not provided)');
-    console.log('Resume first 200 chars:', resumeText?.substring(0, 200) ?? '(empty)');
-    console.log('Job first 200 chars:', jobDescription?.substring(0, 200) ?? '(empty)');
-    console.log('=======================');
+    console.log('Total chars:', (resumeText?.length ?? 0) + (jobDescription?.length ?? 0));
+    console.log('========================');
 
     if (!resumeText || !jobDescription) {
       return NextResponse.json(
