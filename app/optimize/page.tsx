@@ -219,7 +219,7 @@ export default function CustomizePage() {
                     Click below to optimize your resume for ATS while preserving your unique voice
                   </p>
                 </div>
-                <div className="flex justify-center">
+                <div className="flex flex-col items-center gap-4">
                   <Button
                     variant="primary"
                     size="lg"
@@ -239,6 +239,9 @@ export default function CustomizePage() {
                       </>
                     )}
                   </Button>
+                  <p className="text-sm text-text-secondary">
+                    Very detailed job descriptions (5000+ words) may take longer to process. For best results, use standard job postings.
+                  </p>
                 </div>
               </section>
             )}
