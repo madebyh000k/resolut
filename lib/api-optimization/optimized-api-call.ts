@@ -52,7 +52,7 @@ export const BETA_TOKEN_LIMITS: Record<Feature, number> = {
   'agent-jd-analyst': 800,    // Haiku — structured JSON extraction
   'agent-strategist': 3500,   // Sonnet — strategy chain-of-thought + full rewrite (merged)
   'agent-recruiter': 1200,    // Sonnet — adversarial review
-  'agent-scorer': 2500,       // Haiku — structured JSON scoring (expanded with STAR + ownership fields)
+  'agent-scorer': 2000,       // Haiku — structured JSON scoring (expanded with STAR + ownership fields)
 };
 
 // Agent features bypass per-call rate limiting — they're sub-steps of a single pipeline call

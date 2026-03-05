@@ -152,12 +152,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ── Truncate oversized inputs to prevent timeouts ────────────────────────
+    let processedResume = resumeText;
+    let processedJobDesc = jobDescription;
+
+    if (jobDescription.length > 15000) {
+      console.warn(`Job description too long (${jobDescription.length} chars), truncating to 15000`);
+      processedJobDesc = jobDescription.substring(0, 15000) + '\n\n[Description truncated for analysis]';
+    }
+    if (resumeText.length > 12000) {
+      console.warn(`Resume too long (${resumeText.length} chars), truncating to 12000`);
+      processedResume = resumeText.substring(0, 12000) + '\n\n[Resume truncated for analysis]';
+    }
+
     // ── Rate limit check on the pipeline feature (not individual agents) ──────
     // We check 'optimize' once here before starting the chain.
     // Individual agent calls bypass rate limiting (they're sub-steps).
     const rateLimitCheck = await makeOptimizedApiCall({
       feature: 'optimize',
-      inputs: { resumeText, jobDescription, companyName },
+      inputs: { resumeText: processedResume, jobDescription: processedJobDesc, companyName },
       anthropicCall: () => Promise.reject(new Error('rate-limit-check-only')),
       request,
     });
@@ -179,8 +192,8 @@ export async function POST(request: NextRequest) {
     const jdAnalystRaw = await runAgent(
       'agent-jd-analyst',
       'claude-haiku-4-5-20251001',
-      createJdAnalystPrompt(jobDescription),
-      { jobDescription },
+      createJdAnalystPrompt(processedJobDesc),
+      { jobDescription: processedJobDesc },
       request
     );
     const jdAnalysis = parseAgentJson<Record<string, string>>(jdAnalystRaw, 'JD Analyst');
@@ -196,12 +209,12 @@ export async function POST(request: NextRequest) {
       'agent-strategist',
       'claude-sonnet-4-5-20250929',
       createStrategistWriterPrompt(
-        resumeText,
+        processedResume,
         JSON.stringify(jdAnalysis, null, 2),
-        jobDescription,
+        processedJobDesc,
         companyName
       ),
-      { resumeText, jdAnalysis: JSON.stringify(jdAnalysis), jobDescription, companyName },
+      { resumeText: processedResume, jdAnalysis: JSON.stringify(jdAnalysis), jobDescription: processedJobDesc, companyName },
       request
     );
 
@@ -224,8 +237,8 @@ export async function POST(request: NextRequest) {
     const recruiterRaw = await runAgent(
       'agent-recruiter',
       'claude-sonnet-4-5-20250929',
-      createRecruiterPrompt(rewrittenResume, jobDescription),
-      { rewrittenResume, jobDescription },
+      createRecruiterPrompt(rewrittenResume, processedJobDesc),
+      { rewrittenResume, jobDescription: processedJobDesc },
       request
     );
     const recruiterVerdict = parseAgentJson<{
@@ -250,8 +263,8 @@ export async function POST(request: NextRequest) {
     const scorerRaw = await runAgent(
       'agent-scorer',
       'claude-haiku-4-5-20251001',
-      createScorerPrompt(rewrittenResume, jobDescription, JSON.stringify(recruiterVerdict, null, 2)),
-      { rewrittenResume, jobDescription, recruiterVerdict: JSON.stringify(recruiterVerdict) },
+      createScorerPrompt(rewrittenResume, processedJobDesc, JSON.stringify(recruiterVerdict, null, 2)),
+      { rewrittenResume, jobDescription: processedJobDesc, recruiterVerdict: JSON.stringify(recruiterVerdict) },
       request
     );
     const scoreData = parseAgentJson<ResumeAnalysis>(scorerRaw, 'Scorer');
