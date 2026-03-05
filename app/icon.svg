@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 423.83 508.08">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #faf9f6;
+        font-family: Tekno-One, Tekno;
+        font-size: 252px;
+      }
+
+      .cls-2 {
+        fill: #1b4332;
+      }
+    </style>
+  </defs>
+  <circle class="cls-2" cx="204.89" cy="226.36" r="204.89"/>
+  <text class="cls-1" transform="translate(41.57 315.44)"><tspan x="0" y="0">r</tspan></text>
+</svg>
