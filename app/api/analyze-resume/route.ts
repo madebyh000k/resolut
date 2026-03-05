@@ -80,6 +80,17 @@ class ClaudeErrorTextError extends Error {
   }
 }
 
+// ─── Agent-specific system messages ──────────────────────────────────────────
+const SYSTEM_MSG_JSON_ONLY =
+  'You are a JSON-only API. Return ONLY a valid JSON object. No preamble, no apologies, no explanations. Your first character must be {. Your last character must be }. If you cannot complete the task, return {"error": "reason"}.';
+
+const SYSTEM_MSG_DELIMITER =
+  'You are a resume optimization expert. Return your response in exactly two parts: first a valid JSON object (starting with {), then the delimiter ---RESUME--- on its own line, then the full optimized resume as plain text. No preamble before the JSON. No markdown fences. Start immediately with {.';
+
+function getSystemMessage(feature: string): string {
+  return feature === 'agent-strategist' ? SYSTEM_MSG_DELIMITER : SYSTEM_MSG_JSON_ONLY;
+}
+
 // ─── Helper: run a single agent call (with retry on error-text) ─────────────
 async function runAgent(
   feature: Parameters<typeof makeOptimizedApiCall>[0]['feature'],
@@ -102,7 +113,7 @@ async function runAgent(
           model,
           max_tokens: getMaxTokens(feature),
           temperature: 0.3,
-          system: 'You are a JSON-only API. Your entire response must be valid JSON (or JSON followed by a ---RESUME--- delimiter if instructed). NEVER output preamble, apologies, explanations, or error text before the JSON. Your first character must be {. If you cannot complete the task, return {"error": "reason"}.',
+          system: getSystemMessage(feature),
           messages: [{ role: 'user', content: prompt }],
         }),
       request,
