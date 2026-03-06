@@ -87,9 +87,9 @@ export default function LandingPage() {
             <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-4">
               <Target className="h-8 w-8 text-primary dark:text-green-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-3">ATS-Optimized Resumes</h3>
+            <h3 className="text-xl font-semibold mb-3">Get Recruiter Feedback Instantly</h3>
             <p className="text-text-secondary">
-              Get past applicant tracking systems with AI-powered keyword optimization while preserving your unique voice and authenticity.
+              Upload your resume and see exactly what recruiters see. Get honest feedback on what's working, what's broken, and how to fix it before you apply.
             </p>
           </div>
 
@@ -98,9 +98,9 @@ export default function LandingPage() {
             <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-4">
               <MessageSquare className="h-8 w-8 text-primary dark:text-green-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-3">Interview Preparation</h3>
+            <h3 className="text-xl font-semibold mb-3">Prepare Like a Pro</h3>
             <p className="text-text-secondary">
-              Get personalized interview briefs with company research, talking points, and strategic questions tailored to your background.
+              Get personalized interview briefs with company intel, talking points, and strategic questions based on your experience and the role.
             </p>
           </div>
 
@@ -109,9 +109,9 @@ export default function LandingPage() {
             <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-4">
               <TrendingUp className="h-8 w-8 text-primary dark:text-green-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-3">Smart Negotiations</h3>
+            <h3 className="text-xl font-semibold mb-3">Negotiate With Data</h3>
             <p className="text-text-secondary">
-              Analyze your offer and get data-driven negotiation strategies with market insights, email templates, and pushback responses.
+              Know where your offer stands in the market. Get percentile analysis, negotiation strategies, email templates, and pushback scripts.
             </p>
           </div>
         </div>
