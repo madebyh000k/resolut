@@ -270,9 +270,9 @@ export default function LandingPage() {
 
       {/* Final CTA */}
       <section className="py-12 sm:py-20 text-center border-t border-text-muted/20">
-        <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Land Your Dream Job?</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold mb-4">Your resume gets 6 seconds. Make them count.</h2>
         <p className="text-lg text-text-secondary mb-8 max-w-2xl mx-auto">
-          Join professionals who are getting more interviews and better offers with Resolut
+          Find out what recruiters see, what's getting you rejected, and how to fix it.
         </p>
         <Button
           variant="primary"
@@ -281,7 +281,7 @@ export default function LandingPage() {
           className="px-8 py-4 sm:px-12 sm:py-6 text-base sm:text-lg"
         >
           <Sparkles className="h-6 w-6 mr-3" />
-          Get Started Free
+          Get Free Feedback Now
         </Button>
       </section>
     </AppLayout>
