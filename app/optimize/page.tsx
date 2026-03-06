@@ -106,9 +106,9 @@ export default function CustomizePage() {
             {/* Welcome Section with 3-Step Process */}
             {!originalResume && (
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-3">Customize Your Resume</h2>
+                <h2 className="text-3xl font-bold mb-3">Get Recruiter Feedback</h2>
                 <p className="text-text-secondary mb-8">
-                  Optimize your resume for any job in three simple steps
+                  See your resume through a recruiter's eyes in three simple steps
                 </p>
 
                 {/* 3-Step Process Overview */}
@@ -140,9 +140,9 @@ export default function CustomizePage() {
                     <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-green-900/20 flex items-center justify-center mb-3">
                       <span className="text-xl font-bold text-primary dark:text-green-400">3</span>
                     </div>
-                    <h4 className="font-semibold mb-1">Resolut Does the Rest</h4>
+                    <h4 className="font-semibold mb-1">Get Honest Feedback</h4>
                     <p className="text-xs text-text-secondary">
-                      Get optimized, ATS-ready resume
+                      See what's working, what's broken, and how to fix it
                     </p>
                   </div>
                 </div>
@@ -213,7 +213,7 @@ export default function CustomizePage() {
                     <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary dark:bg-green-400 text-white dark:text-primary text-sm font-bold">
                       3
                     </span>
-                    Resolut Does the Rest
+                    Get Honest Feedback
                   </h2>
                   <p className="text-text-secondary ml-10 mt-1">
                     Click below to optimize your resume for ATS while preserving your unique voice
