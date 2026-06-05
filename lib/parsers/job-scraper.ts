@@ -57,6 +57,17 @@ export async function scrapeJobDescription(url: string): Promise<ScrapedJob> {
     const html = await response.text();
     const $ = cheerio.load(html);
 
+    // Detect login/auth walls before attempting extraction
+    const pageTitle = $('title').text().toLowerCase();
+    const loginIndicators = [
+      'log in', 'login', 'sign in', 'signin', 'sign up', 'authenticate',
+      'access denied', 'authorization required', 'please log in',
+    ];
+    const isLoginPage = loginIndicators.some(indicator => pageTitle.includes(indicator));
+    if (isLoginPage) {
+      throw new Error('LOGIN_WALL');
+    }
+
     // Detect platform
     const platform = detectPlatform(url);
     const selectors = platform ? PLATFORM_SELECTORS[platform] : null;

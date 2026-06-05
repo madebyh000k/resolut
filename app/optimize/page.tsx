@@ -50,8 +50,8 @@ export default function CustomizePage() {
 
   return (
     <AppLayout>
-        {/* Error Banner */}
-        {error && (
+        {/* Error Banner — LOGIN_WALL is handled inline in JobUrlInput */}
+        {error && error !== 'LOGIN_WALL' && (
           <div className="mb-6 p-5 rounded-lg bg-red-50 border-l-4 border-red-500">
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-lg font-semibold text-red-900 flex items-center gap-2">

@@ -60,6 +60,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ jobDescription }, { status: 200 });
   } catch (error) {
     console.error('Job scraping error:', error);
+    if (error instanceof Error && error.message === 'LOGIN_WALL') {
+      return NextResponse.json({ error: 'LOGIN_WALL' }, { status: 422 });
+    }
     return NextResponse.json(
       {
         error: `Failed to fetch job description: ${error instanceof Error ? error.message : 'Unknown error'}`,

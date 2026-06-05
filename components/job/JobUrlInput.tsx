@@ -1,20 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { Link as LinkIcon, Loader2, CheckCircle, Briefcase } from 'lucide-react';
+import { Link as LinkIcon, Loader2, CheckCircle, Briefcase, AlertCircle } from 'lucide-react';
 import { useResumeStore } from '@/lib/store/use-resume-store';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 export function JobUrlInput() {
   const [url, setUrl] = useState('');
-  const { jobDescription, isProcessing, setJobDescription } = useResumeStore();
+  const { jobDescription, isProcessing, setJobDescription, error, clearError } = useResumeStore();
+
+  const loginWall = error === 'LOGIN_WALL';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (url.trim()) {
-      await setJobDescription(url.trim());
-    }
+    if (!url.trim()) return;
+    if (loginWall) clearError();
+    await setJobDescription(url.trim());
   };
 
   if (jobDescription) {
@@ -92,9 +94,18 @@ export function JobUrlInput() {
               )}
             </Button>
           </div>
-          <p className="text-xs text-text-secondary mt-2">
-            Supports LinkedIn, Indeed, Greenhouse, and most job boards
-          </p>
+          {loginWall ? (
+            <div className="flex items-start gap-2 mt-2 text-amber-600 dark:text-amber-400">
+              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <p className="text-xs">
+                Unable to preview this job listing — paste the full job description below or try another source
+              </p>
+            </div>
+          ) : (
+            <p className="text-xs text-text-secondary mt-2">
+              Supports LinkedIn, Indeed, Greenhouse, and most job boards
+            </p>
+          )}
         </div>
       </form>
     </Card>
