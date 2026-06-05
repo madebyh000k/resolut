@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     console.log('🧠✍️  [Agent 2] Strategist+Writer starting...');
     const strategistWriterRaw = await runAgent(
       'agent-strategist',
-      'claude-sonnet-4-5-20250929',
+      'claude-sonnet-4-6',
       createStrategistWriterPrompt(
         resumeText,
         JSON.stringify(jdAnalysis, null, 2),
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
     console.log('👔 [Agent 3] Recruiter starting...');
     const recruiterRaw = await runAgent(
       'agent-recruiter',
-      'claude-sonnet-4-5-20250929',
+      'claude-sonnet-4-6',
       createRecruiterPrompt(rewrittenResume, jobDescription),
       { rewrittenResume, jobDescription },
       request

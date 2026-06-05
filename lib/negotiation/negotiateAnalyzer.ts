@@ -340,7 +340,7 @@ export async function analyzeAndAdvise(input: OfferInput): Promise<NegotiationAd
 
     // Use Sonnet 4.5 for sophisticated analysis
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+      model: 'claude-sonnet-4-6',
       max_tokens: 3000,
       temperature: 0.4, // Balanced between consistency and natural language
       messages: [

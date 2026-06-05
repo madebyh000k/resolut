@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       inputs: { resumeText, jobDescription, companyName, companyNews, format },
       anthropicCall: () =>
         anthropic.messages.create({
-          model: 'claude-sonnet-4-5-20250929',
+          model: 'claude-sonnet-4-6',
           max_tokens: getMaxTokens('prepare'), // Beta limit: 2000
           temperature: 0.7,
           messages: [{ role: 'user', content: prompt }],
