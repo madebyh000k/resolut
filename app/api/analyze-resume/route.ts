@@ -180,6 +180,12 @@ export async function POST(request: NextRequest) {
       { rewrittenResume, jobDescription, recruiterVerdict: JSON.stringify(recruiterVerdict) },
       request
     );
+    console.log('=== SCORER RESPONSE DEBUG ===');
+    console.log('Raw response length:', scorerRaw.length);
+    console.log('Raw response (first 2000 chars):', scorerRaw.substring(0, 2000));
+    console.log('Has opening brace?', scorerRaw.includes('{'));
+    console.log('Has closing brace?', scorerRaw.includes('}'));
+    console.log('=============================');
     const scoreData = parseAgentJson<ResumeAnalysis>(scorerRaw, 'Scorer');
     console.log('✅ [Agent 4] Scorer complete — overall:', scoreData.overallScore);
 
