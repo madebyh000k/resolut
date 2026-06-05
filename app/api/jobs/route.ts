@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     // Extract keywords using Claude
     const keywordPrompt = createKeywordExtractionPrompt(scrapedJob.description);
     const keywordResponse = await callClaude(keywordPrompt, {
-      model: 'claude-3-haiku-20240307', // Use Haiku for cheaper keyword extraction
+      model: 'claude-haiku-4-5-20251001', // Use Haiku for cheaper keyword extraction
       maxTokens: 2048,
     });
 

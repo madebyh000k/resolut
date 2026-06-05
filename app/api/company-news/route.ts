@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Analyze news with Claude
     const analysisPrompt = createNewsAnalysisPrompt(company, scrapedNews.articles);
     const analysisResponse = await callClaude(analysisPrompt, {
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-haiku-4-5-20251001',
       maxTokens: 2048,
     });
 
